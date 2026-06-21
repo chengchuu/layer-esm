@@ -17,7 +17,10 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "mazey": ["./node_modules/mazey/lib/index.d.ts"]
+    }
   },
   "include": [
     "./src/**/*.ts",

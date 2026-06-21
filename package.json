@@ -92,7 +92,6 @@
     "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^14.0.1",
     "markdown-toc": "^1.2.0",
-    "mazey": "^4.11.0",
     "prettier": "^2.8.8",
     "prettier-eslint-cli": "^8.0.1",
     "rollup": "^3.29.4",
@@ -116,5 +115,7 @@
       "pre-commit": "lint-staged"
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "mazey": "^4.11.1"
+  }
 }
