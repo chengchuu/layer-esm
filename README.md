@@ -22,21 +22,7 @@ Of course, you can also download this file and serve it yourself. The file locat
 
 ## Usage
 
-Foo foo foo example.
-
-```javascript
-import { foo } from "layer-esm";
-
-foo(); // true
-```
-
-Bar bar bar example.
-
-```javascript
-import { bar } from "layer-esm";
-
-bar(); // false
-```
+TODO: Add usage examples here.
 
 ## Contributing
 

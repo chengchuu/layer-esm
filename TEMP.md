@@ -2,6 +2,9 @@ You are a senior JavaScript library migration engineer.
 
 Task: Convert the legacy global-script version of the Layer JS library into a modern ESM package.
 
+- legacy global-script: "./layer/"
+- modern ESM package: "./layer-esm/"
+
 Migration goals:
 
 1. Architecture
