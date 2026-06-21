@@ -1,3 +1,4 @@
+import { addStyle } from "mazey";
 import { PREFIX, ensureDocument } from "../utils/dom";
 
 const STYLE_ID = `${PREFIX}-style`;
@@ -9,9 +10,5 @@ export const injectStyle = (cssText: string): void => {
     return;
   }
 
-  const style = doc.createElement("style");
-  style.id = STYLE_ID;
-  style.type = "text/css";
-  style.textContent = cssText;
-  doc.head.appendChild(style);
+  addStyle(cssText, { id: STYLE_ID });
 };
