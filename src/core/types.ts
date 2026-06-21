@@ -66,7 +66,7 @@ export interface LayerOptions {
   success?: (layero: HTMLElement, index: number) => void;
   end?: () => void;
   yes?: (index: number, layero: HTMLElement) => void;
-  btn2?: (index: number, layero: HTMLElement) => void;
+  btn2?: (index: number, layero: HTMLElement) => boolean | void;
   cancel?: (index: number, layero: HTMLElement) => boolean | void;
   change?: (index: number) => void;
   tab?: LayerTabItem[];
@@ -102,7 +102,28 @@ export interface NormalizedLayerOptions extends Omit<LayerOptions, "title" | "sh
   area: [string | undefined, string | undefined];
   tips: [LayerTipDirection, string];
   btn: string[] | false;
+  fixed: boolean;
+  move: boolean | string;
+  moveType: 0 | 1;
+  resize: boolean;
+  closeBtn: boolean | 0 | 1 | 2;
   timeMs: number;
+  zIndex: number;
+  maxWidth: number;
+  anim: number;
+  isOutAnim: boolean;
+  icon: number;
+  btnAlign: "l" | "c" | "r" | string;
+  skin: string;
+  className: string;
+  id: string;
+  scrollbar: boolean;
+  minStack: boolean;
+  maxmin: boolean;
+  shadeStyle: string;
+  formType: 0 | 1 | 2;
+  value: string;
+  maxlength: number;
 }
 
 export interface MovedContentState {

@@ -32,24 +32,23 @@ const state = {
   bodyLocks: 0,
 };
 
-const baseOptions: NormalizedLayerOptions = {
+const baseOptions: LayerOptions = {
   type: 0,
-  title: { text: "信息" },
+  title: "信息",
   content: "",
-  shade: { opacity: 0.3, color: "#000" },
+  shade: 0.3,
   shadeClose: false,
   fixed: true,
   move: `${PREFIX}__title`,
   moveType: 1,
   resize: true,
   closeBtn: 1,
-  timeMs: 0,
   zIndex: 19891014,
   maxWidth: 360,
   anim: 0,
   isOutAnim: true,
   icon: -1,
-  area: [ undefined, undefined ],
+  area: "auto",
   offset: "auto",
   btn: false,
   btnAlign: "r",
@@ -112,7 +111,11 @@ const normalizeTips = (tips: LayerOptions["tips"]): [1 | 2 | 3 | 4, string] => {
 };
 
 const normalizeOptions = (options: LayerOptions): NormalizedLayerOptions => {
-  const merged = shallowMerge<LayerOptions>(baseOptions, state.globalConfig, options);
+  const merged: LayerOptions = {
+    ...baseOptions,
+    ...state.globalConfig,
+    ...options,
+  };
 
   return {
     ...baseOptions,
@@ -123,7 +126,28 @@ const normalizeOptions = (options: LayerOptions): NormalizedLayerOptions => {
     area: normalizeArea(merged.area),
     tips: normalizeTips(merged.tips),
     btn: normalizeButtons(merged.btn),
+    fixed: merged.fixed ?? true,
+    move: merged.move ?? `${PREFIX}__title`,
+    moveType: merged.moveType ?? 1,
+    resize: merged.resize ?? true,
+    closeBtn: merged.closeBtn ?? 1,
     timeMs: Math.max((merged.time ?? 0) * 1000, 0),
+    zIndex: merged.zIndex ?? 19891014,
+    maxWidth: merged.maxWidth ?? 360,
+    anim: merged.anim ?? 0,
+    isOutAnim: merged.isOutAnim ?? true,
+    icon: merged.icon ?? -1,
+    btnAlign: merged.btnAlign ?? "r",
+    skin: merged.skin ?? "",
+    className: merged.className ?? "",
+    id: merged.id ?? "",
+    scrollbar: merged.scrollbar ?? true,
+    minStack: merged.minStack ?? true,
+    maxmin: merged.maxmin ?? false,
+    shadeStyle: merged.shadeStyle ?? "",
+    formType: merged.formType ?? 0,
+    value: merged.value ?? "",
+    maxlength: merged.maxlength ?? 500,
   };
 };
 
@@ -266,16 +290,17 @@ const bindDrag = (record: LayerRecord): void => {
 
   handle.style.cursor = "move";
 
-  const onPointerDown = (event: MouseEvent): void => {
-    if (event.button !== 0) {
+  const onPointerDown = (event: Event): void => {
+    const mouseEvent = event as MouseEvent;
+    if (mouseEvent.button !== 0) {
       return;
     }
 
     updateZIndex(record);
 
     const rect = root.getBoundingClientRect();
-    const startX = event.clientX - rect.left;
-    const startY = event.clientY - rect.top;
+    const startX = mouseEvent.clientX - rect.left;
+    const startY = mouseEvent.clientY - rect.top;
 
     root.style.transform = "";
     root.style.left = `${rect.left + (options.fixed ? 0 : window.scrollX)}px`;
@@ -307,15 +332,16 @@ const bindResize = (record: LayerRecord): void => {
   const handle = createElement(ensureDocument(), "span", [ `${PREFIX}__resize-handle` ]);
   root.appendChild(handle);
 
-  const onMouseDown = (event: MouseEvent): void => {
-    event.preventDefault();
+  const onMouseDown = (event: Event): void => {
+    const mouseEvent = event as MouseEvent;
+    mouseEvent.preventDefault();
     updateZIndex(record);
 
     const rect = root.getBoundingClientRect();
     const startWidth = rect.width;
     const startHeight = rect.height;
-    const startX = event.clientX;
-    const startY = event.clientY;
+    const startX = mouseEvent.clientX;
+    const startY = mouseEvent.clientY;
 
     const removeMove = addEvent(document, "mousemove", (moveEvent: Event) => {
       const pointer = moveEvent as MouseEvent;
@@ -375,8 +401,8 @@ const renderContent = (record: LayerRecord, rawContent: LayerOptions["content"])
   if (record.typeName === "iframe") {
     const iframe = createElement(doc, "iframe", [ `${PREFIX}__iframe` ]);
     iframe.src = Array.isArray(rawContent) ? rawContent[0] : String(rawContent ?? "");
-    iframe.scrolling = Array.isArray(rawContent) ? rawContent[1] ?? "auto" : "auto";
-    iframe.allowTransparency = "true";
+    iframe.scrolling = Array.isArray(rawContent) && typeof rawContent[1] === "string" ? rawContent[1] : "auto";
+    iframe.setAttribute("allowtransparency", "true");
     iframe.name = `${LEGACY_PREFIX}-iframe${record.index}`;
     iframe.id = `${LEGACY_PREFIX}-iframe${record.index}`;
     record.iframe = iframe;
@@ -416,7 +442,10 @@ const bindButtons = (record: LayerRecord): void => {
       }
 
       const handled = options.btn2?.(record.index, record.root);
-      if (handled !== false) {
+      if (handled === false) {
+        return;
+      }
+      {
         close(record.index);
       }
     }));
@@ -450,7 +479,7 @@ const createRecord = (options: NormalizedLayerOptions): LayerRecord => {
   const minButton = options.maxmin ? createToolbarButton(doc, "min") : null;
   const maxButton = options.maxmin ? createToolbarButton(doc, "max") : null;
 
-  if (shade) {
+  if (shade && options.shade) {
     shade.style.background = options.shadeStyle || options.shade.color;
     shade.style.opacity = `${options.shade.opacity}`;
     shade.dataset.index = `${index}`;

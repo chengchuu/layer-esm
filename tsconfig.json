@@ -8,7 +8,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "importHelpers": true,
     "strict": true,
     "noImplicitThis": false,
@@ -20,7 +20,8 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+    "./examples/**/*.ts"
   ],
   "typedocOptions": {
     "entryPoints": ["./src"],
