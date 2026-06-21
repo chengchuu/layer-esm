@@ -18,11 +18,22 @@ Use layer-esm via [npm](https://www.npmjs.com/package/layer-esm).
 npm install layer-esm --save
 ```
 
-Of course, you can also download this file and serve it yourself. The file locates at the `lib/layer-esm.min.js`.
+Of course, you can also serve the built package files yourself. The ESM, CommonJS, and type declaration outputs are written to `dist/`.
 
 ## Usage
 
-TODO: Add usage examples here.
+```ts
+import layer, { alert, confirm, load, msg } from "layer-esm";
+
+msg("Saved");
+
+const loading = load(1, { content: "Loading..." });
+
+confirm("Continue?", {}, () => {
+  alert("Confirmed");
+  layer.close(loading);
+});
+```
 
 ## Contributing
 
@@ -56,7 +67,13 @@ npm run build
 Test:
 
 ```bash
-npm run test
+npm test
+```
+
+Single test file:
+
+```bash
+npm test -- test/foo.test.js
 ```
 
 Documentation:

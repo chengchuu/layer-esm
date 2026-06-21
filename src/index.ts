@@ -1,3 +1,51 @@
-/**
- * @author Cheng
- */
+import layer, {
+  alert,
+  close,
+  closeAll,
+  config,
+  confirm,
+  full,
+  getChildFrame,
+  getFrameIndex,
+  iframeAuto,
+  iframeSrc,
+  load,
+  min,
+  msg,
+  open,
+  prompt,
+  ready,
+  restore,
+  setTop,
+  style,
+  tab,
+  tips,
+  title,
+} from "./core/layer";
+
+export default layer;
+
+export {
+  alert,
+  close,
+  closeAll,
+  config,
+  confirm,
+  full,
+  getChildFrame,
+  getFrameIndex,
+  iframeAuto,
+  iframeSrc,
+  load,
+  min,
+  msg,
+  open,
+  prompt,
+  ready,
+  restore,
+  setTop,
+  style,
+  tab,
+  tips,
+  title,
+};
