@@ -1,21 +1,51 @@
-/**
- * @author Cheng
- */
+import layer, {
+  alert,
+  close,
+  closeAll,
+  config,
+  confirm,
+  full,
+  getChildFrame,
+  getFrameIndex,
+  iframeAuto,
+  iframeSrc,
+  load,
+  min,
+  msg,
+  open,
+  prompt,
+  ready,
+  restore,
+  setTop,
+  style,
+  tab,
+  tips,
+  title,
+} from "./core/layer";
 
-/**
- * Foo foo foo, Foo description.
- *
- * @returns {boolean} true or false
- */
-export function foo(): boolean {
-  return true;
-}
+export default layer;
 
-/**
- * Bar bar bar, Bar description.
- *
- * @returns {boolean} true or false
- */
-export function bar(): boolean {
-  return false;
-}
+export {
+  alert,
+  close,
+  closeAll,
+  config,
+  confirm,
+  full,
+  getChildFrame,
+  getFrameIndex,
+  iframeAuto,
+  iframeSrc,
+  load,
+  min,
+  msg,
+  open,
+  prompt,
+  ready,
+  restore,
+  setTop,
+  style,
+  tab,
+  tips,
+  title,
+};

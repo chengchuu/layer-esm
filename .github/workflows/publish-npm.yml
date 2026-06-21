@@ -9,12 +9,10 @@ on:
   pull_request:
     branches:
       - main
-      - 'release/v*'
   # Publish on pushes to release branches
   push:
     branches:
       - main
-      - 'release/v*'
   workflow_dispatch:
 
 jobs:
@@ -73,7 +71,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          node scripts/change-package-name.js "@${{ github.actor }}/${{ env.PROJECT_NAME }}"
+          node scripts/change-package-name.cjs "@${{ github.actor }}/${{ env.PROJECT_NAME }}"
           npm publish --registry=https://npm.pkg.github.com/
 
       - name: Restore modified files

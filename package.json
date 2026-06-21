@@ -1,27 +1,40 @@
 {
   "name": "layer-esm",
-  "version": "2.1.4",
+  "version": "1.0.0",
   "description": "Layer ESM is a JavaScript library.",
-  "main": "lib/index.cjs.js",
-  "module": "lib/index.esm.js",
-  "typings": "lib/index.d.ts",
-  "types": "lib/index.d.ts",
-  "mainEntryPointFilePath": "lib/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts",
+  "mainEntryPointFilePath": "./dist/index.d.ts",
   "directories": {
-    "lib": "./lib"
+    "lib": "./dist"
   },
-  "unpkg": "lib/layer-esm.min.js",
-  "jsdelivr": "lib/layer-esm.min.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
-    "dev": "webpack-dev-server --config ./scripts/webpack.config.dev.js",
-    "dev:open": "webpack-dev-server --config ./scripts/webpack.config.dev.js --open",
+    "dev": "webpack-dev-server --config ./scripts/webpack.config.dev.cjs",
+    "dev:open": "webpack-dev-server --config ./scripts/webpack.config.dev.cjs --open",
     "build": "cross-env SCRIPTS_NPM_PACKAGE_DEBUG=close SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version rollup --config ./scripts/rollup.config.mjs",
     "build:debug": "cross-env SCRIPTS_NPM_PACKAGE_DEBUG=open SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version rollup --config ./scripts/rollup.config.mjs",
+    "pretest": "npm run build",
     "test": "jest",
     "docs": "typedoc --readme ./README.md --excludeProtected --excludePrivate --excludeInternal --hideGenerator",
-    "lint:fix": "eslint --ext 'js,ts,tsx' --fix ./examples ./scripts ./src ./test ./types",
-    "preview": "npm run build && npm run test",
-    "release": "npm run preview && cross-env SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version node ./scripts/release.js",
+    "lint:fix": "eslint --ext '.js,.ts,.tsx,.cjs,.mjs' --fix ./examples ./scripts ./src ./test",
+    "preview": "npm test",
+    "release": "npm run preview && cross-env SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version node ./scripts/release.cjs",
     "release:win": "bash scripts/env-win.sh && npm i --registry=https://registry.npmjs.org && npm run release"
   },
   "repository": {
@@ -59,7 +72,6 @@
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-terser": "^0.4.4",
-    "@types/jquery": "^3.5.29",
     "@types/node": "^25.0.9",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
@@ -78,7 +90,6 @@
     "husky": "^8.0.3",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "jquery": "^3.7.1",
     "lint-staged": "^14.0.1",
     "markdown-toc": "^1.2.0",
     "prettier": "^2.8.8",
@@ -105,6 +116,6 @@
     }
   },
   "dependencies": {
-    "mazey": "^4.11.0"
+    "mazey": "^4.11.1"
   }
 }
