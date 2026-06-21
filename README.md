@@ -73,7 +73,7 @@ npm test
 Single test file:
 
 ```bash
-npm test -- test/foo.test.js
+npm test -- test/layer.test.js
 ```
 
 Documentation:
