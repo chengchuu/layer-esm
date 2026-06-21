@@ -8,7 +8,7 @@
 [l-image]: https://img.shields.io/npm/l/layer-esm
 [l-url]: https://github.com/chengchuu/layer-esm
 
-Layer ESM is a JavaScript library.
+layer-esm is a modern ESM layer library for web popups and dialogs.
 
 ## Install
 

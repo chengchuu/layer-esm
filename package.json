@@ -1,7 +1,7 @@
 {
   "name": "layer-esm",
   "version": "1.0.1",
-  "description": "Layer ESM is a JavaScript library.",
+  "description": "Modern ESM Layer Library for Web Popups and Dialogs",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
