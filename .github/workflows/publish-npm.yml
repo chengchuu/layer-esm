@@ -9,12 +9,10 @@ on:
   pull_request:
     branches:
       - main
-      - 'release/v*'
   # Publish on pushes to release branches
   push:
     branches:
       - main
-      - 'release/v*'
   workflow_dispatch:
 
 jobs:
