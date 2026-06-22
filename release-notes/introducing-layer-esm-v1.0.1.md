@@ -19,7 +19,7 @@ npm install layer-esm
 ## Basic usage
 
 ```ts
-import layer, { confirm, load, msg } from "layer-esm";
+import { close, confirm, load, msg } from "layer-esm";
 ```
 
 ## `msg`: quick message feedback
@@ -80,7 +80,7 @@ It works well for:
 Use `load` when you need to show that an action is in progress.
 
 ```ts
-import layer, { load } from "layer-esm";
+import { close, load } from "layer-esm";
 
 const loadingIndex = load(1, {
   content: "Loading...",
@@ -88,7 +88,7 @@ const loadingIndex = load(1, {
 });
 
 setTimeout(() => {
-  layer.close(loadingIndex);
+  close(loadingIndex);
 }, 1500);
 ```
 
@@ -190,14 +190,14 @@ setTimeout(function () {
 New:
 
 ```ts
-import layer, { load } from "layer-esm";
+import { close, load } from "layer-esm";
 
 const index = load(1, {
   shade: [0.1, "#fff"],
 });
 
 setTimeout(() => {
-  layer.close(index);
+  close(index);
 }, 1500);
 ```
 
@@ -219,16 +219,18 @@ import { msg } from "layer-esm";
 msg("Hi");
 ```
 
-### 2. Keep `layer` default import when you need instance control
+### 2. Prefer named imports for direct actions
 
-For actions like closing a loading layer, keep the default import:
+For actions like closing a loading layer, a named import keeps the call site simple:
 
 ```ts
-import layer, { load } from "layer-esm";
+import { close, load } from "layer-esm";
 
 const index = load();
-layer.close(index);
+close(index);
 ```
+
+If you prefer, the default `layer` export is still available, but named imports are usually cleaner in modern ESM code.
 
 ### 3. Remove script-tag dependency assumptions
 
@@ -242,7 +244,7 @@ The new package is designed for module-based usage in modern app builds:
 
 1. Replace the global script include with an npm dependency.
 2. Start by migrating `msg`, `confirm`, and `load` first because they are usually the most common calls.
-3. Add `import layer, { ... } from "layer-esm"` where you still need `close`, `closeAll`, or other instance-level helpers.
+3. Add named imports like `close`, `closeAll`, and `msg` directly from `"layer-esm"` as you replace old global calls.
 4. Move page-by-page or feature-by-feature until the old global dependency is no longer needed.
 
 ## Summary

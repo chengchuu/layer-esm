@@ -23,7 +23,7 @@ Of course, you can also serve the built package files yourself. The ESM, CommonJ
 ## Usage
 
 ```ts
-import layer, { alert, confirm, load, msg } from "layer-esm";
+import { alert, close, confirm, load, msg } from "layer-esm";
 
 msg("Saved");
 
@@ -31,7 +31,7 @@ const loading = load(1, { content: "Loading..." });
 
 confirm("Continue?", {}, () => {
   alert("Confirmed");
-  layer.close(loading);
+  close(loading);
 });
 ```
 
