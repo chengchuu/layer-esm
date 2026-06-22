@@ -35,6 +35,11 @@ confirm("Continue?", {}, () => {
 });
 ```
 
+## Guides
+
+- [Introducing layer-esm](./release-notes/introducing-layer-esm-v1.0.1.md)
+- [Release notes index](./release-notes/README.md)
+
 ## Contributing
 
 ### Development Environment
