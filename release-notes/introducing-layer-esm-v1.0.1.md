@@ -134,7 +134,7 @@ msg("Saved");
 Legacy:
 
 ```js
-layer.msg("一段提示信息");
+layer.msg("A short notification message.");
 ```
 
 New:
@@ -142,7 +142,7 @@ New:
 ```ts
 import { msg } from "layer-esm";
 
-msg("一段提示信息");
+msg("A short notification message.");
 ```
 
 ### Confirm
@@ -150,12 +150,12 @@ msg("一段提示信息");
 Legacy:
 
 ```js
-layer.confirm("您是如何看待前端开发？", {
-  btn: ["重要", "奇葩"],
+layer.confirm("What do you think about frontend development?", {
+  btn: ["Important", "Unusual"],
 }, function () {
-  layer.msg("的确很重要", { icon: 1 });
+  layer.msg("It really is important.", { icon: 1 });
 }, function () {
-  layer.msg("也可以这样");
+  layer.msg("That answer works too.");
 });
 ```
 
@@ -164,12 +164,12 @@ New:
 ```ts
 import { confirm, msg } from "layer-esm";
 
-confirm("您是如何看待前端开发？", {
-  btn: [ "重要", "奇葩" ],
+confirm("What do you think about frontend development?", {
+  btn: [ "Important", "Unusual" ],
 }, () => {
-  msg("的确很重要", { icon: 1 });
+  msg("It really is important.", { icon: 1 });
 }, () => {
-  msg("也可以这样");
+  msg("That answer works too.");
 });
 ```
 
