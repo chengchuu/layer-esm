@@ -1,3 +1,5 @@
+reference these cases to modify the code in `layer-esm/examples/index.ts`. And use the bootstrap style to make the examples look better. You can also add more examples to demonstrate the usage of the library.
+
 ```js
 //Alert
 
