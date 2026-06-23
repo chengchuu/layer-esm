@@ -8,7 +8,7 @@
 [l-image]: https://img.shields.io/npm/l/layer-esm
 [l-url]: https://github.com/chengchuu/layer-esm
 
-layer-esm is a modern ESM layer library for web popups and dialogs.
+Special thanks to 贤心, the original author of Layer, for creating a popup library that has been widely used across the web community for many years. layer-esm is a modern ESM adaptation and refactoring effort inspired by the original Layer project.
 
 ## Install
 
