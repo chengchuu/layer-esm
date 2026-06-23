@@ -6,9 +6,7 @@
 
 ## 什么是 `layer-esm`
 
-`layer-esm` 是一个面向 Web 应用的现代弹层库。他保留了 `layer` 风格的 API，同时采用 ESM (ECMAScript Module，ECMAScript 模块) 形式发布，便于在现代构建工具中使用。
-
-如果已经熟悉旧版 `layer`，那么迁移到 `layer-esm` 的理解成本并不高。常见的方法名依然保持不变，例如 `msg`、`confirm` 和 `load`。他的主要变化不在交互形式，而在接入方式。过去的代码依赖全局 `window.layer`。现在的代码通过模块导入来使用能力。
+`layer-esm` 是一个面向 Web 应用的现代弹层库。他保留了 `layer` 风格的 API，同时采用 ESM (ECMAScript Module，ECMAScript 模块) 形式发布，便于在现代构建工具中使用。如果已经熟悉旧版 `layer`，那么迁移到 `layer-esm` 的理解成本并不高。常见的方法名依然保持不变，例如 `msg`、`confirm` 和 `load`。他的主要变化不在交互形式，而在接入方式。过去的代码依赖全局 `window.layer`。现在的代码通过模块导入来使用能力。
 
 ## 安装与引入
 
@@ -22,10 +20,18 @@ npm install layer-esm
 
 ### 引入
 
-推荐优先使用具名导入。这种写法更符合现代 ESM 代码风格，也更利于阅读。如果确实需要默认导出，也可以使用默认导入。
+推荐优先使用具名导入。这种写法更符合现代 ESM 代码风格，也更利于阅读。
 
 ```javascript
 import { close, confirm, load, msg } from "layer-esm";
+```
+
+也可以使用默认导入，对于旧版 `layer` 的迁移来说，这种写法更接近原来的调用方式。
+
+```javascript
+import layer from "layer-esm";
+
+layer.msg("保存成功");
 ```
 
 ## 基本用法
@@ -37,17 +43,7 @@ import { close, confirm, load, msg } from "layer-esm";
 ```javascript
 import { msg } from "layer-esm";
 
-msg("保存成功。");
-```
-
-也可以补充图标、时长和位置参数。
-
-```javascript
-msg("上传完成。", {
-  icon: 1,
-  time: 3,
-  offset: "t",
-});
+msg("保存成功");
 ```
 
 如果页面经常需要即时反馈，建议优先从 `msg` 开始迁移。
@@ -62,9 +58,9 @@ import { confirm, msg } from "layer-esm";
 confirm("是否继续删除这条记录？", {
   btn: [ "删除", "取消" ],
 }, () => {
-  msg("已删除。", { icon: 1 });
+  msg("已删除");
 }, () => {
-  msg("已取消。");
+  msg("已取消");
 });
 ```
 
@@ -77,10 +73,7 @@ confirm("是否继续删除这条记录？", {
 ```javascript
 import { close, load } from "layer-esm";
 
-const loadingIndex = load(1, {
-  content: "加载中⋯⋯",
-  shade: [0.1, "#fff"],
-});
+const loadingIndex = load();
 
 setTimeout(() => {
   close(loadingIndex);
@@ -108,7 +101,7 @@ load(2);
 ```html
 <script src="layer.js"></script>
 <script>
-  layer.msg("保存成功。");
+  layer.msg("保存成功");
 </script>
 ```
 
@@ -117,10 +110,8 @@ load(2);
 ```javascript
 import { msg } from "layer-esm";
 
-msg("保存成功。");
+msg("保存成功");
 ```
-
-这一步通常也是最值得优先完成的一步。完成之后，后续 API 的替换会顺畅很多。
 
 ### 常见 API 对照
 
@@ -129,7 +120,7 @@ msg("保存成功。");
 旧写法:
 
 ```javascript
-layer.msg("一段提示信息。");
+layer.msg("一段提示信息");
 ```
 
 新写法:
@@ -137,7 +128,7 @@ layer.msg("一段提示信息。");
 ```javascript
 import { msg } from "layer-esm";
 
-msg("一段提示信息。");
+msg("一段提示信息");
 ```
 
 **确认对话框**
@@ -148,9 +139,9 @@ msg("一段提示信息。");
 layer.confirm("如何看待前端开发？", {
   btn: ["重要", "特别"],
 }, function () {
-  layer.msg("他确实很重要。", { icon: 1 });
+  layer.msg("确实很重要");
 }, function () {
-  layer.msg("这种回答也可以。");
+  layer.msg("这种回答也可以");
 });
 ```
 
@@ -162,9 +153,9 @@ import { confirm, msg } from "layer-esm";
 confirm("如何看待前端开发？", {
   btn: [ "重要", "特别" ],
 }, () => {
-  msg("他确实很重要。", { icon: 1 });
+  msg("确实很重要");
 }, () => {
-  msg("这种回答也可以。");
+  msg("这种回答也可以");
 });
 ```
 
@@ -173,9 +164,7 @@ confirm("如何看待前端开发？", {
 旧写法:
 
 ```javascript
-var index = layer.load(1, {
-  shade: [0.1, "#fff"],
-});
+var index = layer.load();
 
 setTimeout(function () {
   layer.close(index);
@@ -187,9 +176,7 @@ setTimeout(function () {
 ```javascript
 import { close, load } from "layer-esm";
 
-const index = load(1, {
-  shade: [0.1, "#fff"],
-});
+const index = load();
 
 setTimeout(() => {
   close(index);
@@ -220,8 +207,6 @@ import { close, load, msg } from "layer-esm";
 
 ## 总结
 
-`layer-esm` 延续了 `layer` 的调用风格，也适应了现代前端工程的使用方式。
-
-如果项目当前大量依赖 `msg`、`confirm` 和 `load`，那么迁移成本通常不高。只需要完成安装、改成模块导入，并逐步替换旧的全局调用。
+`layer-esm` 延续了 `layer` 的调用风格，也适应了现代前端工程的使用方式。如果项目当前大量依赖 `msg`、`confirm` 和 `load`，那么迁移成本通常不高。只需要完成安装、改成模块导入，并逐步替换旧的全局调用。
 
 再次感谢贤心为 `layer` 打下的基础。`layer-esm` 希望在这份经验之上，继续提供一个更适合现代项目的弹层方案。
