@@ -22,16 +22,14 @@ Of course, you can also serve the built package files yourself. The ESM, CommonJ
 
 ## Usage
 
-```ts
-import { alert, close, confirm, load, msg } from "layer-esm";
+```javascript
+import { close, confirm, load, msg } from "layer-esm";
 
-msg("Saved");
-
-const loading = load(1, { content: "Loading..." });
+const loadingIndex = load();
 
 confirm("Continue?", {}, () => {
-  alert("Confirmed");
-  close(loading);
+  msg("Confirmed");
+  close(loadingIndex);
 });
 ```
 
