@@ -1,3 +1,4 @@
+import { getBrowserInfo } from "mazey";
 import {
   alert,
   close,
@@ -16,6 +17,13 @@ import {
 } from "../src";
 
 const app = document.querySelector(".container");
+const { colorScheme } = getBrowserInfo();
+const isDarkMode = colorScheme === "dark";
+
+if (isDarkMode) {
+  document.documentElement.setAttribute("data-bs-theme", "dark");
+  document.body.style.backgroundColor = "#052e16";
+}
 
 const iframeHtml = `
 <!doctype html>
@@ -472,7 +480,7 @@ if (app) {
     });
   });
 
-  msg("Hi，欢迎体验 layer-esm 示例页。", {
+  msg("Hi，欢迎体验 layer-esm 示例页", {
     offset: "t",
     anim: 6,
   });
