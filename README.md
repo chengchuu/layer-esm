@@ -8,7 +8,7 @@
 [l-image]: https://img.shields.io/npm/l/layer-esm
 [l-url]: https://github.com/chengchuu/layer-esm
 
-Layer ESM is a JavaScript library.
+Special thanks to 贤心, the original author of Layer, for creating a popup library that has been widely used across the web community for many years. layer-esm is a modern ESM adaptation and refactoring effort inspired by the original Layer project.
 
 ## Install
 
@@ -23,7 +23,7 @@ Of course, you can also serve the built package files yourself. The ESM, CommonJ
 ## Usage
 
 ```ts
-import layer, { alert, confirm, load, msg } from "layer-esm";
+import { alert, close, confirm, load, msg } from "layer-esm";
 
 msg("Saved");
 
@@ -31,9 +31,14 @@ const loading = load(1, { content: "Loading..." });
 
 confirm("Continue?", {}, () => {
   alert("Confirmed");
-  layer.close(loading);
+  close(loading);
 });
 ```
+
+## Guides
+
+- [Introducing layer-esm](./release-notes/introducing-layer-esm-v1.0.1.md)
+- [Release notes index](./release-notes/README.md)
 
 ## Contributing
 
