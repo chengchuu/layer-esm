@@ -66,8 +66,12 @@ export const layerTheme = `
   align-items: center;
 }
 
-.${PREFIX}--message .layui-layer-btn1:hover {
+.${PREFIX}--message .${PREFIX}__button:hover {
   background: #fff;
+}
+
+.${PREFIX}--message .${PREFIX}__button.${PREFIX}__button--primary:hover {
+  background: #1d4ed8;
 }
 
 .${PREFIX}__title {
