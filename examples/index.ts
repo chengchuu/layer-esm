@@ -21,7 +21,7 @@ const { colorScheme } = getBrowserInfo();
 const isDarkMode = colorScheme === "dark";
 
 if (isDarkMode) {
-  document.documentElement.setAttribute("data-bs-theme", "dark");
+  // document.documentElement.setAttribute("data-bs-theme", "dark");
   document.body.style.backgroundColor = "#052e16";
 }
 
