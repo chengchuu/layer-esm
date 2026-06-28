@@ -57,6 +57,14 @@ export const layerTheme = `
   text-align: center;
 }
 
+.${PREFIX}--message .${PREFIX}__dialog {
+  min-width: auto;
+}
+
+.${PREFIX}--message .${PREFIX}__dialog-content {
+  justify-content: center;
+}
+
 .${PREFIX}__title {
   display: flex;
   align-items: center;

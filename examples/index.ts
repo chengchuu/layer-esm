@@ -273,7 +273,7 @@ if (app) {
       });
     },
     "message-basic": () => {
-      msg("一段提示信息");
+      msg("一段提示信息", { time: 50 });
     },
     "message-icon": () => {
       msg("常用提示", { icon: 5 });
