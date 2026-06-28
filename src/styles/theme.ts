@@ -66,6 +66,10 @@ export const layerTheme = `
   align-items: center;
 }
 
+.${PREFIX}--message .layui-layer-btn1:hover {
+  background: #fff;
+}
+
 .${PREFIX}__title {
   display: flex;
   align-items: center;
