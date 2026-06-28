@@ -21,7 +21,7 @@ const { colorScheme } = getBrowserInfo();
 const isDarkMode = colorScheme === "dark";
 
 if (isDarkMode) {
-  document.documentElement.setAttribute("data-bs-theme", "dark");
+  // document.documentElement.setAttribute("data-bs-theme", "dark");
   document.body.style.backgroundColor = "#052e16";
 }
 
@@ -264,7 +264,7 @@ if (app) {
       confirm("您是如何看待前端开发？", {
         btn: [ "重要", "奇葩" ],
       }, () => {
-        msg("的确很重要", { icon: 1 });
+        msg("的确很重要", { icon: 1, time: 5 });
       }, () => {
         msg("也可以这样", {
           time: 20,
@@ -273,7 +273,7 @@ if (app) {
       });
     },
     "message-basic": () => {
-      msg("一段提示信息");
+      msg("一段提示信息", { time: 5 });
     },
     "message-icon": () => {
       msg("常用提示", { icon: 5 });

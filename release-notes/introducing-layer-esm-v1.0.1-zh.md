@@ -1,8 +1,31 @@
-# `layer-esm` v1.0.1 中文介绍
+# layer-esm v1.0.1 项目介绍 - 开始
+
+![layer-esm](http://blog.mazey.net/wp-content/uploads/2026/06/layer-esm-SF-s7x3.jpg)
+
+延续 "layer" 熟悉的调用方式，将弹层能力带入现代 ESM 开发环境。通过 "msg"、"confirm"、"load" 等示例，展示安装、导入、常见 API 对照与迁移思路，帮助项目逐步从全局 "window.layer" 切换到模块化使用模式。
+
+- [layer-esm v1.0.1 项目介绍 - 开始](#layer-esm-v101-项目介绍---开始)
+  - [致谢](#致谢)
+  - [什么是 `layer-esm`](#什么是-layer-esm)
+  - [安装与引入](#安装与引入)
+    - [安装](#安装)
+    - [引入](#引入)
+  - [基本用法](#基本用法)
+    - [`msg`](#msg)
+    - [`confirm`](#confirm)
+    - [`load`](#load)
+  - [从旧版 `layer` 迁移](#从旧版-layer-迁移)
+    - [接入方式的变化](#接入方式的变化)
+    - [常见 API 对照](#常见-api-对照)
+  - [迁移建议](#迁移建议)
+    - [优先迁移高频调用](#优先迁移高频调用)
+    - [优先使用具名导入](#优先使用具名导入)
+    - [分页面推进](#分页面推进)
+  - [总结](#总结)
 
 ## 致谢
 
-在介绍 `layer-esm` 之前，想先感谢贤心。[`layer`](https://github.com/layui/layer) 曾经帮助很多前端项目快速落地弹层、提示和对话框能力。他的 API 简洁，使用体验直接，也影响了很多国内项目的交互实现方式。`layer-esm` 的出发点，不是割裂这套经验，而是把这套熟悉的调用方式带到现代模块化环境中。
+介绍 [`layer-esm`](https://github.com/chengchuu/layer-esm) 之前，先感谢贤心。[`layer`](https://github.com/layui/layer) 曾经帮助很多前端项目快速落地弹层、提示和对话框能力。他的 API 简洁，使用体验直接，也影响了很多国内项目的交互实现方式。`layer-esm` 的出发点，不是割裂这套经验，而是把这套熟悉的调用方式带到现代模块化环境中。
 
 ## 什么是 `layer-esm`
 
@@ -210,3 +233,14 @@ import { close, load, msg } from "layer-esm";
 `layer-esm` 延续了 `layer` 的调用风格，也适应了现代前端工程的使用方式。如果项目当前大量依赖 `msg`、`confirm` 和 `load`，那么迁移成本通常不高。只需要完成安装、改成模块导入，并逐步替换旧的全局调用。
 
 再次感谢贤心为 `layer` 打下的基础。`layer-esm` 希望在这份经验之上，继续提供一个更适合现代项目的弹层方案。
+
+**版权声明**
+
+本文为原创文章，作者保留版权。转载请保留本文完整内容，并以超链接形式注明作者及原文出处。
+
+作者: [除除](https://github.com/chengchuu)
+原文: <http://blog.mazey.net/6443.html>
+
+<!-- ID: introducing-layer-esm-v1.0.1-zh -->
+
+(完)
