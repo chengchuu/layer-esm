@@ -21,7 +21,7 @@ const { colorScheme } = getBrowserInfo();
 const isDarkMode = colorScheme === "dark";
 
 if (isDarkMode) {
-  document.documentElement.setAttribute("data-bs-theme", "dark");
+  // document.documentElement.setAttribute("data-bs-theme", "dark");
   document.body.style.backgroundColor = "#052e16";
 }
 
@@ -264,7 +264,7 @@ if (app) {
       confirm("您是如何看待前端开发？", {
         btn: [ "重要", "奇葩" ],
       }, () => {
-        msg("的确很重要", { icon: 1 });
+        msg("的确很重要", { icon: 1, time: 99999 });
       }, () => {
         msg("也可以这样", {
           time: 20,

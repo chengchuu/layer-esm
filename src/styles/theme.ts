@@ -63,6 +63,7 @@ export const layerTheme = `
 
 .${PREFIX}--message .${PREFIX}__dialog-content {
   justify-content: center;
+  align-items: center;
 }
 
 .${PREFIX}__title {
