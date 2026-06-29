@@ -249,7 +249,7 @@ if (app) {
 
     window.setTimeout(() => {
       close(index);
-      msg(`Loading Style ${icon} Finished.`, { icon: 1 });
+      msg(`Loading Style ${icon} Finished`, { icon: 1 });
     }, 1600);
   };
 

@@ -13,10 +13,10 @@ import { createDialogIcon, createLoadingContent, createTipBubble } from "../comp
 import { injectStyle } from "../styles/inject";
 import { layerTheme } from "../styles/theme";
 import {
-  LEGACY_PREFIX, PREFIX, addEvent, appendHTML, createElement, ensureDocument, isHTMLElement, normalizeUnit, resolveElement, setText, 
+  LEGACY_PREFIX, PREFIX, addEvent, appendHTML, createElement, ensureDocument, isHTMLElement, normalizeUnit, resolveElement, setText,
 } from "../utils/dom";
 import {
-  applyOffset, applyTipsPlacement, normalizeArea, normalizeShade, 
+  applyOffset, applyTipsPlacement, normalizeArea, normalizeShade,
 } from "../utils/position";
 
 const TYPE_NAMES = [ "dialog", "page", "iframe", "loading", "tips" ] as const;
@@ -837,7 +837,7 @@ export const confirm = (
   const isCallbackOnly = typeof options === "function";
   return open({
     content,
-    btn: [ "确定", "取消" ],
+    btn: [ "OK", "Cancel" ],
     ...(isCallbackOnly ? {} : options),
     yes: isCallbackOnly ? options : yes,
     btn2: isCallbackOnly ? yes : cancel,
@@ -905,7 +905,7 @@ export const prompt = (options: LayerPromptOptions = {}, yes?: (value: string, i
     type: 1,
     skin: [ "layui-layer-prompt", options.skin ].filter(Boolean).join(" "),
     content: input,
-    btn: [ "确定", "取消" ],
+    btn: [ "OK", "Cancel" ],
     yes: (index) => {
       const value = input.value;
       if (!value.trim()) {
