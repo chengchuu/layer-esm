@@ -1,3 +1,4 @@
+import { isNumber } from "mazey";
 import type { LayerOffset, LayerTipDirection, ShadeValue } from "../core/types";
 import { normalizeUnit } from "./dom";
 
@@ -54,7 +55,7 @@ export const applyOffset = (element: HTMLElement, offset: LayerOffset | undefine
     return;
   }
 
-  if (typeof offset === "number" || (typeof offset === "string" && /^\d/.test(offset))) {
+  if (isNumber(offset) || (typeof offset === "string" && /^\d/.test(offset))) {
     const top = normalizeUnit(offset);
     if (top) {
       element.style.top = top;
