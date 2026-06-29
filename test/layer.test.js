@@ -35,6 +35,18 @@ test("open renders a dialog and close removes it", () => {
   expect(queryLayer(index)).toBeNull();
 });
 
+test("open uses an English default title", () => {
+  const { open, close } = loadLayer();
+
+  const index = open({
+    content: "Default title",
+  });
+
+  expect(queryLayer(index).textContent).toContain("Information");
+
+  close(index);
+});
+
 test("confirm triggers callbacks for both buttons", () => {
   const { confirm } = loadLayer();
   const yes = jest.fn();
