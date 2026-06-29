@@ -113,9 +113,9 @@ if (app) {
                   <h2 class="h5 card-title">Alert & Confirm</h2>
                   <p class="card-text text-secondary">Simple alert dialogs plus a confirm flow modeled after the classic Layer examples.</p>
                   <div class="d-grid gap-2">
-                    <button class="btn btn-primary" data-demo="alert-basic">Alert: 内容</button>
+                    <button class="btn btn-primary" data-demo="alert-basic">Alert: Content</button>
                     <button class="btn btn-outline-primary" data-demo="alert-icon">Alert with icon</button>
-                    <button class="btn btn-outline-secondary" data-demo="confirm-basic">Confirm: 前端开发</button>
+                    <button class="btn btn-outline-secondary" data-demo="confirm-basic">Confirm: Frontend development</button>
                     <button class="btn btn-outline-dark" data-demo="countdown-alert">Auto-close countdown title</button>
                   </div>
                 </div>
@@ -141,7 +141,7 @@ if (app) {
               <div class="card shadow-sm h-100">
                 <div class="card-body">
                   <h2 class="h5 card-title">Captured Page Layer</h2>
-                  <p class="card-text text-secondary">Reuses an existing DOM block, similar to the legacy “捕获页” example.</p>
+                  <p class="card-text text-secondary">Reuses an existing DOM block, similar to the legacy captured-page example.</p>
                   <button class="btn btn-dark w-100 mb-3" data-demo="capture-page">Open captured card</button>
                   <div id="capture-source" class="rounded-3 border border-info-subtle bg-info-subtle p-3 d-none">
                     <span class="badge text-bg-info mb-2">Captured element</span>
@@ -225,7 +225,7 @@ if (app) {
                   <p class="card-text text-secondary">Small, reusable calls inspired by the original docs.</p>
                   <div class="d-flex flex-wrap gap-2">
                     <button class="btn btn-sm btn-primary" data-demo="message-hi">Hi</button>
-                    <button class="btn btn-sm btn-danger" data-demo="message-sauce">打酱油</button>
+                    <button class="btn btn-sm btn-danger" data-demo="message-sauce">Just passing by</button>
                     <button class="btn btn-sm btn-warning" data-demo="close-loading">Close all loading</button>
                     <button class="btn btn-sm btn-secondary" data-demo="close-all">Close all layers</button>
                   </div>
@@ -255,45 +255,45 @@ if (app) {
 
   const demoActions: Record<string, () => void> = {
     "alert-basic": () => {
-      alert("内容");
+      alert("Content");
     },
     "alert-icon": () => {
-      alert("见到你真的很高兴", { icon: 6 });
+      alert("Great to see you.", { icon: 6 });
     },
     "confirm-basic": () => {
-      confirm("您是如何看待前端开发？", {
-        btn: [ "重要", "奇葩" ],
+      confirm("What do you think about frontend development?", {
+        btn: [ "Important", "Unusual" ],
       }, () => {
-        msg("的确很重要", { icon: 1, time: 5 });
+        msg("It really is important.", { icon: 1, time: 5 });
       }, () => {
-        msg("也可以这样", {
+        msg("That works too.", {
           time: 20,
-          btn: [ "明白了", "知道了" ],
+          btn: [ "Got it", "Understood" ],
         });
       });
     },
     "message-basic": () => {
-      msg("一段提示信息", { time: 5 });
+      msg("A simple message.", { time: 5 });
     },
     "message-icon": () => {
-      msg("常用提示", { icon: 5 });
+      msg("Common notice.", { icon: 5 });
     },
     "message-buttons": () => {
-      msg("一个询问测试？", {
+      msg("A quick question?", {
         time: 0,
-        btn: [ "确定", "关闭" ],
+        btn: [ "Confirm", "Close" ],
         yes: (index) => {
           close(index);
-          msg("自定义按钮", {
+          msg("Custom buttons", {
             icon: 6,
             time: 0,
-            btn: [ "按钮-1", "按钮-2", "按钮-3" ],
+            btn: [ "Button 1", "Button 2", "Button 3" ],
           });
         },
       });
     },
     "message-top": () => {
-      msg("灵活运用 offset", {
+      msg("Use offset flexibly.", {
         offset: "t",
         anim: 6,
       });
@@ -307,10 +307,10 @@ if (app) {
         type: 1,
         shade: false,
         area: [ "460px", "320px" ],
-        title: "捕获页示例",
+        title: "Captured Page Example",
         content: captureSource,
         cancel: () => {
-          msg("捕获就是从页面已经存在的元素上，包裹 layer 的结构", {
+          msg("Capture moves an existing page element into the layer structure.", {
             time: 5,
             icon: 6,
           });
@@ -318,24 +318,24 @@ if (app) {
       });
     },
     "tips-top": () => {
-      tips("上", "#tips-target", {
+      tips("Top", "#tips-target", {
         tips: [ 1, "#0d6efd" ],
         time: 4,
       });
     },
     "tips-right": () => {
-      tips("默认就是向右的", "#tips-target", {
+      tips("Right is the default direction.", "#tips-target", {
         time: 4,
       });
     },
     "tips-bottom": () => {
-      tips("下", "#tips-target", {
+      tips("Bottom", "#tips-target", {
         tips: 3,
         time: 4,
       });
     },
     "tips-left": () => {
-      tips("左边么么哒", "#tips-target", {
+      tips("Left side tip", "#tips-target", {
         tips: [ 4, "#198754" ],
         time: 4,
       });
@@ -352,7 +352,7 @@ if (app) {
       runLoading(2);
     },
     "loading-msg": () => {
-      msg("加载中", {
+      msg("Loading", {
         icon: 16,
         shade: 0.01,
         time: 2,
@@ -360,16 +360,16 @@ if (app) {
     },
     "prompt-chain": () => {
       prompt({
-        title: "输入任何口令，并确认",
+        title: "Enter any passcode, then confirm",
         formType: 1,
       }, (password, index) => {
         close(index);
         prompt({
-          title: "随便写点啥，并确认",
+          title: "Write anything, then confirm",
           formType: 2,
         }, (text, nextIndex) => {
           close(nextIndex);
-          alert(`演示完毕！测试口令为：${password}<br>最后写下了：${text}`);
+          alert(`Demo complete. Test passcode: ${password}<br>Final text: ${text}`);
         });
       });
     },
@@ -379,15 +379,15 @@ if (app) {
         tab: [
           {
             title: "TAB1",
-            content: "<p class='mb-0'>内容1：Layer 风格 API 的 ESM 版本。</p>",
+            content: "<p class='mb-0'>Content 1: An ESM version of the Layer-style API.</p>",
           },
           {
             title: "TAB2",
-            content: "<p class='mb-0'>内容2：运行时样式和 CSS loading 已内联。</p>",
+            content: "<p class='mb-0'>Content 2: Runtime styles and CSS loading are built in.</p>",
           },
           {
             title: "TAB3",
-            content: "<p class='mb-0'>内容3：可以继续补充 photos 等高级能力。</p>",
+            content: "<p class='mb-0'>Content 3: Advanced features such as photos can be added later.</p>",
           },
         ],
       });
@@ -395,17 +395,17 @@ if (app) {
     "countdown-alert": () => {
       let timerId = 0;
 
-      alert("在标题栏显示自动关闭倒计秒数", {
+      alert("Show the auto-close countdown in the title bar.", {
         time: 5,
         success: (layero) => {
           let seconds = 5;
           const index = Number(layero.dataset.index);
-          title(`${seconds} 秒后关闭`, index);
+          title(`Closes in ${seconds}s`, index);
 
           timerId = window.setInterval(() => {
             seconds -= 1;
             if (seconds > 0) {
-              title(`${seconds} 秒后关闭`, index);
+              title(`Closes in ${seconds}s`, index);
               return;
             }
 
@@ -421,16 +421,16 @@ if (app) {
     },
     "scroll-lock": () => {
       open({
-        title: "滚动条锁定",
-        content: "浏览器滚动条已锁。关闭此层后会恢复。",
+        title: "Scrollbar Lock",
+        content: "The browser scrollbar is locked. It will be restored after this layer closes.",
         scrollbar: false,
       });
     },
     "min-restore": () => {
       const index = open({
         type: 1,
-        title: "最小化示例",
-        content: "<p class='mb-0'>此层会自动最小化，然后再恢复。</p>",
+        title: "Minimize Example",
+        content: "<p class='mb-0'>This layer will minimize automatically, then restore.</p>",
         area: [ "420px", "220px" ],
         maxmin: true,
       });
@@ -441,35 +441,35 @@ if (app) {
 
       window.setTimeout(() => {
         restore(index);
-        msg("已自动恢复窗口。", { icon: 1 });
+        msg("The window has been restored automatically.", { icon: 1 });
       }, 2200);
     },
     "iframe-full": () => {
       const index = open({
         type: 2,
-        title: "全屏 iframe 示例",
+        title: "Fullscreen iframe Example",
         content: [ iframeUrl, "auto" ],
         area: [ "520px", "360px" ],
         maxmin: true,
       });
 
       full(index);
-      msg("已切换到全屏 iframe 示例。", { icon: 1 });
+      msg("Switched to the fullscreen iframe example.", { icon: 1 });
     },
     "message-hi": () => {
       msg("Hi");
     },
     "message-sauce": () => {
-      msg("尼玛，打个酱油", { icon: 4 });
+      msg("Just passing by.", { icon: 4 });
     },
     "close-loading": () => {
       closeAll("loading", () => {
-        msg("所有 loading 层都已关闭。");
+        msg("All loading layers have been closed.");
       });
     },
     "close-all": () => {
       closeAll(() => {
-        msg("所有 layer 都已关闭。");
+        msg("All layers have been closed.");
       });
     },
   };
@@ -480,7 +480,7 @@ if (app) {
     });
   });
 
-  msg("Hi，欢迎体验 layer-esm 示例页", {
+  msg("Hi, welcome to the layer-esm example page.", {
     offset: "t",
     anim: 6,
   });
