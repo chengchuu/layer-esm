@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const path = require("path");
 const _resolve = (_path) => path.resolve(__dirname, _path);
+const distDevPath = _resolve("../dist-dev");
 
 module.exports = {
   mode: "development",
@@ -11,13 +12,13 @@ module.exports = {
   },
   output: {
     filename: "[name].js",
-    path: _resolve("../dist-dev"),
+    path: distDevPath,
   },
   devServer: {
     port: 8080,
     host: "0.0.0.0",
     static: {
-      directory: _resolve("../dist-dev"),
+      directory: distDevPath,
     },
     allowedHosts: [
       ".mazey.net",
@@ -34,11 +35,14 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      filename: _resolve("../dist-dev/index.html"),
+      filename: "index.html",
       template: _resolve("../examples/index.html"),
       inject: true,
     }),
-    new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: [ _resolve("../dist-dev") ] }),
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: [ "**/*" ],
+      cleanStaleWebpackAssets: false,
+    }),
   ],
   resolve: {
     extensions: [ ".tsx", ".ts", ".js" ],

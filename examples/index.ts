@@ -243,13 +243,13 @@ if (app) {
   const runLoading = (icon: number, options: NonNullable<Parameters<typeof load>[1]> = {}) => {
     const index = load(icon, {
       shade: false,
-      content: `Loading style ${icon}...`,
+      content: `Loading Style ${icon}...`,
       ...options,
     });
 
     window.setTimeout(() => {
       close(index);
-      msg(`Loading style ${icon} finished.`, { icon: 1 });
+      msg(`Loading Style ${icon} Finished.`, { icon: 1 });
     }, 1600);
   };
 
@@ -258,33 +258,33 @@ if (app) {
       alert("Content");
     },
     "alert-icon": () => {
-      alert("Great to see you.", { icon: 6 });
+      alert("Great to See You", { icon: 6 });
     },
     "confirm-basic": () => {
-      confirm("What do you think about frontend development?", {
+      confirm("What Do You Think About Frontend Development?", {
         btn: [ "Important", "Unusual" ],
       }, () => {
-        msg("It really is important.", { icon: 1, time: 5 });
+        msg("It Really Is Important", { icon: 1, time: 5 });
       }, () => {
-        msg("That works too.", {
+        msg("That Works Too", {
           time: 20,
-          btn: [ "Got it", "Understood" ],
+          btn: [ "Got It", "Understood" ],
         });
       });
     },
     "message-basic": () => {
-      msg("A simple message.", { time: 5 });
+      msg("A Simple Message", { time: 5 });
     },
     "message-icon": () => {
-      msg("Common notice.", { icon: 5 });
+      msg("Common Notice", { icon: 5 });
     },
     "message-buttons": () => {
-      msg("A quick question?", {
+      msg("A Quick Question?", {
         time: 0,
         btn: [ "Confirm", "Close" ],
         yes: (index) => {
           close(index);
-          msg("Custom buttons", {
+          msg("Custom Buttons", {
             icon: 6,
             time: 0,
             btn: [ "Button 1", "Button 2", "Button 3" ],
@@ -293,7 +293,7 @@ if (app) {
       });
     },
     "message-top": () => {
-      msg("Use offset flexibly.", {
+      msg("Use Offset Flexibly", {
         offset: "t",
         anim: 6,
       });
@@ -310,7 +310,7 @@ if (app) {
         title: "Captured Page Example",
         content: captureSource,
         cancel: () => {
-          msg("Capture moves an existing page element into the layer structure.", {
+          msg("Capture Moves an Existing Page Element Into the Layer Structure", {
             time: 5,
             icon: 6,
           });
@@ -324,7 +324,7 @@ if (app) {
       });
     },
     "tips-right": () => {
-      tips("Right is the default direction.", "#tips-target", {
+      tips("Right Is the Default Direction", "#tips-target", {
         time: 4,
       });
     },
@@ -335,7 +335,7 @@ if (app) {
       });
     },
     "tips-left": () => {
-      tips("Left side tip", "#tips-target", {
+      tips("Left Side Tip", "#tips-target", {
         tips: [ 4, "#198754" ],
         time: 4,
       });
@@ -360,16 +360,16 @@ if (app) {
     },
     "prompt-chain": () => {
       prompt({
-        title: "Enter any passcode, then confirm",
+        title: "Enter Any Passcode, Then Confirm",
         formType: 1,
       }, (password, index) => {
         close(index);
         prompt({
-          title: "Write anything, then confirm",
+          title: "Write Anything, Then Confirm",
           formType: 2,
         }, (text, nextIndex) => {
           close(nextIndex);
-          alert(`Demo complete. Test passcode: ${password}<br>Final text: ${text}`);
+          alert(`Demo Complete. Test Passcode: ${password}<br>Final Text: ${text}`);
         });
       });
     },
@@ -379,15 +379,15 @@ if (app) {
         tab: [
           {
             title: "TAB1",
-            content: "<p class='mb-0'>Content 1: An ESM version of the Layer-style API.</p>",
+            content: "<p class='mb-0'>Content 1: An ESM Version of the Layer-Style API.</p>",
           },
           {
             title: "TAB2",
-            content: "<p class='mb-0'>Content 2: Runtime styles and CSS loading are built in.</p>",
+            content: "<p class='mb-0'>Content 2: Runtime Styles and CSS Loading Are Built In.</p>",
           },
           {
             title: "TAB3",
-            content: "<p class='mb-0'>Content 3: Advanced features such as photos can be added later.</p>",
+            content: "<p class='mb-0'>Content 3: Advanced Features Such as Photos Can Be Added Later.</p>",
           },
         ],
       });
@@ -395,17 +395,17 @@ if (app) {
     "countdown-alert": () => {
       let timerId = 0;
 
-      alert("Show the auto-close countdown in the title bar.", {
+      alert("Show the Auto-Close Countdown in the Title Bar", {
         time: 5,
         success: (layero) => {
           let seconds = 5;
           const index = Number(layero.dataset.index);
-          title(`Closes in ${seconds}s`, index);
+          title(`Closes In ${seconds}s`, index);
 
           timerId = window.setInterval(() => {
             seconds -= 1;
             if (seconds > 0) {
-              title(`Closes in ${seconds}s`, index);
+              title(`Closes In ${seconds}s`, index);
               return;
             }
 
@@ -422,7 +422,7 @@ if (app) {
     "scroll-lock": () => {
       open({
         title: "Scrollbar Lock",
-        content: "The browser scrollbar is locked. It will be restored after this layer closes.",
+        content: "The Browser Scrollbar Is Locked. It Will Be Restored After This Layer Closes",
         scrollbar: false,
       });
     },
@@ -430,7 +430,7 @@ if (app) {
       const index = open({
         type: 1,
         title: "Minimize Example",
-        content: "<p class='mb-0'>This layer will minimize automatically, then restore.</p>",
+        content: "<p class='mb-0'>This Layer Will Minimize Automatically, Then Restore.</p>",
         area: [ "420px", "220px" ],
         maxmin: true,
       });
@@ -441,35 +441,35 @@ if (app) {
 
       window.setTimeout(() => {
         restore(index);
-        msg("The window has been restored automatically.", { icon: 1 });
+        msg("The Window Has Been Restored Automatically", { icon: 1 });
       }, 2200);
     },
     "iframe-full": () => {
       const index = open({
         type: 2,
-        title: "Fullscreen iframe Example",
+        title: "Fullscreen Iframe Example",
         content: [ iframeUrl, "auto" ],
         area: [ "520px", "360px" ],
         maxmin: true,
       });
 
       full(index);
-      msg("Switched to the fullscreen iframe example.", { icon: 1 });
+      msg("Switched to the Fullscreen Iframe Example", { icon: 1 });
     },
     "message-hi": () => {
-      msg("Hi");
+      msg("Hi", { time: 5 });
     },
     "message-sauce": () => {
-      msg("Just passing by.", { icon: 4 });
+      msg("Just Passing By", { icon: 4 });
     },
     "close-loading": () => {
       closeAll("loading", () => {
-        msg("All loading layers have been closed.");
+        msg("All Loading Layers Have Been Closed");
       });
     },
     "close-all": () => {
       closeAll(() => {
-        msg("All layers have been closed.");
+        msg("All Layers Have Been Closed");
       });
     },
   };
@@ -480,7 +480,7 @@ if (app) {
     });
   });
 
-  msg("Hi, welcome to the layer-esm example page.", {
+  msg("Hi, Welcome to the layer-esm Example Page", {
     offset: "t",
     anim: 6,
   });
