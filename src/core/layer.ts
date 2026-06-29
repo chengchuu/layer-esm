@@ -1,19 +1,16 @@
+import { isNumber } from "mazey";
 import type {
-  LayerOptions,
-  LayerPromptOptions,
-  LayerRecord,
-  LayerStyleOptions,
-  LayerTabOptions,
-  LayerTipsOptions,
-  LayerType,
-  MovedContentState,
+  LayerOptions, LayerPromptOptions, LayerRecord, LayerStyleOptions,
+  LayerTabOptions, LayerTipsOptions, LayerType, MovedContentState,
   NormalizedLayerOptions,
 } from "./types";
 import { createDialogIcon, createLoadingContent, createTipBubble } from "../components/render";
 import { injectStyle } from "../styles/inject";
 import { layerTheme } from "../styles/theme";
 import {
-  LEGACY_PREFIX, PREFIX, addEvent, appendHTML, createElement, ensureDocument, isHTMLElement, normalizeUnit, resolveElement, setText,
+  LEGACY_PREFIX, PREFIX, addEvent, appendHTML,
+  createElement, ensureDocument, isHTMLElement, normalizeUnit,
+  resolveElement, setText,
 } from "../utils/dom";
 import {
   applyOffset, applyTipsPlacement, normalizeArea, normalizeShade,
@@ -372,7 +369,11 @@ const renderContent = (record: LayerRecord, rawContent: LayerOptions["content"])
     const dialog = createElement(doc, "div", [ `${PREFIX}__dialog` ]);
     const dialogContent = createElement(doc, "div", [ DIALOG_PADDING_CLASS ]);
 
-    if (typeof options.icon === "number" && options.icon >= 0) {
+    if (
+      isNumber(options.icon) &&
+      options.icon >= 0 &&
+      options.icon < 7
+    ) {
       dialogContent.appendChild(createDialogIcon(doc, options.icon));
     }
 

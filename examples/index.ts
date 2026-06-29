@@ -240,7 +240,7 @@ if (app) {
 
   const captureSource = document.querySelector<HTMLElement>("#capture-source");
 
-  const runLoading = (icon: number, options: NonNullable<Parameters<typeof load>[1]> = {}) => {
+  const runLoading = (icon: number = 0, options: NonNullable<Parameters<typeof load>[1]> = {}) => {
     const index = load(icon, {
       shade: false,
       content: `Loading Style ${icon}...`,
@@ -341,7 +341,7 @@ if (app) {
       });
     },
     "loading-0": () => {
-      runLoading(0);
+      runLoading();
     },
     "loading-1": () => {
       runLoading(1, {
@@ -353,7 +353,7 @@ if (app) {
     },
     "loading-msg": () => {
       msg("Loading", {
-        icon: 16,
+        icon: 6,
         shade: 0.01,
         time: 2,
       });
