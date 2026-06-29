@@ -206,7 +206,7 @@ export const layerTheme = `
 .${PREFIX}__dialog-content {
   display: flex;
   gap: 14px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .${PREFIX}__icon {
@@ -228,26 +228,54 @@ export const layerTheme = `
   font-size: 18px;
 }
 
-.${PREFIX}__icon--0,
-.${PREFIX}__icon--1 {
-  background: #2563eb;
-}
-
-.${PREFIX}__icon--2 {
+.${PREFIX}__icon--0 {
   background: #f59e0b;
 }
 
-.${PREFIX}__icon--3 {
+.${PREFIX}__icon--1 {
   background: #22c55e;
 }
 
-.${PREFIX}__icon--4,
+.${PREFIX}__icon--2 {
+  background: #ef4444;
+}
+
+.${PREFIX}__icon--3 {
+  background: #eab308;
+}
+
+.${PREFIX}__icon--4 {
+  background: #94a3b8;
+}
+
+.${PREFIX}__icon--4::before {
+  top: 15px;
+  left: 9px;
+  width: 16px;
+  height: 12px;
+  border-radius: 3px;
+  background: #fff;
+  content: "";
+}
+
+.${PREFIX}__icon--4::after {
+  position: absolute;
+  top: 7px;
+  left: 10px;
+  width: 10px;
+  height: 12px;
+  border: 3px solid #fff;
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  content: "";
+}
+
 .${PREFIX}__icon--5 {
   background: #ef4444;
 }
 
 .${PREFIX}__icon--6 {
-  background: #8b5cf6;
+  background: #22c55e;
 }
 
 .${PREFIX}__loading-shell {

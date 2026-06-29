@@ -35,6 +35,18 @@ test("open renders a dialog and close removes it", () => {
   expect(queryLayer(index)).toBeNull();
 });
 
+test("open uses an English default title", () => {
+  const { open, close } = loadLayer();
+
+  const index = open({
+    content: "Default title",
+  });
+
+  expect(queryLayer(index).textContent).toContain("Information");
+
+  close(index);
+});
+
 test("confirm triggers callbacks for both buttons", () => {
   const { confirm } = loadLayer();
   const yes = jest.fn();
@@ -59,6 +71,24 @@ test("msg auto closes after its timeout", () => {
 
   jest.advanceTimersByTime(3200);
   expect(queryLayer(index)).toBeNull();
+});
+
+test("dialog icons render distinct legacy-compatible glyphs", () => {
+  const { open, close } = loadLayer();
+  const expectedIcons = [ "!", "✓", "×", "?", "", "☹", "☺" ];
+
+  expectedIcons.forEach((expectedIcon, icon) => {
+    const index = open({
+      content: `Icon ${icon}`,
+      icon,
+    });
+    const iconNode = document.querySelector(`.layer-esm[data-index="${index}"] .layer-esm__icon--${icon}`);
+
+    expect(iconNode).not.toBeNull();
+    expect(iconNode.dataset.icon).toBe(expectedIcon);
+
+    close(index);
+  });
 });
 
 test("load injects styles once and renders CSS spinner", () => {

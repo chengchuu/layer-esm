@@ -34,7 +34,7 @@ const state = {
 
 const baseOptions: LayerOptions = {
   type: 0,
-  title: "信息",
+  title: "Information",
   content: "",
   shade: 0.3,
   shadeClose: false,
@@ -90,7 +90,7 @@ const normalizeTitle = (title: LayerOptions["title"]): NormalizedLayerOptions["t
   }
 
   return {
-    text: title ?? "信息",
+    text: title ?? "Information",
   };
 };
 
