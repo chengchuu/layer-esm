@@ -258,25 +258,25 @@ if (app) {
       alert("Content");
     },
     "alert-icon": () => {
-      alert("Great to See You.", { icon: 6 });
+      alert("Great to See You", { icon: 6 });
     },
     "confirm-basic": () => {
       confirm("What Do You Think About Frontend Development?", {
         btn: [ "Important", "Unusual" ],
       }, () => {
-        msg("It Really Is Important.", { icon: 1, time: 5 });
+        msg("It Really Is Important", { icon: 1, time: 5 });
       }, () => {
-        msg("That Works Too.", {
+        msg("That Works Too", {
           time: 20,
           btn: [ "Got It", "Understood" ],
         });
       });
     },
     "message-basic": () => {
-      msg("A Simple Message.", { time: 5 });
+      msg("A Simple Message", { time: 5 });
     },
     "message-icon": () => {
-      msg("Common Notice.", { icon: 5 });
+      msg("Common Notice", { icon: 5 });
     },
     "message-buttons": () => {
       msg("A Quick Question?", {
@@ -293,7 +293,7 @@ if (app) {
       });
     },
     "message-top": () => {
-      msg("Use Offset Flexibly.", {
+      msg("Use Offset Flexibly", {
         offset: "t",
         anim: 6,
       });
@@ -310,7 +310,7 @@ if (app) {
         title: "Captured Page Example",
         content: captureSource,
         cancel: () => {
-          msg("Capture Moves an Existing Page Element Into the Layer Structure.", {
+          msg("Capture Moves an Existing Page Element Into the Layer Structure", {
             time: 5,
             icon: 6,
           });
@@ -324,7 +324,7 @@ if (app) {
       });
     },
     "tips-right": () => {
-      tips("Right Is the Default Direction.", "#tips-target", {
+      tips("Right Is the Default Direction", "#tips-target", {
         time: 4,
       });
     },
@@ -395,7 +395,7 @@ if (app) {
     "countdown-alert": () => {
       let timerId = 0;
 
-      alert("Show the Auto-Close Countdown in the Title Bar.", {
+      alert("Show the Auto-Close Countdown in the Title Bar", {
         time: 5,
         success: (layero) => {
           let seconds = 5;
@@ -422,7 +422,7 @@ if (app) {
     "scroll-lock": () => {
       open({
         title: "Scrollbar Lock",
-        content: "The Browser Scrollbar Is Locked. It Will Be Restored After This Layer Closes.",
+        content: "The Browser Scrollbar Is Locked. It Will Be Restored After This Layer Closes",
         scrollbar: false,
       });
     },
@@ -441,7 +441,7 @@ if (app) {
 
       window.setTimeout(() => {
         restore(index);
-        msg("The Window Has Been Restored Automatically.", { icon: 1 });
+        msg("The Window Has Been Restored Automatically", { icon: 1 });
       }, 2200);
     },
     "iframe-full": () => {
@@ -454,22 +454,22 @@ if (app) {
       });
 
       full(index);
-      msg("Switched to the Fullscreen Iframe Example.", { icon: 1 });
+      msg("Switched to the Fullscreen Iframe Example", { icon: 1 });
     },
     "message-hi": () => {
       msg("Hi");
     },
     "message-sauce": () => {
-      msg("Just Passing By.", { icon: 4 });
+      msg("Just Passing By", { icon: 4 });
     },
     "close-loading": () => {
       closeAll("loading", () => {
-        msg("All Loading Layers Have Been Closed.");
+        msg("All Loading Layers Have Been Closed");
       });
     },
     "close-all": () => {
       closeAll(() => {
-        msg("All Layers Have Been Closed.");
+        msg("All Layers Have Been Closed");
       });
     },
   };
@@ -480,7 +480,7 @@ if (app) {
     });
   });
 
-  msg("Hi, Welcome to the layer-esm Example Page.", {
+  msg("Hi, Welcome to the layer-esm Example Page", {
     offset: "t",
     anim: 6,
   });
