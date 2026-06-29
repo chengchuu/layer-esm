@@ -446,10 +446,15 @@ export const layerTheme = `
   width: 14px;
   height: 14px;
   cursor: se-resize;
+  transition: opacity .5s ease-in-out;
   opacity: 0;
   background:
     linear-gradient(135deg, transparent 0 46%, rgba(100, 116, 139, 0.55) 46% 54%, transparent 54% 100%),
     linear-gradient(135deg, transparent 0 66%, rgba(100, 116, 139, 0.55) 66% 74%, transparent 74% 100%);
+}
+
+.${PREFIX}__resize-handle:hover {
+  opacity: 1;
 }
 
 .${PREFIX}--anim-0 {
