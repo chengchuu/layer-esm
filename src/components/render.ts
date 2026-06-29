@@ -3,7 +3,7 @@ import { PREFIX, appendHTML, createElement } from "../utils/dom";
 
 export const createDialogIcon = (doc: Document, icon: number): HTMLSpanElement => {
   const iconNode = createElement(doc, "span", [ `${PREFIX}__icon`, `${PREFIX}__icon--${Math.max(icon, 0)}` ]);
-  const content = [ "!", "i", "?", "✓", "×", "!", "…" ][Math.max(0, Math.min(icon, 6))] ?? "!";
+  const content = [ "!", "✓", "×", "?", "", "☹", "☺" ][Math.max(0, Math.min(icon, 6))] ?? "!";
   iconNode.dataset.icon = content;
   iconNode.setAttribute("aria-hidden", "true");
   return iconNode;

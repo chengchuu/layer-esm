@@ -61,6 +61,24 @@ test("msg auto closes after its timeout", () => {
   expect(queryLayer(index)).toBeNull();
 });
 
+test("dialog icons render distinct legacy-compatible glyphs", () => {
+  const { open, close } = loadLayer();
+  const expectedIcons = [ "!", "✓", "×", "?", "", "☹", "☺" ];
+
+  expectedIcons.forEach((expectedIcon, icon) => {
+    const index = open({
+      content: `Icon ${icon}`,
+      icon,
+    });
+    const iconNode = document.querySelector(`.layer-esm[data-index="${index}"] .layer-esm__icon--${icon}`);
+
+    expect(iconNode).not.toBeNull();
+    expect(iconNode.dataset.icon).toBe(expectedIcon);
+
+    close(index);
+  });
+});
+
 test("load injects styles once and renders CSS spinner", () => {
   const { load, close } = loadLayer();
 
