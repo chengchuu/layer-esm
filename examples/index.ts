@@ -457,7 +457,7 @@ if (app) {
       msg("Switched to the Fullscreen Iframe Example", { icon: 1 });
     },
     "message-hi": () => {
-      msg("Hi");
+      msg("Hi", { time: 5 });
     },
     "message-sauce": () => {
       msg("Just Passing By", { icon: 4 });

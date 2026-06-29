@@ -44,7 +44,7 @@ export const layerTheme = `
 }
 
 .${PREFIX}--message {
-  min-width: 160px;
+  min-width: 75px;
   max-width: min(70vw, 420px);
   border: none;
   background: rgba(15, 23, 42, 0.88);
