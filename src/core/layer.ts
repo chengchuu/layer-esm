@@ -914,7 +914,7 @@ export const prompt = (options: LayerPromptOptions = {}, yes?: (value: string, i
         return;
       }
       if (value.length > (options.maxlength ?? 500)) {
-        tips(`最多输入 ${(options.maxlength ?? 500)} 个字符`, input, { tips: [ 1, "#111827" ], time: 2 });
+        tips(`Enter up to ${(options.maxlength ?? 500)} characters`, input, { tips: [ 1, "#111827" ], time: 2 });
         return;
       }
       yes?.(value, index, input);
