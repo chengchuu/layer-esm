@@ -104,3 +104,22 @@ test("load injects styles once and renders CSS spinner", () => {
   close(first);
   close(second);
 });
+
+test("prompt supports a custom maxlength message", () => {
+  const { prompt } = loadLayer();
+  const yes = jest.fn();
+
+  const index = prompt({
+    maxlength: 3,
+    maxlengthMessage: (maxlength, value) => `Please keep this within ${maxlength} chars. Current: ${value.length}.`,
+  }, yes);
+  const layer = queryLayer(index);
+  const input = layer.querySelector(".layui-layer-input");
+  const okButton = layer.querySelector(".layer-esm__button");
+
+  input.value = "abcd";
+  okButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+  expect(yes).not.toHaveBeenCalled();
+  expect(document.body.textContent).toContain("Please keep this within 3 chars. Current: 4.");
+});
