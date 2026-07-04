@@ -75,6 +75,7 @@ export interface LayerOptions {
 export interface LayerPromptOptions extends Omit<LayerOptions, "content" | "type"> {
   formType?: 0 | 1 | 2;
   value?: string;
+  maxlengthMessage?: string | ((maxlength: number, value: string) => string);
 }
 
 export interface LayerTipsOptions extends Omit<LayerOptions, "content" | "type" | "follow"> {
@@ -128,9 +129,9 @@ export interface NormalizedLayerOptions extends Omit<LayerOptions, "title" | "sh
 
 export interface MovedContentState {
   node: HTMLElement;
-  originalParent: Node;
+  originalParent: Node | null;
   originalNextSibling: Node | null;
-  placeholder: Comment;
+  placeholder: Comment | null;
 }
 
 export interface LayerRecord {

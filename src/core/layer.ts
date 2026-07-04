@@ -148,6 +148,16 @@ const normalizeOptions = (options: LayerOptions): NormalizedLayerOptions => {
   };
 };
 
+const resolvePromptMaxlengthMessage = (options: LayerPromptOptions, value: string): string => {
+  const maxlength = options.maxlength ?? 500;
+
+  if (typeof options.maxlengthMessage === "function") {
+    return options.maxlengthMessage(maxlength, value);
+  }
+
+  return options.maxlengthMessage ?? `Enter up to ${maxlength} characters`;
+};
+
 const ensureStyleReady = (): void => {
   injectStyle(layerTheme);
 };
@@ -170,13 +180,18 @@ const unlockScroll = (): void => {
 };
 
 const createMovedContentState = (node: HTMLElement): MovedContentState => {
-  const placeholder = ensureDocument().createComment("layer-esm-placeholder");
   const originalParent = node.parentNode;
 
   if (!originalParent) {
-    throw new Error("Cannot move detached content into layer.");
+    return {
+      node,
+      originalParent: null,
+      originalNextSibling: null,
+      placeholder: null,
+    };
   }
 
+  const placeholder = ensureDocument().createComment("layer-esm-placeholder");
   originalParent.insertBefore(placeholder, node);
 
   return {
@@ -193,8 +208,10 @@ const restoreMovedContent = (record: LayerRecord): void => {
   }
 
   const { node, originalParent, placeholder } = record.movedContent;
-  originalParent.insertBefore(node, placeholder);
-  placeholder.remove();
+  if (originalParent && placeholder) {
+    originalParent.insertBefore(node, placeholder);
+    placeholder.remove();
+  }
   record.movedContent = null;
 };
 
@@ -914,7 +931,7 @@ export const prompt = (options: LayerPromptOptions = {}, yes?: (value: string, i
         return;
       }
       if (value.length > (options.maxlength ?? 500)) {
-        tips(`最多输入 ${(options.maxlength ?? 500)} 个字符`, input, { tips: [ 1, "#111827" ], time: 2 });
+        tips(resolvePromptMaxlengthMessage(options, value), input, { tips: [ 1, "#111827" ], time: 2 });
         return;
       }
       yes?.(value, index, input);

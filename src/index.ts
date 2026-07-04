@@ -22,8 +22,39 @@ import layer, {
   tips,
   title,
 } from "./core/layer";
+import type {
+  LayerArea,
+  LayerOffset,
+  LayerOffsetKeyword,
+  LayerOptions,
+  LayerPromptOptions,
+  LayerShade,
+  LayerStyleOptions,
+  LayerTabItem,
+  LayerTabOptions,
+  LayerTipDirection,
+  LayerTipsOptions,
+  LayerTitle,
+  LayerType,
+} from "./core/types";
 
 export default layer;
+
+export type {
+  LayerArea,
+  LayerOffset,
+  LayerOffsetKeyword,
+  LayerOptions,
+  LayerPromptOptions,
+  LayerShade,
+  LayerStyleOptions,
+  LayerTabItem,
+  LayerTabOptions,
+  LayerTipDirection,
+  LayerTipsOptions,
+  LayerTitle,
+  LayerType,
+};
 
 export {
   alert,
