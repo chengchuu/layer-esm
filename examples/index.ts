@@ -1,4 +1,3 @@
-import { getBrowserInfo } from "mazey";
 import {
   alert,
   close,
@@ -16,14 +15,7 @@ import {
   title,
 } from "../src";
 
-const app = document.querySelector(".container");
-const { colorScheme } = getBrowserInfo();
-const isDarkMode = colorScheme === "dark";
-
-if (isDarkMode) {
-  // document.documentElement.setAttribute("data-bs-theme", "dark");
-  document.body.style.backgroundColor = "#052e16";
-}
+const app = document.querySelector("#demo-gallery");
 
 const iframeHtml = `
 <!doctype html>
@@ -69,18 +61,18 @@ const iframeHtml = `
 </html>
 `;
 
-const iframeUrl = `data:text/html;charset=utf-8,${encodeURIComponent(iframeHtml)}`;
+const iframeUrl = `data:text/html;charset=utf-8,${encodeURIComponent(
+  iframeHtml
+)}`;
 
 if (app) {
   app.innerHTML = `
-    <div class="py-5">
-      <div class="row justify-content-center">
-        <div class="col-12 col-xl-11">
-          <section class="rounded-4 border border-primary-subtle bg-white shadow-sm overflow-hidden mb-4">
+    <div class="py-4 py-lg-5 playground-demo-grid">
+          <section class="rounded-4 border border-primary-subtle shadow-sm overflow-hidden mb-4">
             <div class="row g-0">
               <div class="col-lg-8 p-4 p-lg-5">
                 <span class="badge rounded-pill text-bg-primary mb-3">Demo Gallery</span>
-                <h1 class="display-6 fw-bold mb-3">layer-esm example playground</h1>
+                <h2 class="display-6 fw-bold mb-3">Dialog demo gallery</h2>
                 <p class="lead text-secondary mb-3">
                   Bootstrap-style examples for alerts, confirms, messages, captured pages, tips, loading states,
                   prompts, tabs, fullscreen iframes, and more.
@@ -89,7 +81,7 @@ if (app) {
                   <button class="btn btn-primary" data-demo="alert-basic">Alert</button>
                   <button class="btn btn-outline-primary" data-demo="confirm-basic">Confirm</button>
                   <button class="btn btn-outline-secondary" data-demo="message-basic">Message</button>
-                  <button class="btn btn-outline-dark" data-demo="loading-0">Loading</button>
+                  <button class="btn btn-outline-secondary" data-demo="loading-0">Loading</button>
                 </div>
               </div>
               <div class="col-lg-4 bg-primary-subtle border-start">
@@ -116,7 +108,7 @@ if (app) {
                     <button class="btn btn-primary" data-demo="alert-basic">Alert: Content</button>
                     <button class="btn btn-outline-primary" data-demo="alert-icon">Alert with icon</button>
                     <button class="btn btn-outline-secondary" data-demo="confirm-basic">Confirm: Frontend development</button>
-                    <button class="btn btn-outline-dark" data-demo="countdown-alert">Auto-close countdown title</button>
+                    <button class="btn btn-outline-secondary" data-demo="countdown-alert">Auto-close countdown title</button>
                   </div>
                 </div>
               </div>
@@ -142,7 +134,7 @@ if (app) {
                 <div class="card-body">
                   <h2 class="h5 card-title">Captured Page Layer</h2>
                   <p class="card-text text-secondary">Reuses an existing DOM block, similar to the legacy captured-page example.</p>
-                  <button class="btn btn-dark w-100 mb-3" data-demo="capture-page">Open captured card</button>
+                  <button class="btn btn-secondary w-100 mb-3" data-demo="capture-page">Open captured card</button>
                   <div id="capture-source" class="rounded-3 border border-info-subtle bg-info-subtle p-3 d-none">
                     <span class="badge text-bg-info mb-2">Captured element</span>
                     <h3 class="h5">Page capture content</h3>
@@ -164,7 +156,7 @@ if (app) {
                   <h2 class="h5 card-title">Tips</h2>
                   <p class="card-text text-secondary">Four directions and color customization, attached to a single target element.</p>
                   <div class="rounded-4 border border-primary-subtle bg-primary-subtle p-4 text-center mb-3">
-                    <button id="tips-target" class="btn btn-light border shadow-sm">Hover target replacement</button>
+                    <button id="tips-target" class="btn btn-outline-secondary border shadow-sm">Hover target replacement</button>
                   </div>
                   <div class="row g-2">
                     <div class="col-6"><button class="btn btn-outline-primary w-100" data-demo="tips-top">Top</button></div>
@@ -182,9 +174,9 @@ if (app) {
                   <h2 class="h5 card-title">Loading States</h2>
                   <p class="card-text text-secondary">Demonstrates the CSS-based loading styles from icon 0 through 2.</p>
                   <div class="d-grid gap-2">
-                    <button class="btn btn-outline-dark" data-demo="loading-0">Loading style 0</button>
-                    <button class="btn btn-outline-dark" data-demo="loading-1">Loading style 1</button>
-                    <button class="btn btn-outline-dark" data-demo="loading-2">Loading style 2</button>
+                    <button class="btn btn-outline-secondary" data-demo="loading-0">Loading style 0</button>
+                    <button class="btn btn-outline-secondary" data-demo="loading-1">Loading style 1</button>
+                    <button class="btn btn-outline-secondary" data-demo="loading-2">Loading style 2</button>
                     <button class="btn btn-outline-secondary" data-demo="loading-msg">Message-style loading</button>
                   </div>
                 </div>
@@ -210,9 +202,9 @@ if (app) {
                   <h2 class="h5 card-title">Window Controls</h2>
                   <p class="card-text text-secondary">Examples for scroll locking, minimize/restore, and a fullscreen iframe layer.</p>
                   <div class="d-grid gap-2">
-                    <button class="btn btn-outline-dark" data-demo="scroll-lock">Lock scrollbar</button>
-                    <button class="btn btn-outline-dark" data-demo="min-restore">Minimize then restore</button>
-                    <button class="btn btn-outline-dark" data-demo="iframe-full">Open fullscreen iframe</button>
+                    <button class="btn btn-outline-secondary" data-demo="scroll-lock">Lock scrollbar</button>
+                    <button class="btn btn-outline-secondary" data-demo="min-restore">Minimize then restore</button>
+                    <button class="btn btn-outline-secondary" data-demo="iframe-full">Open fullscreen iframe</button>
                   </div>
                 </div>
               </div>
@@ -232,15 +224,15 @@ if (app) {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
     </div>
   `;
 
   const captureSource = document.querySelector<HTMLElement>("#capture-source");
 
-  const runLoading = (icon: number = 0, options: NonNullable<Parameters<typeof load>[1]> = {}) => {
+  const runLoading = (
+    icon: number = 0,
+    options: NonNullable<Parameters<typeof load>[1]> = {}
+  ) => {
     const index = load(icon, {
       shade: false,
       content: `Loading Style ${icon}...`,
@@ -261,16 +253,21 @@ if (app) {
       alert("Great to See You", { icon: 6 });
     },
     "confirm-basic": () => {
-      confirm("What Do You Think About Frontend Development?", {
-        btn: [ "Important", "Unusual" ],
-      }, () => {
-        msg("It Really Is Important", { icon: 1, time: 5 });
-      }, () => {
-        msg("That Works Too", {
-          time: 20,
-          btn: [ "Got It", "Understood" ],
-        });
-      });
+      confirm(
+        "What Do You Think About Frontend Development?",
+        {
+          btn: ["Important", "Unusual"],
+        },
+        () => {
+          msg("It Really Is Important", { icon: 1, time: 5 });
+        },
+        () => {
+          msg("That Works Too", {
+            time: 20,
+            btn: ["Got It", "Understood"],
+          });
+        }
+      );
     },
     "message-basic": () => {
       msg("A Simple Message", { time: 5 });
@@ -281,13 +278,13 @@ if (app) {
     "message-buttons": () => {
       msg("A Quick Question?", {
         time: 0,
-        btn: [ "Confirm", "Close" ],
+        btn: ["Confirm", "Close"],
         yes: (index) => {
           close(index);
           msg("Custom Buttons", {
             icon: 6,
             time: 0,
-            btn: [ "Button 1", "Button 2", "Button 3" ],
+            btn: ["Button 1", "Button 2", "Button 3"],
           });
         },
       });
@@ -306,20 +303,23 @@ if (app) {
       open({
         type: 1,
         shade: false,
-        area: [ "460px", "320px" ],
+        area: ["460px", "320px"],
         title: "Captured Page Example",
         content: captureSource,
         cancel: () => {
-          msg("Capture Moves an Existing Page Element Into the Layer Structure", {
-            time: 5,
-            icon: 6,
-          });
+          msg(
+            "Capture Moves an Existing Page Element Into the Layer Structure",
+            {
+              time: 5,
+              icon: 6,
+            }
+          );
         },
       });
     },
     "tips-top": () => {
       tips("Top", "#tips-target", {
-        tips: [ 1, "#0d6efd" ],
+        tips: [1, "#0d6efd"],
         time: 4,
       });
     },
@@ -336,7 +336,7 @@ if (app) {
     },
     "tips-left": () => {
       tips("Left Side Tip", "#tips-target", {
-        tips: [ 4, "#198754" ],
+        tips: [4, "#198754"],
         time: 4,
       });
     },
@@ -345,7 +345,7 @@ if (app) {
     },
     "loading-1": () => {
       runLoading(1, {
-        shade: [ 0.1, "#fff" ],
+        shade: [0.1, "#fff"],
       });
     },
     "loading-2": () => {
@@ -359,35 +359,46 @@ if (app) {
       });
     },
     "prompt-chain": () => {
-      prompt({
-        title: "Enter Any Passcode, Then Confirm",
-        formType: 1,
-      }, (password, index) => {
-        close(index);
-        prompt({
-          title: "Write Anything, Then Confirm",
-          formType: 2,
-        }, (text, nextIndex) => {
-          close(nextIndex);
-          alert(`Demo Complete. Test Passcode: ${password}<br>Final Text: ${text}`);
-        });
-      });
+      prompt(
+        {
+          title: "Enter Any Passcode, Then Confirm",
+          formType: 1,
+        },
+        (password, index) => {
+          close(index);
+          prompt(
+            {
+              title: "Write Anything, Then Confirm",
+              formType: 2,
+            },
+            (text, nextIndex) => {
+              close(nextIndex);
+              alert(
+                `Demo Complete. Test Passcode: ${password}<br>Final Text: ${text}`
+              );
+            }
+          );
+        }
+      );
     },
     "tab-basic": () => {
       tab({
-        area: [ "640px", "340px" ],
+        area: ["640px", "340px"],
         tab: [
           {
             title: "TAB1",
-            content: "<p class='mb-0'>Content 1: An ESM Version of the Layer-Style API.</p>",
+            content:
+              "<p class='mb-0'>Content 1: An ESM Version of the Layer-Style API.</p>",
           },
           {
             title: "TAB2",
-            content: "<p class='mb-0'>Content 2: Runtime Styles and CSS Loading Are Built In.</p>",
+            content:
+              "<p class='mb-0'>Content 2: Runtime Styles and CSS Loading Are Built In.</p>",
           },
           {
             title: "TAB3",
-            content: "<p class='mb-0'>Content 3: Advanced Features Such as Photos Can Be Added Later.</p>",
+            content:
+              "<p class='mb-0'>Content 3: Advanced Features Such as Photos Can Be Added Later.</p>",
           },
         ],
       });
@@ -422,7 +433,8 @@ if (app) {
     "scroll-lock": () => {
       open({
         title: "Scrollbar Lock",
-        content: "The Browser Scrollbar Is Locked. It Will Be Restored After This Layer Closes",
+        content:
+          "The Browser Scrollbar Is Locked. It Will Be Restored After This Layer Closes",
         scrollbar: false,
       });
     },
@@ -430,8 +442,9 @@ if (app) {
       const index = open({
         type: 1,
         title: "Minimize Example",
-        content: "<p class='mb-0'>This Layer Will Minimize Automatically, Then Restore.</p>",
-        area: [ "420px", "220px" ],
+        content:
+          "<p class='mb-0'>This Layer Will Minimize Automatically, Then Restore.</p>",
+        area: ["420px", "220px"],
         maxmin: true,
       });
 
@@ -448,8 +461,8 @@ if (app) {
       const index = open({
         type: 2,
         title: "Fullscreen Iframe Example",
-        content: [ iframeUrl, "auto" ],
-        area: [ "520px", "360px" ],
+        content: [iframeUrl, "auto"],
+        area: ["520px", "360px"],
         maxmin: true,
       });
 

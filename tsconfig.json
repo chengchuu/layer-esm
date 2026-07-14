@@ -22,12 +22,9 @@
       "mazey": ["./node_modules/mazey/lib/index.d.ts"]
     }
   },
-  "include": [
-    "./src/**/*.ts",
-    "./examples/**/*.ts"
-  ],
+  "include": ["./src/**/*.ts", "./examples/**/*.ts", "./site/**/*.ts"],
   "typedocOptions": {
-    "entryPoints": ["./src"],
-    "out": "docs"
+    "entryPoints": ["./src/index.ts"],
+    "out": "docs/api"
   }
 }

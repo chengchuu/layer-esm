@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= ROOT_TITLE %></title>
+    <meta name="description" content="<%= ROOT_DESCRIPTION %>" />
+    <link rel="canonical" href="<%= SITE_URL %>" />
+    <link rel="sitemap" type="application/xml" href="<%= SITEMAP_URL %>" />
+    <link rel="icon" href="<%= FAVICON_URL %>" type="image/png" />
+    <% if (MANIFEST_URL) { %>
+    <link rel="manifest" href="<%= MANIFEST_URL %>" />
+    <% } %>
+    <meta
+      name="theme-color"
+      content="<%= THEME_COLOR_LIGHT %>"
+      data-theme-color
+      data-theme-color-light="<%= THEME_COLOR_LIGHT %>"
+      data-theme-color-dark="<%= THEME_COLOR_DARK %>"
+    />
+    <style>
+      :root {
+        --project-theme-primary: <%= THEME_COLOR_PRIMARY %>;
+        --project-theme-primary-hover: <%= THEME_PRIMARY_HOVER %>;
+        --project-theme-primary-active: <%= THEME_PRIMARY_ACTIVE %>;
+        --project-theme-primary-soft: <%= THEME_PRIMARY_SOFT %>;
+        --project-theme-primary-rgb: <%= THEME_PRIMARY_RGB %>;
+        --project-theme-primary-hover-rgb: <%= THEME_PRIMARY_HOVER_RGB %>;
+        --project-theme-primary-dark: <%= THEME_PRIMARY_DARK %>;
+        --project-theme-primary-dark-hover: <%= THEME_PRIMARY_DARK_HOVER %>;
+        --project-theme-primary-dark-active: <%= THEME_PRIMARY_DARK_ACTIVE %>;
+        --project-theme-primary-dark-soft: <%= THEME_PRIMARY_DARK_SOFT %>;
+        --project-theme-primary-dark-rgb: <%= THEME_PRIMARY_DARK_RGB %>;
+        --project-theme-primary-dark-hover-rgb: <%= THEME_PRIMARY_DARK_HOVER_RGB
+          %>;
+        --project-theme-light: <%= THEME_COLOR_LIGHT %>;
+        --project-theme-dark: <%= THEME_COLOR_DARK %>;
+      }
+    </style>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="<%= DISPLAY_NAME %>" />
+    <meta property="og:title" content="<%= ROOT_TITLE %>" />
+    <meta property="og:description" content="<%= ROOT_DESCRIPTION %>" />
+    <meta property="og:url" content="<%= SITE_URL %>" />
+    <meta property="og:image" content="<%= OPEN_GRAPH_IMAGE_URL %>" />
+    <meta property="og:image:type" content="<%= OPEN_GRAPH_IMAGE_TYPE %>" />
+    <meta property="og:image:width" content="<%= OPEN_GRAPH_IMAGE_WIDTH %>" />
+    <meta property="og:image:height" content="<%= OPEN_GRAPH_IMAGE_HEIGHT %>" />
+    <meta property="og:image:alt" content="<%= OPEN_GRAPH_IMAGE_ALT %>" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="<%= ROOT_TITLE %>" />
+    <meta name="twitter:description" content="<%= ROOT_DESCRIPTION %>" />
+    <meta name="twitter:image" content="<%= OPEN_GRAPH_IMAGE_URL %>" />
+    <meta name="twitter:image:alt" content="<%= OPEN_GRAPH_IMAGE_ALT %>" />
+    <script type="application/ld+json">
+      <%= ROOT_JSON_LD %>
+    </script>
+    <script>
+      (()=>{try{const key=<%= THEME_STORAGE_KEY_JSON %>;const value=localStorage.getItem(key)||"system";const resolved=value==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):(value==="dark"?"dark":"light");document.documentElement.dataset.bsTheme=resolved;document.documentElement.dataset.theme=resolved;document.documentElement.style.colorScheme=resolved;const meta=document.querySelector('meta[name="theme-color"][data-theme-color]');if(meta)meta.content=resolved==="dark"?meta.dataset.themeColorDark:meta.dataset.themeColorLight;localStorage.setItem("tsd-theme",value==="system"?"os":value)}catch{}})();
+    </script>
+  </head>
+  <body id="top">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site-header">
+      <nav
+        class="navbar navbar-expand-xl site-navbar"
+        aria-label="Primary navigation"
+        data-site-navbar
+      >
+        <div class="container">
+          <a class="navbar-brand d-flex align-items-center gap-2" href="./"
+            ><img
+              class="brand-logo"
+              src="<%= LOGO_URL %>"
+              width="32"
+              height="32"
+              alt=""
+            /><span><%= DISPLAY_NAME %></span></a
+          >
+          <button
+            class="navbar-toggler"
+            type="button"
+            aria-controls="primary-navigation"
+            aria-expanded="false"
+            aria-label="Toggle project navigation"
+            data-nav-toggle
+          >
+            <span class="navbar-toggler-icon" aria-hidden="true"></span>
+          </button>
+          <div id="primary-navigation" class="navbar-collapse" data-mobile-nav>
+            <ul class="navbar-nav ms-auto align-items-xl-center gap-xl-1">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="./">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#features">Features</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#installation">Installation</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#usage">Basic usage</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./playground/">Playground</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="./api/">API</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="<%= GITHUB_URL %>">GitHub</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="<%= NPM_URL %>">npm</a>
+              </li>
+            </ul>
+            <label class="theme-control ms-xl-3"
+              ><span>Theme</span
+              ><select
+                class="form-select form-select-sm w-auto"
+                data-theme-select
+                aria-label="Choose website theme"
+              >
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select></label
+            >
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main id="main-content">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="container">
+          <img
+            class="hero-logo"
+            src="<%= LOGO_URL %>"
+            width="72"
+            height="72"
+            alt="<%= DISPLAY_NAME %> logo"
+          />
+          <h1 id="hero-title"><%= DISPLAY_NAME %></h1>
+          <p class="lead"><%= ROOT_DESCRIPTION %></p>
+          <div class="hero-actions" aria-label="Project actions">
+            <a class="btn btn-primary btn-lg" href="./playground/"
+              >Open playground</a
+            >
+            <a class="btn btn-outline-secondary btn-lg" href="./api/"
+              >View API documentation</a
+            >
+            <a class="btn btn-outline-secondary btn-lg" href="<%= GITHUB_URL %>"
+              >View on GitHub</a
+            >
+            <a class="btn btn-outline-secondary btn-lg" href="<%= NPM_URL %>"
+              >Install from npm</a
+            >
+          </div>
+          <div data-pwa-install-container hidden>
+            <button
+              class="btn btn-outline-primary mt-3"
+              type="button"
+              data-pwa-install
+              disabled
+            >
+              Install app
+            </button>
+          </div>
+          <p class="small text-muted-custom mt-3" data-pwa-install-help>
+            Website installation depends on browser and platform support. On
+            iPhone or iPad, Safari offers Add to Home Screen from the Share
+            menu.
+          </p>
+        </div>
+      </section>
+      <section
+        id="features"
+        class="section-band"
+        aria-labelledby="features-title"
+      >
+        <div class="container">
+          <div class="section-heading">
+            <h2 id="features-title">
+              Layer-style APIs, modern package formats
+            </h2>
+            <p>
+              Use named TypeScript imports without jQuery, global variables, or
+              external runtime styles and images.
+            </p>
+          </div>
+          <div class="row g-4">
+            <article class="col-md-6 col-xl-4">
+              <div class="feature-card h-100">
+                <h3>Dialog helpers</h3>
+                <p>
+                  Open alerts, confirmations, messages, loading indicators,
+                  prompts, tips, tabs, page content, and iframe layers.
+                </p>
+              </div>
+            </article>
+            <article class="col-md-6 col-xl-4">
+              <div class="feature-card h-100">
+                <h3>Window controls</h3>
+                <p>
+                  Close, minimize, restore, maximize, retitle, resize, and
+                  manage active layers through exported helpers.
+                </p>
+              </div>
+            </article>
+            <article class="col-md-6 col-xl-4">
+              <div class="feature-card h-100">
+                <h3>Typed package</h3>
+                <p>
+                  Consume ESM, CommonJS, and declaration outputs from the
+                  package root with runtime-injected component styles.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section
+        id="installation"
+        class="section-band section-band--muted"
+        aria-labelledby="installation-title"
+      >
+        <div class="container">
+          <div class="row g-4 align-items-center">
+            <div class="col-lg-5">
+              <h2 id="installation-title">Install from npm</h2>
+              <p>
+                Add <code>layer-esm</code> to a browser application that uses a
+                package manager and bundler.
+              </p>
+              <a href="<%= NPM_URL %>">View the layer-esm npm package</a>
+            </div>
+            <div class="col-lg-7">
+              <div class="code-panel">
+                <div class="code-panel-header">
+                  <span>Terminal</span
+                  ><button
+                    class="btn btn-sm btn-outline-light"
+                    type="button"
+                    data-copy-install
+                  >
+                    Copy command
+                  </button>
+                </div>
+                <pre><code><%= INSTALL_COMMAND %></code></pre>
+              </div>
+              <p
+                class="visually-hidden"
+                aria-live="polite"
+                data-copy-status
+              ></p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="usage" class="section-band" aria-labelledby="usage-title">
+        <div class="container">
+          <div class="row g-4 align-items-center">
+            <div class="col-lg-5">
+              <h2 id="usage-title">Basic usage</h2>
+              <p>
+                Import only the helpers you need. This example opens a
+                confirmation, reports success, and closes a loading layer.
+              </p>
+              <a href="./api/">Explore every exported function and type</a>
+            </div>
+            <div class="col-lg-7">
+              <div class="code-panel">
+                <div class="code-panel-header"><span>TypeScript</span></div>
+                <pre><code>import { close, confirm, load, msg } from "layer-esm";
+
+const loadingIndex = load();
+
+confirm("Continue?", {}, () =&gt; {
+  msg("Confirmed");
+  close(loadingIndex);
+});</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section
+        class="section-band section-band--muted"
+        aria-labelledby="explore-title"
+      >
+        <div class="container">
+          <div class="section-heading">
+            <h2 id="explore-title">Explore the library</h2>
+            <p>
+              The playground exercises public APIs in the browser, while TypeDoc
+              lists the complete exported contract.
+            </p>
+          </div>
+          <div class="d-flex flex-wrap gap-3">
+            <a class="btn btn-primary" href="./playground/"
+              >Open the live playground</a
+            ><a class="btn btn-outline-secondary" href="./api/"
+              >Read the API documentation</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+    <aside class="pwa-update-notice" data-pwa-update hidden aria-live="polite">
+      <div>
+        <strong>Website update available</strong>
+        <p>A new version of the <%= DISPLAY_NAME %> website is available.</p>
+      </div>
+      <button class="btn btn-sm btn-primary" type="button" data-pwa-update-now>
+        Update now
+      </button>
+    </aside>
+    <p class="visually-hidden" aria-live="polite" data-pwa-status></p>
+    <footer class="site-footer">
+      <div class="container">
+        <div>
+          <strong><%= DISPLAY_NAME %></strong>
+          <p class="mb-0">
+            TypeScript dialogs and popups under the MIT License.
+          </p>
+        </div>
+        <nav aria-label="Footer navigation">
+          <a href="./">Project home</a
+          ><a href="./playground/">Live playground</a
+          ><a href="./api/">API documentation</a
+          ><a href="./sitemap.xml">Sitemap</a
+          ><a href="<%= GITHUB_URL %>">GitHub repository</a
+          ><a href="<%= NPM_URL %>">npm package</a
+          ><a href="<%= LICENSE_URL %>">MIT License</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
