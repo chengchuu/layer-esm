@@ -136,11 +136,11 @@ function validatePwa({ rootDir = defaultRoot } = {}) {
   }
 
   const pages = [
-    ["Homepage", path.join(docs, "index.html"), true],
-    ["Playground", path.join(docs, "playground", "index.html"), true],
-    ["API documentation", path.join(docs, "api", "index.html"), false],
+    ["Homepage", path.join(docs, "index.html")],
+    ["Playground", path.join(docs, "playground", "index.html")],
+    ["API documentation", path.join(docs, "api", "index.html")],
   ];
-  for (const [label, file, requiresInstallButton] of pages) {
+  for (const [label, file] of pages) {
     if (!existsSync(file)) {
       fail(`${label} HTML is missing`);
       continue;
@@ -158,13 +158,8 @@ function validatePwa({ rootDir = defaultRoot } = {}) {
       fail(`${label} lost its SEO description`);
     if (!findTag(html, "link", "rel", "canonical"))
       fail(`${label} lost its canonical URL`);
-    if (
-      requiresInstallButton &&
-      !/<button\b[^>]*data-pwa-install[^>]*>[\s\S]*?Install app[\s\S]*?<\/button>/i.test(
-        html
-      )
-    )
-      fail(`${label} is missing an accessible Install app button`);
+    if (/<button\b[^>]*data-pwa-install\b/i.test(html))
+      fail(`${label} must not expose an Install app button`);
     if (
       !/<button\b[^>]*data-pwa-update-now[^>]*>[\s\S]*?Update now[\s\S]*?<\/button>/i.test(
         html

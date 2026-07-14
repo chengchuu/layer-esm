@@ -91,6 +91,16 @@ test("site templates use the styled update, code panel, and muted section classe
   }
   expect(homepage).toContain('class="code-panel"');
   expect(playground).toContain('class="playground-demo-gallery"');
+  for (const template of [homepage, playground]) {
+    expect(template).not.toContain("data-pwa-install-container");
+    expect(template).not.toContain("data-pwa-install>");
+    expect(template).not.toContain(">Basic usage<");
+    expect(template).toContain(">Usage<");
+  }
+  expect(homepage).not.toContain('href="#features">Features</a>');
+  expect(homepage.indexOf(">Home</a>")).toBeLessThan(
+    homepage.indexOf(">Playground</a>")
+  );
   expect(playgroundScript).not.toContain("bg-white");
   expect(playgroundScript).not.toContain("btn-outline-dark");
   expect(stylesheet).toContain(".playground-demo-grid .card");
