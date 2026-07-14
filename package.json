@@ -1,6 +1,6 @@
 {
   "name": "layer-esm",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Modern ESM Layer Library for Web Popups and Dialogs",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -16,7 +16,9 @@
     "README.md",
     "LICENSE"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "**/*.css"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -30,11 +32,18 @@
     "build": "cross-env SCRIPTS_NPM_PACKAGE_DEBUG=close SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version rollup --config ./scripts/rollup.config.mjs",
     "build:debug": "cross-env SCRIPTS_NPM_PACKAGE_DEBUG=open SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version rollup --config ./scripts/rollup.config.mjs",
     "build:dev": "webpack --config ./scripts/webpack.config.dev.cjs",
+    "build:site": "cross-env GITHUB_PAGES=true webpack --mode production --config ./scripts/webpack.config.dev.cjs",
     "pretest": "npm run build",
     "test": "jest",
-    "docs": "typedoc --readme ./README.md --excludeProtected --excludePrivate --excludeInternal --hideGenerator",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --ext '.js,.ts,.tsx,.cjs,.mjs' ./examples ./scripts ./site ./src ./test ./project.config.cjs",
+    "format:check": "prettier --check README.md package.json tsconfig.json project.config.cjs .github/workflows/pages.yml examples/index.html examples/index.ts site scripts/build-pages.cjs scripts/preview-pages.cjs scripts/project-config-utils.cjs scripts/validate-pwa.cjs scripts/validate-seo.cjs scripts/webpack.config.dev.cjs test/pwa.test.js test/seo.test.js test/service-worker.test.js test/theme.test.js",
+    "docs": "typedoc --out ./docs/api --readme ./README.md --excludeProtected --excludePrivate --excludeInternal --hideGenerator && npm run build:site && node ./scripts/build-pages.cjs && npm run seo:validate && npm run pwa:validate",
+    "seo:validate": "node ./scripts/validate-seo.cjs",
+    "pwa:validate": "node ./scripts/validate-pwa.cjs",
+    "pwa:preview": "npm run docs && node ./scripts/preview-pages.cjs",
     "lint:fix": "eslint --ext '.js,.ts,.tsx,.cjs,.mjs' --fix ./examples ./scripts ./src ./test",
-    "preview": "npm test",
+    "preview": "npm run typecheck && npm run lint && npm run build && npm run test && npm run docs && npm run format:check",
     "release": "npm run preview && cross-env SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version node ./scripts/release.cjs",
     "release:win": "bash scripts/env-win.sh && npm i --registry=https://registry.npmjs.org && npm run release"
   },
@@ -43,11 +52,12 @@
     "url": "git+https://github.com/chengchuu/layer-esm.git"
   },
   "keywords": [
-    "template",
+    "dialog",
+    "popup",
+    "modal",
+    "layer",
     "typescript",
-    "function",
-    "document",
-    "test"
+    "esm"
   ],
   "author": {
     "name": "Cheng",
@@ -58,7 +68,7 @@
   "bugs": {
     "url": "https://github.com/chengchuu/layer-esm/issues"
   },
-  "homepage": "https://github.com/chengchuu/layer-esm#readme",
+  "homepage": "https://chengchuu.github.io/layer-esm/",
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@babel/plugin-transform-class-properties": "^7.22.5",
@@ -76,9 +86,11 @@
     "@types/node": "^25.0.9",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
+    "bootstrap": "5.3.8",
     "clean-webpack-plugin": "^4.0.0",
     "core-js": "^3.33.2",
     "cross-env": "^7.0.3",
+    "css-loader": "^7.1.2",
     "date-fns": "^2.30.0",
     "eslint": "^8.54.0",
     "eslint-config-standard": "^17.1.0",
@@ -93,6 +105,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^14.0.1",
     "markdown-toc": "^1.2.0",
+    "mini-css-extract-plugin": "^2.9.2",
     "prettier": "^2.8.8",
     "prettier-eslint-cli": "^8.0.1",
     "rollup": "^3.29.4",

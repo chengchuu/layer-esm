@@ -71,7 +71,7 @@ export default [
     ],
     plugins: [
       cleaner({
-        targets: [ fromRoot("dist/*") ],
+        targets: [fromRoot("dist")],
       }),
       ...plugins,
     ],

@@ -1,7 +1,7 @@
 name: Deploy GitHub Pages
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: "22"
 
 on:
   push:
@@ -35,6 +35,15 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Check types
+        run: npm run typecheck
+
+      - name: Lint source
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
 
       - name: Build docs
         run: npm run docs

@@ -34,5 +34,21 @@
     "object-curly-newline": ["warn", {
       "ImportDeclaration": { "multiline": true, "minProperties": 4 }
     }]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.cjs", "scripts/**/*.cjs"],
+      "env": { "node": true },
+      "rules": { "@typescript-eslint/no-var-requires": "off" }
+    },
+    {
+      "files": ["test/**/*.js"],
+      "env": { "browser": true, "jest": true, "node": true },
+      "rules": { "@typescript-eslint/no-var-requires": "off" }
+    },
+    {
+      "files": ["site/service-worker.js"],
+      "env": { "serviceworker": true }
+    }
+  ]
 }
