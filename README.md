@@ -60,8 +60,8 @@ Chrome for Android 100+, and iOS Safari 15+. The package does not install global
 
 ## Guides
 
-- [Introducing layer-esm](./release-notes/introducing-layer-esm-v1.0.1.md)
-- [Release notes index](./release-notes/README.md)
+- [Introducing layer-esm](./guides/release-notes/introducing-layer-esm-v1.0.1.md)
+- [Release notes index](./guides/release-notes/README.md)
 
 ## Contributing
 
@@ -110,10 +110,16 @@ Documentation:
 npm run docs
 ```
 
-This command creates the complete GitHub Pages artifact in `docs`, including the landing page,
+`npm run docs` creates the complete GitHub Pages artifact in `docs`, including the landing page,
 playground, TypeDoc API documentation, manifest, service worker, `robots.txt`, and `sitemap.xml`.
-Validate the final SEO and PWA output independently with `npm run seo:validate` and
-`npm run pwa:validate`.
+Handwritten documentation belongs in `guides`; `docs` is generated output only. Validate the final
+SEO and PWA output independently with `npm run seo:validate` and `npm run pwa:validate`.
+
+Validate handwritten Markdown links without rebuilding the Pages artifact:
+
+```bash
+npm run docs:links
+```
 
 Build and serve a production-like project-path preview at
 <http://127.0.0.1:4173/layer-esm/>:

@@ -22,7 +22,8 @@ This file applies to work inside `layer-esm/` only.
 - `src/utils/` — DOM, positioning, and shared helpers
 - `examples/` — dev/demo entry used by webpack dev server
 - `test/` — Jest coverage for the public API
-- `release-notes/` — change records, publish logs, and longer-form docs
+- `guides/` — handwritten documentation, including release notes under `guides/release-notes/`
+- `docs/` — generated GitHub Pages output only; do not store handwritten source here
 - `scripts/` — Rollup, webpack, release, and packaging scripts
 
 ## Build, test, and dev commands
@@ -37,6 +38,7 @@ npm test
 npm test -- test/layer.test.js
 npm run lint:fix
 npm run docs
+npm run docs:links
 ```
 
 ## Packaging expectations
@@ -53,7 +55,7 @@ npm run docs
 ## Documentation expectations
 
 - Main package docs live in `README.md`.
-- Versioned or release-focused articles belong under `release-notes/`.
+- Versioned or release-focused articles belong under `guides/release-notes/`.
 - When updating examples, keep `examples/index.ts` aligned with the APIs that are actually implemented.
 
 ## Conventions

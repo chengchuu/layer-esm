@@ -60,6 +60,18 @@ test("API subpages receive self-referencing canonical URLs", () => {
   expect(transformed).toContain(`open | ${displayName} API Reference`);
 });
 
+test("API guide links resolve to the handwritten GitHub source", () => {
+  const source = typeDocHtml.replace(
+    "</main>",
+    '<a href="../guides/release-notes/README.md">Release notes</a></main>'
+  );
+  const transformed = transformApiHtml(source, "index.html");
+  expect(transformed).toContain(
+    `href="${projectConfig.urls.guidesSource}release-notes/README.md"`
+  );
+  expect(transformed).not.toContain('href="../guides/release-notes/README.md"');
+});
+
 test("generated TypeDoc headings are normalized without changing content", () => {
   expect(
     normalizeHeadingOrder(

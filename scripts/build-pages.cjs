@@ -63,6 +63,19 @@ function normalizeHeadingOrder(html) {
   );
 }
 
+function rewriteGuideLinks(html) {
+  return html.replace(
+    /href=(["'])(?:\.\.?\/)*guides\/([^"']+)\1/g,
+    (link, quote, target) => {
+      const pathname = target.split(/[?#]/, 1)[0];
+      if (!pathname.toLowerCase().endsWith(".md")) return link;
+      return `href=${quote}${
+        new URL(target, projectConfig.urls.guidesSource).href
+      }${quote}`;
+    }
+  );
+}
+
 function transformApiHtml(html, relativeFile) {
   const cleanHtml = html
     .replace(markerExpression(seoStart, seoEnd), "")
@@ -203,7 +216,7 @@ function transformApiHtml(html, relativeFile) {
       );
     }
   }
-  return normalizeHeadingOrder(output);
+  return rewriteGuideLinks(normalizeHeadingOrder(output));
 }
 
 function htmlFiles(directory) {
@@ -364,5 +377,6 @@ module.exports = {
   fingerprintPages,
   normalizeHeadingOrder,
   renderServiceWorker,
+  rewriteGuideLinks,
   transformApiHtml,
 };
