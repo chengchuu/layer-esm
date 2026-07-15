@@ -1,3 +1,6 @@
 #!/bin/bash
-# Node.js Version
-nvm use 16.19.0
+set -e
+
+nvm use 22.21.1
+npm i --registry=https://registry.npmjs.org
+npm run release

@@ -1,53 +1,64 @@
 /* eslint-disable @typescript-eslint/no-var-requires, no-undef */
 import { babel } from "@rollup/plugin-babel";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { DEFAULT_EXTENSIONS } from "@babel/core";
-import cleaner from "rollup-plugin-cleaner";
 import { dts } from "rollup-plugin-dts";
-import path from "path";
-import commonjs from "rollup-plugin-commonjs";
-import resolve from "rollup-plugin-node-resolve";
+import { rmSync } from "node:fs";
+import path, { dirname } from "node:path";
 import terser from "@rollup/plugin-terser";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-import pkg from "../package.json" with { type: "json" };
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 
+const require = createRequire(import.meta.url);
+const pkg = require("../package.json");
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 const fromRoot = (...segments) => path.resolve(projectRoot, ...segments);
 
-const pkgVersion = process.env.SCRIPTS_NPM_PACKAGE_VERSION || process.env.VERSION || pkg.version || "unknown";
+const pkgVersion =
+  process.env.SCRIPTS_NPM_PACKAGE_VERSION ||
+  process.env.VERSION ||
+  pkg.version ||
+  "unknown";
 const debugMode = process.env.SCRIPTS_NPM_PACKAGE_DEBUG;
 const banner =
   "/*!\n" +
   ` * ${pkg.name} v${pkgVersion}\n` +
-  ` * (c) 2018-${new Date().getFullYear()} Cheng https://www.npmjs.com/package/${pkg.name}\n` +
+  ` * (c) 2018-${new Date().getFullYear()} Cheng https://www.npmjs.com/package/${
+    pkg.name
+  }\n` +
   " * Released under the MIT License.\n" +
   " */";
 
 const plugins = [
-  resolve({
-    extensions: [ ...DEFAULT_EXTENSIONS, ".ts" ],
+  nodeResolve({
+    extensions: [...DEFAULT_EXTENSIONS, ".ts"],
   }),
   babel({
-    babelHelpers: "runtime",
+    babelHelpers: "bundled",
     exclude: /node_modules/,
-    extensions: [ ...DEFAULT_EXTENSIONS, ".ts" ],
-  }),
-  commonjs({
-    include: /node_modules/,
+    extensions: [...DEFAULT_EXTENSIONS, ".ts"],
   }),
 ];
 
-const outputPlugins = debugMode === "open"
-  ? []
-  : [
-    terser({
-      format: {
-        comments: /^!\n\s\*\slayer-esm/,
-      },
-    }),
-  ];
+const cjsOutputPlugins =
+  debugMode === "open"
+    ? []
+    : [
+        terser({
+          format: {
+            comments: /^!\n\s\*\slayer-esm/,
+          },
+        }),
+      ];
+
+const cleanDist = {
+  name: "clean-dist",
+  buildStart() {
+    rmSync(fromRoot("dist"), { recursive: true, force: true });
+  },
+};
 
 export default [
   {
@@ -59,22 +70,16 @@ export default [
         banner,
         exports: "named",
         sourcemap: true,
-        plugins: outputPlugins,
+        plugins: cjsOutputPlugins,
       },
       {
         file: fromRoot("dist/index.mjs"),
         format: "esm",
         banner,
         sourcemap: true,
-        plugins: outputPlugins,
       },
     ],
-    plugins: [
-      cleaner({
-        targets: [fromRoot("dist")],
-      }),
-      ...plugins,
-    ],
+    plugins: [cleanDist, ...plugins],
   },
   {
     input: fromRoot("src/index.ts"),
@@ -84,8 +89,6 @@ export default [
         format: "es",
       },
     ],
-    plugins: [
-      dts(),
-    ],
+    plugins: [dts()],
   },
 ];

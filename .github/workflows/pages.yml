@@ -34,7 +34,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Check types
         run: npm run typecheck

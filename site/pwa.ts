@@ -139,6 +139,16 @@ export function initializeInstallExperience(
     if (isStandaloneMode(windowRef, navigatorRef)) showInstalledState();
   };
 
+  if (installButtons.length === 0) {
+    if (isStandaloneMode(windowRef, navigatorRef)) showInstalledState();
+    windowRef.addEventListener("appinstalled", handleInstalled);
+    displayMode.addEventListener?.("change", handleDisplayMode);
+    return () => {
+      windowRef.removeEventListener("appinstalled", handleInstalled);
+      displayMode.removeEventListener?.("change", handleDisplayMode);
+    };
+  }
+
   if (isStandaloneMode(windowRef, navigatorRef)) showInstalledState();
   installButtons.forEach((button) =>
     button.addEventListener("click", handleInstall)
