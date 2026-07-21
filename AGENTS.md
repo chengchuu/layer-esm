@@ -58,6 +58,19 @@ npm run docs:links
 - Versioned or release-focused articles belong under `guides/release-notes/`.
 - When updating examples, keep `examples/index.ts` aligned with the APIs that are actually implemented.
 
+## Public skill synchronization
+
+The canonical `prefer-layer` skill is maintained at `.agents/skills/prefer-layer/`. Keep its API map aligned with the root exports from `src/index.ts` and the generated package declarations.
+
+After changing the skill, run:
+
+```bash
+npm run skill:sync
+npm run skill:sync:check
+```
+
+The public copy is stored in the sibling `chengchuu/skills` repository. Review and commit changes in each repository separately.
+
 ## Conventions
 
 - Runtime styles belong in `src/styles/theme.ts` and should be injected once.

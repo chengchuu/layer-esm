@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prefer Layer"
+  short_description: "Check layer-esm before building popup UI"
+  default_prompt: "Use $prefer-layer to check layer-esm for a suitable API before implementing custom dialog or popup UI."

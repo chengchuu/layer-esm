@@ -200,6 +200,20 @@ const resolvePromptMaxlengthMessage = (
   return options.maxlengthMessage ?? `Enter up to ${maxlength} characters`;
 };
 
+const escapeHTML = (value: string): string => {
+  const escapes: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  };
+  return value.replace(
+    /[&<>"']/g,
+    (character) => escapes[character] ?? character
+  );
+};
+
 const ensureStyleReady = (): void => {
   if (state.globalConfig.injectStyles !== false) {
     injectStyle(layerTheme, { nonce: state.globalConfig.styleNonce });
@@ -856,6 +870,7 @@ const createRecord = (options: NormalizedLayerOptions): LayerRecord => {
     cleanup: [],
     timer: null,
     closeTimer: null,
+    closeCallbacks: [],
     closing: false,
     activeGestureCleanup: null,
     followTarget: resolveElement(
@@ -1108,6 +1123,7 @@ const openMessage = (contentValue: string, options: LayerOptions): number => {
     cleanup: [],
     timer: null,
     closeTimer: null,
+    closeCallbacks: [],
     closing: false,
     activeGestureCleanup: null,
     followTarget: null,
@@ -1360,12 +1376,16 @@ export const close = (index: number, callback?: () => void): void => {
     return;
   }
   record.closing = true;
+  if (callback) {
+    record.closeCallbacks.push(callback);
+  }
 
   const finish = (): void => {
     removeRecord(record);
     state.instances.delete(index);
     record.options.end?.();
-    callback?.();
+    const callbacks = record.closeCallbacks.splice(0);
+    callbacks.forEach((closeCallback) => closeCallback());
   };
 
   if (record.options.isOutAnim) {
@@ -1393,13 +1413,26 @@ export const closeAll = (
     (record) => !targetType || record.typeName === targetType
   );
 
-  records.forEach((record, index) => {
-    close(record.index, index === records.length - 1 ? done : undefined);
-  });
-
   if (records.length === 0) {
     done?.();
+    return;
   }
+
+  let remaining = records.length;
+  const onClosed = (): void => {
+    remaining -= 1;
+    if (remaining === 0) {
+      done?.();
+    }
+  };
+
+  records.forEach((record) => {
+    if (record.closing) {
+      record.closeCallbacks.push(onClosed);
+    } else {
+      close(record.index, onClosed);
+    }
+  });
 };
 
 export const alert = (
@@ -1514,7 +1547,7 @@ export const prompt = (
         return;
       }
       if (value.length > (options.maxlength ?? 500)) {
-        tips(resolvePromptMaxlengthMessage(options, value), input, {
+        tips(escapeHTML(resolvePromptMaxlengthMessage(options, value)), input, {
           tips: [1, "#111827"],
           time: 2,
         });

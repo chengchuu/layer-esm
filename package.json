@@ -48,6 +48,9 @@
     "lint:fix": "eslint --ext '.js,.ts,.tsx,.cjs,.mjs' --fix ./examples ./scripts ./site ./src ./test ./project.config.cjs",
     "preview": "npm run typecheck && npm run lint && npm run build && npm run test:consumer && npm run test && npm run docs && npm run format:check",
     "release": "npm run preview && cross-env SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version node ./scripts/release.cjs",
+    "skill:sync": "node ./scripts/sync-prefer-layer-skill.mjs",
+    "skill:sync:dry-run": "node ./scripts/sync-prefer-layer-skill.mjs --dry-run",
+    "skill:sync:check": "node ./scripts/sync-prefer-layer-skill.mjs --check",
     "release:win": "bash scripts/env-win.sh",
     "prepare": "husky install"
   },

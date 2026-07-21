@@ -121,6 +121,15 @@ Validate handwritten Markdown links without rebuilding the Pages artifact:
 npm run docs:links
 ```
 
+Synchronize the canonical `prefer-layer` Codex skill from `.agents/skills/prefer-layer/` to the sibling public skills repository:
+
+```bash
+npm run skill:sync
+npm run skill:sync:check
+```
+
+Use `npm run skill:sync:dry-run` to preview changes. The synchronization replaces the complete public skill directory, removes obsolete destination files, validates the public copy, and never stages or commits changes.
+
 Build and serve a production-like project-path preview at
 <http://127.0.0.1:4173/layer-esm/>:
 

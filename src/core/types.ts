@@ -162,6 +162,7 @@ export interface LayerRecord {
   cleanup: Array<() => void>;
   timer: number | null;
   closeTimer: number | null;
+  closeCallbacks: Array<() => void>;
   closing: boolean;
   activeGestureCleanup: (() => void) | null;
   followTarget: HTMLElement | null;

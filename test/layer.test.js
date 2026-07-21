@@ -200,6 +200,23 @@ test("prompt supports a custom maxlength message", () => {
   );
 });
 
+test("prompt renders a custom maxlength message as text", () => {
+  const { prompt } = loadLayer();
+  const index = prompt({
+    maxlength: 1,
+    maxlengthMessage: (_maxlength, value) => `Too long: ${value}`,
+  });
+  const layer = queryLayer(index);
+  const input = layer.querySelector(".layui-layer-input");
+
+  input.value = '<img data-proof="raw">';
+  layer.querySelector(".layer-esm__button").click();
+
+  const tip = document.querySelector(".layer-esm__tips");
+  expect(tip.querySelector("img")).toBeNull();
+  expect(tip.textContent).toContain('<img data-proof="raw">');
+});
+
 test("close is idempotent while its exit animation is running", () => {
   jest.useFakeTimers();
   const { close, open } = loadLayer();
@@ -215,6 +232,22 @@ test("close is idempotent while its exit animation is running", () => {
   expect(end).toHaveBeenCalledTimes(1);
   expect(firstCallback).toHaveBeenCalledTimes(1);
   expect(ignoredCallback).not.toHaveBeenCalled();
+});
+
+test("closeAll waits for records that are already closing", () => {
+  jest.useFakeTimers();
+  const { close, closeAll, open } = loadLayer();
+  const done = jest.fn();
+  const first = open({ content: "First" });
+  open({ content: "Second" });
+
+  close(first);
+  closeAll(done);
+
+  expect(done).not.toHaveBeenCalled();
+  jest.advanceTimersByTime(250);
+  expect(done).toHaveBeenCalledTimes(1);
+  expect(document.querySelectorAll(".layer-esm")).toHaveLength(0);
 });
 
 test("scroll locking restores existing inline overflow after full and close", () => {
