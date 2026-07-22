@@ -8,11 +8,9 @@ permissions:
   contents: read
 
 on:
-  # Test on pull requests to main or release branches
   pull_request:
     branches:
       - main
-  # Test main continuously; publishing requires an explicit manual run.
   push:
     branches:
       - main
