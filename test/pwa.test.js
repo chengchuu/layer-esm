@@ -104,6 +104,26 @@ test("fallback help remains when no custom install event is available", () => {
   cleanup();
 });
 
+test("pages without install buttons leave the browser install prompt available", () => {
+  document.body.innerHTML = `
+    <section data-pwa-install-help>Website app help</section>
+    <p role="status" aria-live="polite" data-pwa-status></p>
+  `;
+  installMatchMedia(false);
+  const cleanup = initializeInstallExperience(
+    document,
+    window,
+    navigator,
+    appName
+  );
+  const event = installPrompt("accepted");
+
+  window.dispatchEvent(event);
+  expect(event.defaultPrevented).toBe(false);
+  expect(event.prompt).not.toHaveBeenCalled();
+  cleanup();
+});
+
 test("standalone mode and appinstalled hide installation controls", () => {
   renderInstallControls();
   installMatchMedia(true);

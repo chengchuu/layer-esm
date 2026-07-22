@@ -4,7 +4,7 @@
 
 ### Documentation
 
-- Added a new `release-notes/` directory to store change records, publish logs, and library articles.
+- Added `guides/release-notes/` to store change records, publish logs, and library articles.
 - Added an introductory article for `layer-esm` with migration guidance from legacy `layer`.
 
 ### Library direction

@@ -1,19 +1,16 @@
 name: Publish npm Packages
 
 env:
-  NODE_VERSION: '22'
-  PROJECT_NAME: 'layer-esm'
+  NODE_VERSION: "22"
+  PROJECT_NAME: "layer-esm"
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 on:
-  # Test on pull requests to main or release branches
   pull_request:
     branches:
       - main
-  # Publish on pushes to release branches
   push:
     branches:
       - main
@@ -24,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -32,7 +29,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build package
         run: npm run build --if-present
@@ -43,22 +40,37 @@ jobs:
   publish:
     needs: test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://registry.npmjs.org/'
+          registry-url: "https://registry.npmjs.org/"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build package
         run: npm run build --if-present
+
+      - name: Verify version is unreleased
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists."
+            exit 1
+          fi
+          if npm view "${{ env.PROJECT_NAME }}@$VERSION" version >/dev/null 2>&1; then
+            echo "${{ env.PROJECT_NAME }}@$VERSION is already published."
+            exit 1
+          fi
 
       - name: Publish to npm
         env:

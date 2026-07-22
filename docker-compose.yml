@@ -12,8 +12,5 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./src:/web/src
-      - ./examples:/web/examples
-      - ./test:/web/test
-      - ./lib:/web/lib
-      - ./scripts:/web/scripts
+      - .:/web
+      - /web/node_modules

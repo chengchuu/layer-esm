@@ -13,7 +13,9 @@ export const isHTMLElement = (value: unknown): value is HTMLElement => {
   return typeof HTMLElement !== "undefined" && value instanceof HTMLElement;
 };
 
-export const normalizeUnit = (value: string | number | undefined): string | undefined => {
+export const normalizeUnit = (
+  value: string | number | undefined
+): string | undefined => {
   if (value === undefined || value === null || value === "") {
     return undefined;
   }
@@ -27,14 +29,18 @@ export const normalizeUnit = (value: string | number | undefined): string | unde
 
 export const resolveElement = (
   target: string | HTMLElement | undefined,
-  root: ParentNode = ensureDocument(),
+  root: ParentNode = ensureDocument()
 ): HTMLElement | null => {
   if (!target) {
     return null;
   }
 
   if (typeof target === "string") {
-    return root.querySelector<HTMLElement>(target);
+    try {
+      return root.querySelector<HTMLElement>(target);
+    } catch {
+      return null;
+    }
   }
 
   return isHTMLElement(target) ? target : null;
@@ -44,7 +50,7 @@ export const addEvent = (
   target: EventTarget,
   type: string,
   listener: EventListenerOrEventListenerObject,
-  options?: AddEventListenerOptions | boolean,
+  options?: AddEventListenerOptions | boolean
 ): (() => void) => {
   target.addEventListener(type, listener, options);
 
@@ -56,7 +62,7 @@ export const addEvent = (
 export const createElement = <K extends keyof HTMLElementTagNameMap>(
   doc: Document,
   tagName: K,
-  classNames: string[] = [],
+  classNames: string[] = []
 ): HTMLElementTagNameMap[K] => {
   const element = doc.createElement(tagName);
 

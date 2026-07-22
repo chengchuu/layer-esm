@@ -33,7 +33,7 @@ export interface LayerTabItem {
 export interface LayerOptions {
   type?: LayerType;
   title?: LayerTitle;
-  content?: string | HTMLElement | [string, string?] | [string, HTMLElement | string];
+  content?: string | HTMLElement | [string, string?];
   shade?: LayerShade;
   shadeClose?: boolean;
   fixed?: boolean;
@@ -54,6 +54,7 @@ export interface LayerOptions {
   skin?: string;
   className?: string;
   id?: string;
+  ariaLabel?: string;
   scrollbar?: boolean;
   minStack?: boolean;
   maxmin?: boolean;
@@ -72,17 +73,25 @@ export interface LayerOptions {
   tab?: LayerTabItem[];
 }
 
-export interface LayerPromptOptions extends Omit<LayerOptions, "content" | "type"> {
+export interface LayerConfigOptions extends Partial<LayerOptions> {
+  injectStyles?: boolean;
+  styleNonce?: string;
+}
+
+export interface LayerPromptOptions
+  extends Omit<LayerOptions, "content" | "type"> {
   formType?: 0 | 1 | 2;
   value?: string;
   maxlengthMessage?: string | ((maxlength: number, value: string) => string);
 }
 
-export interface LayerTipsOptions extends Omit<LayerOptions, "content" | "type" | "follow"> {
+export interface LayerTipsOptions
+  extends Omit<LayerOptions, "content" | "type" | "follow"> {
   tips?: LayerTipDirection | [LayerTipDirection, string];
 }
 
-export interface LayerTabOptions extends Omit<LayerOptions, "content" | "type" | "title"> {
+export interface LayerTabOptions
+  extends Omit<LayerOptions, "content" | "type" | "title"> {
   tab: LayerTabItem[];
 }
 
@@ -96,7 +105,8 @@ export interface TitleValue {
   style?: string;
 }
 
-export interface NormalizedLayerOptions extends Omit<LayerOptions, "title" | "shade" | "area" | "tips" | "btn"> {
+export interface NormalizedLayerOptions
+  extends Omit<LayerOptions, "title" | "shade" | "area" | "tips" | "btn"> {
   type: LayerType;
   title: TitleValue | false;
   shade: ShadeValue | false;
@@ -125,6 +135,7 @@ export interface NormalizedLayerOptions extends Omit<LayerOptions, "title" | "sh
   formType: 0 | 1 | 2;
   value: string;
   maxlength: number;
+  maxWidthExplicit: boolean;
 }
 
 export interface MovedContentState {
@@ -144,14 +155,21 @@ export interface LayerRecord {
   content: HTMLDivElement;
   buttons: HTMLDivElement | null;
   closeButton: HTMLButtonElement | null;
+  minButton: HTMLButtonElement | null;
+  maxButton: HTMLButtonElement | null;
   iframe: HTMLIFrameElement | null;
   movedContent: MovedContentState | null;
   cleanup: Array<() => void>;
   timer: number | null;
+  closeTimer: number | null;
+  closeCallbacks: Array<() => void>;
+  closing: boolean;
+  activeGestureCleanup: (() => void) | null;
   followTarget: HTMLElement | null;
   restoreCssText: string | null;
-  minimized: boolean;
+  windowState: "normal" | "minimized" | "full";
   lockedScroll: boolean;
+  previouslyFocused: HTMLElement | null;
 }
 
 export interface LayerStyleOptions {

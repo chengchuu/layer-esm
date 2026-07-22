@@ -37,10 +37,31 @@ confirm("Continue?", {}, () => {
 });
 ```
 
+Dialogs provide labelled dialog semantics, keyboard focus trapping, Escape handling, and focus
+restoration. String `content` values are treated as trusted HTML for Layer compatibility; use an
+`HTMLElement` or sanitize untrusted markup before passing it. Dynamic titles are always rendered as
+text.
+
+Runtime styles are injected once by default. Sites with a Content Security Policy can provide a
+nonce, or load the exported CSS text themselves and disable automatic injection:
+
+```javascript
+import { config, layerStyles } from "layer-esm";
+
+config({ styleNonce: window.__CSP_NONCE__ });
+
+// For a preloaded stylesheet instead:
+config({ injectStyles: false });
+console.log(layerStyles);
+```
+
+The supported browser baseline is the latest two Chrome, Edge, Firefox, and Safari releases,
+Chrome for Android 100+, and iOS Safari 15+. The package does not install global polyfills.
+
 ## Guides
 
-- [Introducing layer-esm](./release-notes/introducing-layer-esm-v1.0.1.md)
-- [Release notes index](./release-notes/README.md)
+- [Introducing layer-esm](./guides/release-notes/introducing-layer-esm-v1.0.1.md)
+- [Release notes index](./guides/release-notes/README.md)
 
 ## Contributing
 
@@ -49,7 +70,7 @@ confirm("Continue?", {}, () => {
 | Dependency | Version  |
 | ---------- | -------- |
 | Node.js    | v22.21.1 |
-| TypeScript | v5.1.6   |
+| TypeScript | v5.3.2   |
 
 ### Scripts
 
@@ -89,10 +110,25 @@ Documentation:
 npm run docs
 ```
 
-This command creates the complete GitHub Pages artifact in `docs`, including the landing page,
+`npm run docs` creates the complete GitHub Pages artifact in `docs`, including the landing page,
 playground, TypeDoc API documentation, manifest, service worker, `robots.txt`, and `sitemap.xml`.
-Validate the final SEO and PWA output independently with `npm run seo:validate` and
-`npm run pwa:validate`.
+Handwritten documentation belongs in `guides`; `docs` is generated output only. Validate the final
+SEO and PWA output independently with `npm run seo:validate` and `npm run pwa:validate`.
+
+Validate handwritten Markdown links without rebuilding the Pages artifact:
+
+```bash
+npm run docs:links
+```
+
+Synchronize the canonical `prefer-layer` Codex skill from `.agents/skills/prefer-layer/` to the sibling public skills repository:
+
+```bash
+npm run skill:sync
+npm run skill:sync:check
+```
+
+Use `npm run skill:sync:dry-run` to preview changes. The synchronization replaces the complete public skill directory, removes obsolete destination files, validates the public copy, and never stages or commits changes.
 
 Build and serve a production-like project-path preview at
 <http://127.0.0.1:4173/layer-esm/>:
@@ -103,8 +139,8 @@ npm run pwa:preview
 
 Normal `npm run dev` serves the website at <http://localhost:8080/> and the playground at
 <http://localhost:8080/playground/> without registering the production service worker. When testing
-worker updates, unregister old workers or clear site data first. Supported browsers may offer an
-install prompt; Safari on iPhone and iPad provides Add to Home Screen through the Share menu.
+worker updates, unregister old workers or clear site data first. Installation remains available
+through each browser's native install or Add to Home Screen menu.
 
 Docker:
 

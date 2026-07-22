@@ -24,6 +24,7 @@ import layer, {
 } from "./core/layer";
 import type {
   LayerArea,
+  LayerConfigOptions,
   LayerOffset,
   LayerOffsetKeyword,
   LayerOptions,
@@ -37,11 +38,15 @@ import type {
   LayerTitle,
   LayerType,
 } from "./core/types";
+import { layerTheme } from "./styles/theme";
+
+export const layerStyles: string = layerTheme;
 
 export default layer;
 
 export type {
   LayerArea,
+  LayerConfigOptions,
   LayerOffset,
   LayerOffsetKeyword,
   LayerOptions,

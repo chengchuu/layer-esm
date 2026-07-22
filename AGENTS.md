@@ -22,7 +22,8 @@ This file applies to work inside `layer-esm/` only.
 - `src/utils/` — DOM, positioning, and shared helpers
 - `examples/` — dev/demo entry used by webpack dev server
 - `test/` — Jest coverage for the public API
-- `release-notes/` — change records, publish logs, and longer-form docs
+- `guides/` — handwritten documentation, including release notes under `guides/release-notes/`
+- `docs/` — generated GitHub Pages output only; do not store handwritten source here
 - `scripts/` — Rollup, webpack, release, and packaging scripts
 
 ## Build, test, and dev commands
@@ -37,6 +38,7 @@ npm test
 npm test -- test/layer.test.js
 npm run lint:fix
 npm run docs
+npm run docs:links
 ```
 
 ## Packaging expectations
@@ -53,8 +55,21 @@ npm run docs
 ## Documentation expectations
 
 - Main package docs live in `README.md`.
-- Versioned or release-focused articles belong under `release-notes/`.
+- Versioned or release-focused articles belong under `guides/release-notes/`.
 - When updating examples, keep `examples/index.ts` aligned with the APIs that are actually implemented.
+
+## Public skill synchronization
+
+The canonical `prefer-layer` skill is maintained at `.agents/skills/prefer-layer/`. Keep its API map aligned with the root exports from `src/index.ts` and the generated package declarations.
+
+After changing the skill, run:
+
+```bash
+npm run skill:sync
+npm run skill:sync:check
+```
+
+The public copy is stored in the sibling `chengchuu/skills` repository. Review and commit changes in each repository separately.
 
 ## Conventions
 

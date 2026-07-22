@@ -120,6 +120,7 @@ module.exports = deepFreeze({
   brand: { displayName, shortName },
   urls: {
     github: githubUrl,
+    guidesSource: `${githubUrl}/blob/main/guides/`,
     npm: npmUrl,
     license: `${githubUrl}/blob/main/LICENSE`,
     sitemap: new URL("sitemap.xml", siteUrl).href,
