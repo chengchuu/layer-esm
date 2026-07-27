@@ -785,9 +785,10 @@ const createRecord = (options: NormalizedLayerOptions): LayerRecord => {
     `${PREFIX}__toolbar`,
     `${LEGACY_PREFIX}-setwin`,
   ]);
-  const closeButton = options.closeBtn
-    ? createToolbarButton(doc, "close")
-    : null;
+  const closeButton =
+    options.closeBtn && options.title !== false
+      ? createToolbarButton(doc, "close")
+      : null;
   const minButton = options.maxmin ? createToolbarButton(doc, "min") : null;
   const maxButton = options.maxmin ? createToolbarButton(doc, "max") : null;
 

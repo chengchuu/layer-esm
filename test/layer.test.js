@@ -48,6 +48,19 @@ test("open uses an English default title", () => {
   close(index);
 });
 
+test("titleless dialogs do not render a close button", () => {
+  const { open } = loadLayer();
+  const index = open({
+    title: false,
+    content: "No title",
+    closeBtn: 1,
+  });
+
+  expect(
+    queryLayer(index).querySelector(".layer-esm__toolbar-button--close")
+  ).toBeNull();
+});
+
 test("confirm triggers callbacks for both buttons", () => {
   const { confirm } = loadLayer();
   const yes = jest.fn();
