@@ -48,16 +48,26 @@ test("open uses an English default title", () => {
   close(index);
 });
 
-test("titleless dialogs do not render a close button", () => {
-  const { open } = loadLayer();
-  const index = open({
-    title: false,
-    content: "No title",
+test("title controls header and close button rendering", () => {
+  const { confirm } = loadLayer();
+  const emptyTitleIndex = confirm("Empty title", {
+    title: "",
     closeBtn: 1,
   });
+  const titlelessIndex = confirm("No title", {
+    title: false,
+    closeBtn: 1,
+  });
+  const emptyTitleLayer = queryLayer(emptyTitleIndex);
+  const titlelessLayer = queryLayer(titlelessIndex);
 
+  expect(emptyTitleLayer.querySelector(".layer-esm__title")).not.toBeNull();
   expect(
-    queryLayer(index).querySelector(".layer-esm__toolbar-button--close")
+    emptyTitleLayer.querySelector(".layer-esm__toolbar-button--close")
+  ).not.toBeNull();
+  expect(titlelessLayer.querySelector(".layer-esm__title")).toBeNull();
+  expect(
+    titlelessLayer.querySelector(".layer-esm__toolbar-button--close")
   ).toBeNull();
 });
 
