@@ -187,6 +187,24 @@ test("msg keeps icon, button, and callback customizations on its lightweight pat
   expect(yes).toHaveBeenCalledWith(index, root);
 });
 
+test("messages retain the public dialog type and closeAll category", () => {
+  jest.useFakeTimers();
+  const { closeAll, msg, open } = loadLayer();
+  const messageIndex = msg("Message", { time: 0 });
+  const dialogIndex = open({ content: "Dialog" });
+  const messageRoot = queryLayer(messageIndex);
+
+  expect(messageRoot.dataset.type).toBe("dialog");
+  expect(messageRoot.classList).toContain("layer-esm--dialog");
+  expect(messageRoot.classList).toContain("layer-esm--message");
+  expect(messageRoot.classList).toContain("layui-layer-dialog");
+
+  closeAll("dialog");
+  jest.advanceTimersByTime(250);
+  expect(queryLayer(messageIndex)).toBeNull();
+  expect(queryLayer(dialogIndex)).toBeNull();
+});
+
 test("status messages do not block the active dialog keyboard handler", () => {
   const { msg, open } = loadLayer();
   const index = open({ content: "Dialog", isOutAnim: false });
@@ -429,6 +447,37 @@ test("closeAll waits for records that are already closing", () => {
   expect(document.querySelectorAll(".layer-esm")).toHaveLength(0);
 });
 
+test("closeAll continues closing records when an end callback throws", () => {
+  const { closeAll, open } = loadLayer();
+  const done = jest.fn();
+  const first = open({
+    content: "First",
+    isOutAnim: false,
+    end: () => {
+      throw new Error("end failed");
+    },
+  });
+  const second = open({ content: "Second", isOutAnim: false });
+
+  expect(() => closeAll(done)).toThrow("end failed");
+  expect(queryLayer(first)).toBeNull();
+  expect(queryLayer(second)).toBeNull();
+  expect(done).toHaveBeenCalledTimes(1);
+});
+
+test("closeAll restores focus through the dialog stack", () => {
+  const { closeAll, open } = loadLayer();
+  const trigger = document.createElement("button");
+  document.body.appendChild(trigger);
+  trigger.focus();
+  open({ content: "First", btn: "OK", isOutAnim: false });
+  open({ content: "Second", btn: "OK", isOutAnim: false });
+
+  closeAll();
+
+  expect(document.activeElement).toBe(trigger);
+});
+
 test("scroll locking restores existing inline overflow after full and close", () => {
   const { close, full, open, restore } = loadLayer();
   document.documentElement.style.overflow = "clip";
@@ -483,6 +532,28 @@ test("dialogs expose modal semantics, trap focus, close on Escape, and restore f
   );
   expect(queryLayer(index)).toBeNull();
   expect(document.activeElement).toBe(trigger);
+});
+
+test("focus management ignores hidden controls and recaptures escaped focus", () => {
+  const { open } = loadLayer();
+  const outside = document.createElement("button");
+  const content = document.createElement("div");
+  const hidden = document.createElement("button");
+  const visible = document.createElement("button");
+  hidden.hidden = true;
+  hidden.textContent = "Hidden";
+  visible.textContent = "Visible";
+  content.append(hidden, visible);
+  document.body.append(outside, content);
+
+  open({ type: 1, content, closeBtn: false });
+  expect(document.activeElement).toBe(visible);
+
+  outside.focus();
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Tab", bubbles: true })
+  );
+  expect(document.activeElement).toBe(visible);
 });
 
 test("toolbar minimize and maximize controls toggle their corresponding states", () => {
@@ -541,6 +612,19 @@ test("minStack false does not offset minimized layers", () => {
   min(second);
 
   expect(queryLayer(first).style.left).toBe("0px");
+  expect(queryLayer(second).style.left).toBe("0px");
+});
+
+test("closing a minimized layer reflows the remaining stack", () => {
+  const { close, min, open } = loadLayer();
+  const first = open({ type: 1, content: "First", isOutAnim: false });
+  const second = open({ type: 1, content: "Second", isOutAnim: false });
+
+  min(first);
+  min(second);
+  expect(queryLayer(second).style.left).toBe("188px");
+
+  close(first);
   expect(queryLayer(second).style.left).toBe("0px");
 });
 
@@ -689,8 +773,9 @@ test("title updates are text-only and alert renders a default action", () => {
 });
 
 test("closing during a drag removes document gesture listeners", () => {
+  jest.useFakeTimers();
   const { close, open } = loadLayer();
-  const index = open({ content: "Drag", isOutAnim: false });
+  const index = open({ content: "Drag" });
   const root = queryLayer(index);
   const handle = root.querySelector(".layer-esm__title");
   handle.dispatchEvent(
@@ -707,6 +792,7 @@ test("closing during a drag removes document gesture listeners", () => {
     new MouseEvent("mousemove", { clientX: 200, clientY: 200, bubbles: true })
   );
   expect(root.style.left).toBe(left);
+  jest.advanceTimersByTime(250);
 });
 
 test("resize handles are only visible while the handle is hovered", () => {
@@ -768,6 +854,45 @@ test("resizing a centered layer keeps its top-left position anchored", () => {
 
   expect(root.style.left).toBe("100px");
   expect(root.style.top).toBe("80px");
+  expect(root.style.width).toBe("320px");
+  expect(root.style.height).toBe("230px");
+});
+
+test("resize listeners are rebound after restoring a maximized layer", () => {
+  const { full, open, restore } = loadLayer();
+  const index = open({ content: "Resizable", resize: true });
+  const root = queryLayer(index);
+
+  full(index);
+  restore(index);
+  const handle = root.querySelector(".layer-esm__resize");
+  root.getBoundingClientRect = () => ({
+    left: 100,
+    top: 80,
+    width: 300,
+    height: 200,
+    right: 400,
+    bottom: 280,
+    x: 100,
+    y: 80,
+    toJSON: () => ({}),
+  });
+  handle.dispatchEvent(
+    new MouseEvent("mousedown", {
+      button: 0,
+      clientX: 400,
+      clientY: 280,
+      bubbles: true,
+    })
+  );
+  document.dispatchEvent(
+    new MouseEvent("mousemove", {
+      clientX: 420,
+      clientY: 310,
+      bubbles: true,
+    })
+  );
+
   expect(root.style.width).toBe("320px");
   expect(root.style.height).toBe("230px");
 });

@@ -209,20 +209,25 @@ const resolveFollow = (
   }
 };
 
+const isHTMLElement = (value: unknown): value is HTMLElement => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const ownerDocument = (value as Node).ownerDocument;
+  const view = ownerDocument?.defaultView;
+  return !!view && value instanceof view.HTMLElement;
+};
+
 const prepareMovedContent = (
   content: LayerOptions["content"],
-  index: number,
-  doc: Document
+  index: number
 ): MovedContentState | null => {
-  const view = doc.defaultView;
-  if (!view || !(content instanceof view.HTMLElement)) return null;
+  if (!isHTMLElement(content)) return null;
   const owner = runtime.movedOwners.get(content);
   if (owner !== undefined)
     throw new Error(`Layer content is already mounted in layer ${owner}`);
   runtime.movedOwners.set(content, index);
   const parent = content.parentNode;
   const placeholder = parent
-    ? doc.createComment("layer-esm-placeholder")
+    ? content.ownerDocument.createComment("layer-esm-placeholder")
     : null;
   if (parent && placeholder) parent.insertBefore(placeholder, content);
   return {
@@ -283,8 +288,12 @@ const finishClose = (index: number, runEnd = true): void => {
   restoreMovedContent(record);
   if (!record.options.scrollbar) unlockScroll(doc);
   const minimizedIndex = runtime.minimized.indexOf(index);
-  if (minimizedIndex >= 0) runtime.minimized.splice(minimizedIndex, 1);
+  if (minimizedIndex >= 0) {
+    runtime.minimized.splice(minimizedIndex, 1);
+    reflowMinimized();
+  }
   const topmost = Array.from(runtime.records.values())
+    .filter((current) => current.host === host)
     .map(({ record: current }) => current)
     .filter(
       (current) =>
@@ -369,11 +378,11 @@ const openInternal = (
     activeTab: 0,
   };
   try {
-    record.movedContent = prepareMovedContent(normalized.content, index, doc);
+    record.movedContent = prepareMovedContent(normalized.content, index);
     runtime.records.set(index, { host, record });
     if (!normalized.scrollbar) lockScroll(doc);
-    host.flush(() => host.store.add(record));
     record.lifecycle = "open";
+    host.flush(() => host.store.add(record));
     if (!record.root)
       throw new Error("layer-esm failed to render the layer host");
     if (normalized.timeMs > 0) {
@@ -496,14 +505,17 @@ export const iframeSrc = (index: number, url: string): void => {
 };
 
 const reflowMinimized = (): void => {
-  let left = 0;
+  const leftByDocument = new Map<Document, number>();
   runtime.minimized.forEach((index) => {
     const entry = runtime.records.get(index);
     if (!entry) return;
+    const doc = entry.host.document;
+    const left = leftByDocument.get(doc) ?? 0;
     entry.record.style.left = entry.record.options.minStack
       ? `${left}px`
       : "0px";
-    if (entry.record.options.minStack) left += MINIMIZED_WIDTH + 8;
+    if (entry.record.options.minStack)
+      leftByDocument.set(doc, left + MINIMIZED_WIDTH + 8);
     entry.host.flush(() => entry.host.store.touch());
   });
 };
@@ -601,20 +613,32 @@ export const closeAll = (
   const done = typeof type === "function" ? type : callback;
   const records = Array.from(runtime.records.values())
     .map(({ record }) => record)
-    .filter((record) => !target || record.typeName === target);
+    .filter(
+      (record) =>
+        !target ||
+        record.typeName === target ||
+        (target === "dialog" && record.typeName === "message")
+    )
+    .sort((left, right) => right.zIndex - left.zIndex);
   if (!records.length) {
     done?.();
     return;
   }
   let remaining = records.length;
+  let closeError: unknown;
   const onClosed = () => {
     remaining -= 1;
     if (remaining === 0) done?.();
   };
   records.forEach((record) => {
-    if (record.lifecycle === "closing") record.closeCallbacks.push(onClosed);
-    else close(record.index, onClosed);
+    try {
+      if (record.lifecycle === "closing") record.closeCallbacks.push(onClosed);
+      else close(record.index, onClosed);
+    } catch (error) {
+      closeError ??= error;
+    }
   });
+  if (closeError) throw closeError;
 };
 
 export const alert = (

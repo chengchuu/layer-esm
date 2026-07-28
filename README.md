@@ -8,7 +8,7 @@
 [l-image]: https://img.shields.io/npm/l/layer-esm
 [l-url]: https://github.com/chengchuu/layer-esm
 
-Special thanks to XianXin, the original author of Layer, for creating a popup library that has been widely used across the web community for many years. layer-esm is a modern TypeScript implementation inspired by the original Layer API.
+Special thanks to Xianxin, the original author of Layer, for creating a popup library that has been widely used across the web community for many years. layer-esm is a modern TypeScript implementation inspired by the original Layer API.
 
 - [Project website](https://chengchuu.github.io/layer-esm/)
 - [Live playground](https://chengchuu.github.io/layer-esm/playground/)

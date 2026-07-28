@@ -40,6 +40,12 @@ const FOCUSABLE = [
 ].join(",");
 const ICONS = ["!", "✓", "×", "?", "", "☹", "☺"];
 
+const focusableElements = (root: HTMLElement): HTMLElement[] =>
+  Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+    (element) =>
+      !element.hidden && element.getAttribute("aria-hidden") !== "true"
+  );
+
 export interface HostActions {
   close(index: number): void;
   minimize(index: number): void;
@@ -152,7 +158,14 @@ const useGesture = (
     if (record.options.move) bind(moveHandle, false);
     if (record.options.resize) bind(resizeRef.current, true);
     return () => cleanups.forEach((cleanup) => cleanup());
-  }, [actions, headerRef, record, resizeRef]);
+  }, [
+    actions,
+    headerRef,
+    record,
+    record.lifecycle,
+    record.windowState,
+    resizeRef,
+  ]);
 };
 
 const LayerView = ({
@@ -250,18 +263,19 @@ const LayerView = ({
       record.windowState === "minimized"
     )
       return;
-    const focusables = Array.from(
-      root.querySelectorAll<HTMLElement>(FOCUSABLE)
-    );
+    const focusables = focusableElements(root);
     (focusables[0] ?? root).focus();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         const result = options.cancel?.(record.index, root);
-        if (result !== false) actions.close(record.index);
+        if (result !== false) {
+          event.preventDefault();
+          actions.close(record.index);
+        }
         return;
       }
       if (event.key !== "Tab") return;
-      const current = Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE));
+      const current = focusableElements(root);
       if (!current.length) {
         event.preventDefault();
         root.focus();
@@ -269,10 +283,16 @@ const LayerView = ({
       }
       const first = current[0];
       const last = current[current.length - 1];
-      if (event.shiftKey && doc.activeElement === first) {
+      if (
+        event.shiftKey &&
+        (doc.activeElement === first || !root.contains(doc.activeElement))
+      ) {
         event.preventDefault();
         last.focus();
-      } else if (!event.shiftKey && doc.activeElement === last) {
+      } else if (
+        !event.shiftKey &&
+        (doc.activeElement === last || !root.contains(doc.activeElement))
+      ) {
         event.preventDefault();
         first.focus();
       }
@@ -480,6 +500,8 @@ const LayerView = ({
     : record.typeName === "tips"
     ? "tooltip"
     : "dialog";
+  const publicTypeName =
+    record.typeName === "message" ? "dialog" : record.typeName;
 
   return (
     <>
@@ -500,12 +522,13 @@ const LayerView = ({
       <Shell
         ref={rootRef}
         data-index={record.index}
-        data-type={record.typeName}
+        data-type={publicTypeName}
         id={rootId}
         className={[
-          `layer-esm--${record.typeName}`,
+          `layer-esm--${publicTypeName}`,
+          record.typeName === "message" ? "layer-esm--message" : "",
           `layer-esm--anim-${options.anim}`,
-          `layui-layer-${record.typeName}`,
+          `layui-layer-${publicTypeName}`,
           options.skin,
           options.className,
           closing ? "layer-esm--closing" : "",

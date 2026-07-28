@@ -45,6 +45,81 @@ test("uses independent shared hosts for different Document targets", () => {
   expect(document.querySelector("[data-layer-esm-host]")).not.toBeNull();
 });
 
+test("minimized stacks are independent across Document targets", () => {
+  const runtime = loadLayer();
+  const iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  const frameDocument = iframe.contentDocument;
+  const mainIndex = runtime.open({ type: 1, content: "Main" });
+  const frameIndex = runtime.open({
+    type: 1,
+    content: "Frame",
+    targetDocument: frameDocument,
+  });
+
+  runtime.min(mainIndex);
+  runtime.min(frameIndex);
+
+  expect(document.querySelector(`[data-index="${mainIndex}"]`).style.left).toBe(
+    "0px"
+  );
+  expect(
+    frameDocument.querySelector(`[data-index="${frameIndex}"]`).style.left
+  ).toBe("0px");
+});
+
+test("cross-document HTMLElement content is restored after close", () => {
+  const runtime = loadLayer();
+  const iframe = document.createElement("iframe");
+  const parent = document.createElement("div");
+  const content = document.createElement("button");
+  parent.appendChild(content);
+  document.body.append(parent, iframe);
+  const frameDocument = iframe.contentDocument;
+
+  const index = runtime.open({
+    type: 1,
+    content,
+    targetDocument: frameDocument,
+    isOutAnim: false,
+  });
+
+  expect(content.ownerDocument).toBe(frameDocument);
+  expect(
+    frameDocument
+      .querySelector(`.layer-esm[data-index="${index}"]`)
+      .contains(content)
+  ).toBe(true);
+
+  runtime.close(index);
+  expect(content.ownerDocument).toBe(document);
+  expect(content.parentNode).toBe(parent);
+});
+
+test("focus restoration is scoped to each Document host", () => {
+  const runtime = loadLayer();
+  const trigger = document.createElement("button");
+  const outside = document.createElement("button");
+  const iframe = document.createElement("iframe");
+  document.body.append(trigger, outside, iframe);
+  trigger.focus();
+  const mainIndex = runtime.open({
+    content: "Main",
+    btn: "OK",
+    isOutAnim: false,
+  });
+  runtime.open({
+    content: "Frame",
+    btn: "OK",
+    targetDocument: iframe.contentDocument,
+  });
+
+  outside.focus();
+  runtime.close(mainIndex);
+
+  expect(document.activeElement).toBe(trigger);
+});
+
 test("destroy closes records, restores moved content, and unmounts the host", () => {
   const runtime = loadLayer();
   const parent = document.createElement("div");
