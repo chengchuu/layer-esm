@@ -26,7 +26,6 @@
   },
   "scripts": {
     "dev": "webpack-dev-server --config ./scripts/webpack.config.dev.cjs",
-    "dev:open": "webpack-dev-server --config ./scripts/webpack.config.dev.cjs --open",
     "build": "cross-env SCRIPTS_NPM_PACKAGE_DEBUG=close SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version rollup --config ./scripts/rollup.config.mjs",
     "build:debug": "cross-env SCRIPTS_NPM_PACKAGE_DEBUG=open SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version rollup --config ./scripts/rollup.config.mjs",
     "build:dev": "webpack --config ./scripts/webpack.config.dev.cjs",
@@ -49,7 +48,6 @@
     "skill:sync": "node ./scripts/sync-prefer-layer-skill.mjs",
     "skill:sync:dry-run": "node ./scripts/sync-prefer-layer-skill.mjs --dry-run",
     "skill:sync:check": "node ./scripts/sync-prefer-layer-skill.mjs --check",
-    "release:win": "bash scripts/env-win.sh",
     "prepare": "husky install"
   },
   "jest": {

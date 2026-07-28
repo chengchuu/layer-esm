@@ -708,3 +708,19 @@ test("closing during a drag removes document gesture listeners", () => {
   );
   expect(root.style.left).toBe(left);
 });
+
+test("resize handles are only visible while the layer is hovered", () => {
+  const { open } = loadLayer();
+  const index = open({ content: "Resizable", resize: true });
+  const handle = queryLayer(index).querySelector(".layer-esm__resize");
+  const styleText = Array.from(document.querySelectorAll("style[data-styled]"))
+    .map((styleElement) => styleElement.textContent)
+    .join("\n");
+
+  expect(handle).not.toBeNull();
+  expect(getComputedStyle(handle).visibility).toBe("hidden");
+  expect(getComputedStyle(handle).opacity).toBe("0");
+  expect(styleText).toMatch(
+    /:hover \.layer-esm__resize\{visibility:visible;opacity:1;/
+  );
+});

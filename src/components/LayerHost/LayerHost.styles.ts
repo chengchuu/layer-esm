@@ -119,6 +119,12 @@ export const Shell = styled.div.attrs({ className: "layer-esm layui-layer" })<{
     height: 100%;
     border: 0;
   }
+
+  &:hover .layer-esm__resize {
+    visibility: visible;
+    opacity: 1;
+  }
+
   .layer-esm__sr-only {
     position: absolute;
     width: 1px;
@@ -417,7 +423,11 @@ export const ResizeHandle = styled.span.attrs({
   bottom: 1px;
   width: 15px;
   height: 15px;
+  visibility: hidden;
+  opacity: 0;
   cursor: nwse-resize;
+  transition: opacity 120ms ease;
+
   &::after {
     content: "";
     position: absolute;
