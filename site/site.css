@@ -418,6 +418,16 @@ a {
   --bs-btn-active-border-color: var(--mn-primary);
 }
 
+.playground-code-panel pre {
+  max-height: 24rem;
+}
+
+.playground-code-panel [data-demo-source-label] {
+  color: #c7d2fe;
+  font-weight: 600;
+  text-align: right;
+}
+
 [data-bs-theme="dark"]
   .layer-esm:not(.layer-esm--loading, .layer-esm--tips, .layer-esm--message) {
   color: var(--mn-text);

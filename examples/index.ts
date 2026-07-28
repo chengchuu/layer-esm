@@ -65,12 +65,215 @@ const iframeUrl = `data:text/html;charset=utf-8,${encodeURIComponent(
   iframeHtml
 )}`;
 
+const demoSource: Record<string, string> = {
+  "alert-basic": `alert("Content");`,
+  "alert-icon": `alert("Great to See You", { icon: 6 });`,
+  "confirm-basic": `confirm(
+  "What Do You Think About Frontend Development?",
+  { btn: ["Important", "Unusual"] },
+  () => {
+    msg("It Really Is Important", { icon: 1, time: 5 });
+  },
+  () => {
+    msg("That Works Too", {
+      time: 20,
+      btn: ["Got It", "Understood"],
+    });
+  }
+);`,
+  "message-basic": `msg("A Simple Message", { time: 5 });`,
+  "message-icon": `msg("Common Notice", { icon: 5 });`,
+  "message-buttons": `msg("A Quick Question?", {
+  time: 0,
+  btn: ["Confirm", "Close"],
+  yes: (index) => {
+    close(index);
+    msg("Custom Buttons", {
+      icon: 6,
+      time: 0,
+      btn: ["Button 1", "Button 2", "Button 3"],
+    });
+  },
+});`,
+  "message-top": `msg("Use Offset Flexibly", {
+  offset: "t",
+  anim: 6,
+});`,
+  "capture-page": `open({
+  type: 1,
+  shade: false,
+  area: ["460px", "320px"],
+  title: "Captured Page Example",
+  content: captureSource,
+  cancel: () => {
+    msg(
+      "Capture Moves an Existing Page Element Into the Layer Structure",
+      { time: 5, icon: 6 }
+    );
+  },
+});`,
+  "tips-top": `tips("Top", "#tips-target", {
+  tips: [1, "#0d6efd"],
+  time: 4,
+});`,
+  "tips-right": `tips("Right Is the Default Direction", "#tips-target", {
+  time: 4,
+});`,
+  "tips-bottom": `tips("Bottom", "#tips-target", {
+  tips: 3,
+  time: 4,
+});`,
+  "tips-left": `tips("Left Side Tip", "#tips-target", {
+  tips: [4, "#198754"],
+  time: 4,
+});`,
+  "loading-0": `const index = load(0, {
+  shade: false,
+  content: "Loading Style 0...",
+});
+
+window.setTimeout(() => {
+  close(index);
+  msg("Loading Style 0 Finished", { icon: 1 });
+}, 1600);`,
+  "loading-1": `const index = load(1, {
+  shade: [0.1, "#fff"],
+  content: "Loading Style 1...",
+});
+
+window.setTimeout(() => {
+  close(index);
+  msg("Loading Style 1 Finished", { icon: 1 });
+}, 1600);`,
+  "loading-2": `const index = load(2, {
+  shade: false,
+  content: "Loading Style 2...",
+});
+
+window.setTimeout(() => {
+  close(index);
+  msg("Loading Style 2 Finished", { icon: 1 });
+}, 1600);`,
+  "loading-msg": `msg("Loading", {
+  icon: 6,
+  shade: 0.01,
+  time: 2,
+});`,
+  "prompt-chain": `prompt(
+  {
+    title: "Enter Any Passcode, Then Confirm",
+    formType: 1,
+  },
+  (password, index) => {
+    close(index);
+    prompt(
+      {
+        title: "Write Anything, Then Confirm",
+        formType: 2,
+      },
+      (text, nextIndex) => {
+        close(nextIndex);
+        alert(
+          \`Demo Complete. Test Passcode: \${password}<br>Final Text: \${text}\`
+        );
+      }
+    );
+  }
+);`,
+  "tab-basic": `tab({
+  area: ["640px", "340px"],
+  tab: [
+    {
+      title: "TAB1",
+      content:
+        "<p class='mb-0'>Content 1: An ESM Version of the Layer-Style API.</p>",
+    },
+    {
+      title: "TAB2",
+      content:
+        "<p class='mb-0'>Content 2: Runtime Styles and CSS Loading Are Built In.</p>",
+    },
+    {
+      title: "TAB3",
+      content:
+        "<p class='mb-0'>Content 3: Advanced Features Such as Photos Can Be Added Later.</p>",
+    },
+  ],
+});`,
+  "countdown-alert": `let timerId = 0;
+
+alert("Show the Auto-Close Countdown in the Title Bar", {
+  time: 5,
+  success: (layero) => {
+    let seconds = 5;
+    const index = Number(layero.dataset.index);
+    title(\`Closes In \${seconds}s\`, index);
+
+    timerId = window.setInterval(() => {
+      seconds -= 1;
+      if (seconds > 0) {
+        title(\`Closes In \${seconds}s\`, index);
+        return;
+      }
+
+      window.clearInterval(timerId);
+    }, 1000);
+  },
+  end: () => {
+    if (timerId) {
+      window.clearInterval(timerId);
+    }
+  },
+});`,
+  "scroll-lock": `open({
+  title: "Scrollbar Lock",
+  content:
+    "The Browser Scrollbar Is Locked. It Will Be Restored After This Layer Closes",
+  scrollbar: false,
+});`,
+  "min-restore": `const index = open({
+  type: 1,
+  title: "Minimize Example",
+  content:
+    "<p class='mb-0'>This Layer Will Minimize Automatically, Then Restore.</p>",
+  area: ["420px", "220px"],
+  maxmin: true,
+});
+
+window.setTimeout(() => {
+  min(index);
+}, 800);
+
+window.setTimeout(() => {
+  restore(index);
+  msg("The Window Has Been Restored Automatically", { icon: 1 });
+}, 2200);`,
+  "iframe-full": `const index = open({
+  type: 2,
+  title: "Fullscreen Iframe Example",
+  content: [iframeUrl, "auto"],
+  area: ["520px", "360px"],
+  maxmin: true,
+});
+
+full(index);
+msg("Switched to the Fullscreen Iframe Example", { icon: 1 });`,
+  "message-hi": `msg("Hi", { time: 5 });`,
+  "message-sauce": `msg("Just Passing By", { icon: 4 });`,
+  "close-loading": `closeAll("loading", () => {
+  msg("All Loading Layers Have Been Closed");
+});`,
+  "close-all": `closeAll(() => {
+  msg("All Layers Have Been Closed");
+});`,
+};
+
 if (app) {
   app.innerHTML = `
     <div class="py-4 py-lg-5 playground-demo-grid">
           <section class="rounded-4 border border-primary-subtle shadow-sm overflow-hidden mb-4">
             <div class="row g-0">
-              <div class="col-lg-8 p-4 p-lg-5">
+              <div class="col-lg-8 p-4 p-lg-5 playground-demo-controls">
                 <span class="badge rounded-pill text-bg-primary mb-3">Demo Gallery</span>
                 <h2 class="display-6 fw-bold mb-3">Dialog demo gallery</h2>
                 <p class="lead text-secondary mb-3">
@@ -487,9 +690,68 @@ if (app) {
     },
   };
 
+  const showDemoSource = (button: HTMLElement): void => {
+    const demoId = button.dataset.demo ?? "";
+    const source = demoSource[demoId];
+    const group = button.closest<HTMLElement>(
+      ".playground-demo-controls, .card-body"
+    );
+
+    if (!source || !group) {
+      return;
+    }
+
+    let panel = group.querySelector<HTMLElement>("[data-demo-source-panel]");
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.className = "code-panel playground-code-panel mt-3";
+      panel.dataset.demoSourcePanel = "";
+
+      const header = document.createElement("div");
+      header.className = "code-panel-header";
+      const language = document.createElement("span");
+      language.textContent = "TypeScript";
+      const label = document.createElement("span");
+      label.dataset.demoSourceLabel = "";
+      header.append(language, label);
+
+      const pre = document.createElement("pre");
+      pre.tabIndex = 0;
+      const code = document.createElement("code");
+      code.dataset.demoSourceCode = "";
+      pre.appendChild(code);
+      panel.append(header, pre);
+      group.appendChild(panel);
+    }
+
+    const label = panel.querySelector<HTMLElement>("[data-demo-source-label]");
+    const code = panel.querySelector<HTMLElement>("[data-demo-source-code]");
+    if (label) {
+      label.textContent = button.textContent?.trim() ?? "Example";
+    }
+    if (code) {
+      code.textContent = source;
+    }
+  };
+
+  document
+    .querySelectorAll<HTMLElement>(".playground-demo-controls, .card-body")
+    .forEach((group) => {
+      const firstButton = group.querySelector<HTMLElement>("[data-demo]");
+      if (firstButton) {
+        showDemoSource(firstButton);
+      }
+    });
+
   document.querySelectorAll<HTMLElement>("[data-demo]").forEach((button) => {
     button.addEventListener("click", () => {
-      demoActions[button.dataset.demo || ""]?.();
+      const demoId = button.dataset.demo ?? "";
+      if (!demoActions[demoId] || !demoSource[demoId]) {
+        return;
+      }
+
+      showDemoSource(button);
+      demoActions[demoId]();
     });
   });
 

@@ -115,8 +115,27 @@ test("site templates use the styled update, code panel, and muted section classe
   );
   expect(playgroundScript).not.toContain("bg-white");
   expect(playgroundScript).not.toContain("btn-outline-dark");
+  const demoIds = new Set(
+    Array.from(
+      playgroundScript.matchAll(/data-demo="([^"]+)"/g),
+      (match) => match[1]
+    )
+  );
+  const sourceBlock = playgroundScript.match(
+    /const demoSource: Record<string, string> = \{([\s\S]*?)\n\};\n\nif \(app\)/
+  )?.[1];
+  expect(sourceBlock).toBeDefined();
+  const sourceIds = new Set(
+    Array.from(sourceBlock.matchAll(/^ {2}"([^"]+)": `/gm), (match) => match[1])
+  );
+  expect(sourceIds).toEqual(demoIds);
+  expect(playgroundScript).toContain("code.textContent = source;");
+  expect(playgroundScript).toContain(
+    'panel.className = "code-panel playground-code-panel mt-3";'
+  );
   expect(stylesheet).toContain(".playground-demo-grid .card");
   expect(stylesheet).toContain(".playground-demo-grid .btn-outline-secondary");
+  expect(stylesheet).toContain(".playground-code-panel pre");
   expect(stylesheet).toContain(".site-footer nav");
   expect(stylesheet).toContain("gap: 0.75rem 1.25rem");
   expect(stylesheet).toContain(".code-panel {");
