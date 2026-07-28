@@ -1,57 +1,11 @@
 # Mazey Extraction Candidates
 
 This audit compares `layer-esm` runtime, site, and maintenance helpers with the
-installed Mazey 5.5.1 API and the sibling `mazey` and `mazey-npm-template`
+installed Mazey 5.6.0 API and the sibling `mazey` and `mazey-npm-template`
 implementations. The candidates below either have demonstrated duplication or a
 clean, project-independent contract. They are ordered by extraction value.
 
-## 1. `derivePackageMetadata`
-
-- **Purpose:** Validate basic `package.json` identity and derive the unscoped
-  bundle name, normalized author, IIFE global, and package-manager install
-  command.
-- **Why reusable:** `packageDetails` is maintained independently in
-  `layer-esm`, `mazey`, and `mazey-npm-template`. The generalized helper can
-  compose Mazey's existing `toJavaScriptGlobalName` instead of repeating that
-  conversion.
-- **Proposed API:**
-
-  ```ts
-  function derivePackageMetadata(
-    manifest: PackageManifest,
-    options?: { packageManager?: "npm" | "pnpm" | "yarn" }
-  ): {
-    name: string;
-    version?: string;
-    description?: string;
-    license?: string;
-    author: { name: string; email?: string; url?: string };
-    unscopedName: string;
-    iifeGlobal: string;
-    installCommand: string;
-  };
-  ```
-
-## 2. `listenMediaQueryChanges`
-
-- **Purpose:** Register a media-query `change` listener and return an idempotent
-  cleanup function, with support for both modern and legacy
-  `MediaQueryList` listener APIs.
-- **Why reusable:** The same compatibility branch is needed by theme and PWA
-  code in the sibling projects, while `layer-esm` currently repeats modern-only
-  listener handling in its React host, theme controls, and install experience.
-  Accepting a `MediaQueryList` keeps the helper testable and avoids implicit DOM
-  access.
-- **Proposed API:**
-
-  ```ts
-  function listenMediaQueryChanges(
-    media: MediaQueryList | null,
-    listener: (event: MediaQueryListEvent) => void
-  ): () => void;
-  ```
-
-## 3. `computeFloatingPlacement`
+## 1. `computeFloatingPlacement`
 
 - **Purpose:** Select and clamp a tooltip or popover position by comparing the
   preferred side and fallbacks against viewport overflow.
@@ -89,31 +43,7 @@ clean, project-independent contract. They are ordered by extraction value.
   };
   ```
 
-## 4. `watchServiceWorkerUpdates`
-
-- **Purpose:** Track waiting and installing service workers, notify callers when
-  an update becomes available, request activation, and clean up all listeners.
-- **Why reusable:** `monitorServiceWorkerUpdates` is duplicated across the
-  Layer, Mazey, and npm-template sites. Its state machine is reusable, but its
-  selectors, status copy, button state, and reload policy are site-specific and
-  should be callbacks rather than part of the helper.
-- **Proposed API:**
-
-  ```ts
-  function watchServiceWorkerUpdates(
-    registration: ServiceWorkerRegistration,
-    container: ServiceWorkerContainer,
-    callbacks: {
-      onUpdateAvailable(worker: ServiceWorker): void;
-      onControllerChange?(): void;
-    }
-  ): {
-    activateWaiting(message?: unknown): boolean;
-    dispose(): void;
-  };
-  ```
-
-## 5. `syncDirectoryTree`
+## 2. `syncDirectoryTree`
 
 - **Purpose:** Compare two directory trees byte-for-byte and optionally replace
   the destination transactionally, with dry-run/check modes, symlink rejection,
@@ -141,7 +71,7 @@ clean, project-independent contract. They are ordered by extraction value.
   }>;
   ```
 
-## 6. `createObservableMapStore`
+## 3. `createObservableMapStore`
 
 - **Purpose:** Maintain keyed records with cached snapshots, versioned updates,
   subscriptions, and unsubscribe cleanup.
@@ -169,6 +99,9 @@ clean, project-independent contract. They are ordered by extraction value.
 
 | Local functionality                      | Existing Mazey API                             | Assessment                                                                                     |
 | ---------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Package manifest metadata                | `derivePackageMetadata`                        | Reuse directly; retain only Layer's `bundleBaseName` compatibility alias.                      |
+| Media-query listener compatibility       | `listenMediaQueryChanges`                      | Reuse for host themes, site themes, and PWA display-mode listeners.                            |
+| Service-worker update state              | `watchServiceWorkerUpdates`                    | Reuse the state machine; keep Layer's selectors, messages, and reload policy in its site code. |
 | `javaScriptGlobal`                       | `toJavaScriptGlobalName`                       | Direct overlap; compose the existing API.                                                      |
 | `repositoryDetails`                      | `parseGitHubRepository`                        | Parsing already exists; only manifest-field adaptation belongs at the caller.                  |
 | Theme preference reading and persistence | `resolveThemePreference`, `setThemePreference` | Reuse the established validation and fallback behavior; keep DOM application site-specific.    |

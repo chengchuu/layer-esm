@@ -247,6 +247,33 @@ test("system theme follows runtime media-query changes", () => {
   expect(getComputedStyle(root).backgroundColor).toBe("rgb(23, 32, 51)");
 });
 
+test("system theme supports legacy MediaQueryList listeners", () => {
+  let dark = false;
+  let listener;
+  const removeListener = jest.fn();
+  window.matchMedia = jest.fn(() => ({
+    get matches() {
+      return dark;
+    },
+    addListener: (callback) => {
+      listener = callback;
+    },
+    removeListener,
+  }));
+  const runtime = loadLayer();
+  runtime.config({ theme: "system" });
+  const index = runtime.open({ content: "Legacy system" });
+  const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
+  expect(getComputedStyle(root).backgroundColor).toBe("rgb(255, 255, 255)");
+
+  dark = true;
+  listener({ matches: true });
+  expect(getComputedStyle(root).backgroundColor).toBe("rgb(23, 32, 51)");
+
+  runtime.destroy();
+  expect(removeListener).toHaveBeenCalledWith(listener);
+});
+
 test("prompt is labelled and tabs support arrow-key navigation", () => {
   const runtime = loadLayer();
   const promptIndex = runtime.prompt({ title: "Account name" });

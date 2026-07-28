@@ -1,5 +1,6 @@
 import { createRoot, type Root } from "react-dom/client";
 import { flushSync } from "react-dom";
+import { listenMediaQueryChanges } from "mazey";
 import { LayerHost, type HostActions } from "../components/LayerHost/LayerHost";
 import { LayerStore } from "../store/layer-store";
 import type { LayerInstance } from "../store/types";
@@ -32,6 +33,7 @@ export class LayerDocumentHost {
   private actions: HostActions;
   private config: HostConfig;
   private media: MediaQueryList | null = null;
+  private removeThemeListener: () => void = () => undefined;
   private theme: LayerTheme = lightTheme;
   private destroyed = false;
   private ownedStyleElements = new Set<HTMLStyleElement>();
@@ -74,7 +76,7 @@ export class LayerDocumentHost {
   destroy(): void {
     if (this.destroyed) return;
     this.destroyed = true;
-    this.media?.removeEventListener("change", this.onThemeChange);
+    this.removeThemeListener();
     this.media = null;
     flushSync(() => this.root.unmount());
     this.container.remove();
@@ -88,12 +90,16 @@ export class LayerDocumentHost {
   };
 
   private configureTheme(): void {
-    this.media?.removeEventListener("change", this.onThemeChange);
+    this.removeThemeListener();
+    this.removeThemeListener = () => undefined;
     this.media = null;
     if (this.config.theme === "system") {
       const view = this.document.defaultView;
       this.media = view?.matchMedia?.("(prefers-color-scheme: dark)") ?? null;
-      this.media?.addEventListener("change", this.onThemeChange);
+      this.removeThemeListener = listenMediaQueryChanges(
+        this.media,
+        this.onThemeChange
+      );
     }
     this.theme = resolveTheme(this.config.theme, this.media?.matches ?? false);
   }

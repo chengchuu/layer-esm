@@ -16,12 +16,14 @@ const __dirname = dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 const fromRoot = (...segments) => path.resolve(projectRoot, ...segments);
 const external = (id) =>
+  id === "mazey" ||
   id === "react" ||
   id === "react-dom" ||
   id === "styled-components" ||
   id.startsWith("react/") ||
   id.startsWith("react-dom/") ||
-  id.startsWith("styled-components/");
+  id.startsWith("styled-components/") ||
+  id.startsWith("mazey/");
 
 const pkgVersion =
   process.env.SCRIPTS_NPM_PACKAGE_VERSION ||

@@ -1,29 +1,11 @@
-function javaScriptGlobal(value) {
-  const identifier = value.replace(/[^A-Za-z0-9_$]/g, "_").toUpperCase();
-  return /^[A-Za-z_$]/.test(identifier) ? identifier : `_${identifier}`;
-}
+const { derivePackageMetadata } = require("mazey");
 
 function packageDetails(pkg) {
-  if (typeof pkg.name !== "string" || !pkg.name.trim())
-    throw new Error("package.json must define a package name");
-
-  const bundleBaseName = pkg.name.split("/").filter(Boolean).at(-1);
-  const author =
-    typeof pkg.author === "string"
-      ? { name: pkg.author }
-      : pkg.author && typeof pkg.author === "object"
-      ? { ...pkg.author }
-      : { name: "" };
+  const metadata = derivePackageMetadata(pkg);
 
   return {
-    name: pkg.name,
-    version: pkg.version,
-    description: pkg.description,
-    license: pkg.license,
-    author,
-    bundleBaseName,
-    iifeGlobal: javaScriptGlobal(bundleBaseName),
-    installCommand: `npm install ${pkg.name}`,
+    ...metadata,
+    bundleBaseName: metadata.unscopedName,
   };
 }
 
@@ -68,7 +50,6 @@ function repositoryDetails(repository) {
 }
 
 module.exports = {
-  javaScriptGlobal,
   packageDetails,
   repositoryDetails,
 };

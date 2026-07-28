@@ -4,16 +4,18 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { rollup } = require("rollup");
 
-test("a msg-only consumer keeps React runtimes external", async () => {
+test("a msg-only consumer keeps runtime dependencies external", async () => {
   const projectRoot = path.resolve(__dirname, "..");
   const bundle = await rollup({
     input: path.join(projectRoot, "audit-reproductions/tree-shake-entry.mjs"),
     external: (id) =>
+      id === "mazey" ||
       id === "react" ||
       id === "react-dom" ||
       id === "styled-components" ||
       id.startsWith("react/") ||
-      id.startsWith("react-dom/"),
+      id.startsWith("react-dom/") ||
+      id.startsWith("mazey/"),
   });
   const generated = await bundle.generate({ format: "esm" });
   await bundle.close();
@@ -25,6 +27,7 @@ test("a msg-only consumer keeps React runtimes external", async () => {
   expect(msgOnlySize).toBeLessThan(fullEsmSize);
   expect(generated.output[0].imports).toEqual(
     expect.arrayContaining([
+      "mazey",
       "react",
       "react-dom",
       "react-dom/client",

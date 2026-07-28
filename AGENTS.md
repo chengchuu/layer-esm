@@ -22,7 +22,7 @@ This file applies to work inside `layer-esm/` only.
 - `src/utils/` — DOM, positioning, and shared helpers
 - `examples/` — dev/demo entry used by webpack dev server
 - `test/` — Jest coverage for the public API
-- `guides/` — handwritten documentation, including release notes under `guides/release-notes/`
+- `guides/` — handwritten documentation, change records, publish logs, and release articles
 - `docs/` — generated GitHub Pages output only; do not store handwritten source here
 - `scripts/` — Rollup, webpack, release, and packaging scripts
 

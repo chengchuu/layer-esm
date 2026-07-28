@@ -91,7 +91,7 @@ Chrome for Android 100+, and iOS Safari 15+. The package does not install global
 
 - [Introducing layer-esm](./guides/release-notes/introducing-layer-esm-v1.0.1.md)
 - [React 19 migration](./guides/react-19-migration.md)
-- [Release notes index](./guides/release-notes/README.md)
+- [Release notes index](./guides/README.md)
 
 ## Contributing
 
