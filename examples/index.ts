@@ -2,6 +2,7 @@ import {
   alert,
   close,
   closeAll,
+  config,
   confirm,
   full,
   load,
@@ -16,6 +17,8 @@ import {
 } from "../src";
 
 const app = document.querySelector("#demo-gallery");
+
+config({ theme: "system" });
 
 const iframeHtml = `
 <!doctype html>
@@ -266,6 +269,32 @@ msg("Switched to the Fullscreen Iframe Example", { icon: 1 });`,
   "close-all": `closeAll(() => {
   msg("All Layers Have Been Closed");
 });`,
+  "stacked-layers": `open({
+  title: "First layer",
+  content: "This layer stays open behind the next one.",
+});
+
+open({
+  title: "Second layer",
+  content: "Focus and z-index belong to the topmost dialog.",
+});`,
+  "theme-light": `config({ theme: "light" });
+msg("Light theme enabled", { icon: 1 });`,
+  "theme-dark": `config({ theme: "dark" });
+msg("Dark theme enabled", { icon: 1 });`,
+  "theme-system": `config({ theme: "system" });
+msg("The dialog theme now follows your system setting.");`,
+  "theme-custom": `config({
+  theme: {
+    background: "#1f1637",
+    foreground: "#fff7ed",
+    primary: "#f97316",
+    primaryHover: "#fb923c",
+    radius: "20px",
+  },
+});
+
+confirm("Custom theme", {}, (index) => close(index));`,
 };
 
 if (app) {
@@ -423,6 +452,22 @@ if (app) {
                     <button class="btn btn-sm btn-danger" data-demo="message-sauce">Just passing by</button>
                     <button class="btn btn-sm btn-warning" data-demo="close-loading">Close all loading</button>
                     <button class="btn btn-sm btn-secondary" data-demo="close-all">Close all layers</button>
+                    <button class="btn btn-sm btn-outline-primary" data-demo="stacked-layers">Stack two layers</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h2 class="h5 card-title">Runtime Themes</h2>
+                  <p class="card-text text-secondary">Switch styled-components themes without mounting React or reloading the page.</p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-outline-secondary" data-demo="theme-light">Light</button>
+                    <button class="btn btn-outline-secondary" data-demo="theme-dark">Dark</button>
+                    <button class="btn btn-outline-secondary" data-demo="theme-system">System</button>
+                    <button class="btn btn-outline-warning" data-demo="theme-custom">Custom theme</button>
                   </div>
                 </div>
               </div>
@@ -687,6 +732,40 @@ if (app) {
       closeAll(() => {
         msg("All Layers Have Been Closed");
       });
+    },
+    "stacked-layers": () => {
+      open({
+        title: "First layer",
+        content: "This layer stays open behind the next one.",
+      });
+      open({
+        title: "Second layer",
+        content: "Focus and z-index belong to the topmost dialog.",
+      });
+    },
+    "theme-light": () => {
+      config({ theme: "light" });
+      msg("Light theme enabled", { icon: 1 });
+    },
+    "theme-dark": () => {
+      config({ theme: "dark" });
+      msg("Dark theme enabled", { icon: 1 });
+    },
+    "theme-system": () => {
+      config({ theme: "system" });
+      msg("The dialog theme now follows your system setting.");
+    },
+    "theme-custom": () => {
+      config({
+        theme: {
+          background: "#1f1637",
+          foreground: "#fff7ed",
+          primary: "#f97316",
+          primaryHover: "#fb923c",
+          radius: "20px",
+        },
+      });
+      confirm("Custom theme", {}, (index) => close(index));
     },
   };
 

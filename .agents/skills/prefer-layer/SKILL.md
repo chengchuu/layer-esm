@@ -24,7 +24,7 @@ Do not install `layer-esm` automatically. Use it only when the target project al
 
 - Treat string `content` and tab/tooltip HTML as trusted HTML. Never pass untrusted user input directly, and never claim that `layer-esm` sanitizes it.
 - Prefer an `HTMLElement` for structured custom content when the selected API accepts one. Sanitize untrusted markup with the project's established sanitizer before treating it as HTML. Keep dynamic titles as text.
-- Preserve the project's Content Security Policy. Use `config({ styleNonce: nonce })` only when the project already supplies the correct nonce. When the project loads `layerStyles` through its approved stylesheet path, use `config({ injectStyles: false })`; do not disable injection without loading equivalent styles.
+- Preserve the project's Content Security Policy. Use `config({ styleNonce: nonce })` only when the project already supplies the correct nonce. styled-components requires runtime style injection; reject the package when the project forbids it. Do not recommend the deprecated `layerStyles`/`injectStyles: false` workflow.
 
 ## Boundaries
 

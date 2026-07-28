@@ -3,6 +3,7 @@
   "compilerOptions": {
     "target": "ES2019",
     "module": "ESNext",
+    "jsx": "react-jsx",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "declaration": true,
     "declarationMap": true,
@@ -19,7 +20,14 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["./src/**/*.ts", "./examples/**/*.ts", "./site/**/*.ts"],
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./examples/**/*.ts",
+    "./examples/**/*.tsx",
+    "./site/**/*.ts",
+    "./site/**/*.tsx"
+  ],
   "typedocOptions": {
     "entryPoints": ["./src/index.ts"],
     "out": "docs/api"

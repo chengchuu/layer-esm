@@ -1,6 +1,6 @@
 # layer-esm API Map
 
-This discovery map was generated from the current root exports in `src/index.ts`, the declarations in `dist/index.d.ts`, and the defining code and tests. It covers all 23 named runtime exports, the default API object, and all 14 exported types. Verify the installed version before use.
+This discovery map was generated from the current root exports in `src/index.ts`, the declarations in `dist/index.d.ts`, and the defining code and tests. It covers all 26 named runtime exports, the default API object, and all 16 exported types. Verify the installed version before use.
 
 ## Contents
 
@@ -36,9 +36,9 @@ Prefer the specialized API when it matches. Do not choose `open` merely for flex
 
 ## Shared behavior
 
-- **Runtime:** Dialog-creation APIs are browser/DOM-oriented and throw when no browser-like `document` exists. Some configuration and no-record helpers can return without touching the DOM, but do not treat that as support for rendering Layer UI during SSR or in Node.js-only code.
+- **Runtime:** React 19 and styled-components 6 are internal implementation dependencies. Consumers use the imperative API without React code or a provider. Import is SSR-safe; display APIs throw when no browser-like `document` exists.
 - **Indexes:** Creation helpers return a numeric index. Keep it when later closing, styling, positioning, or controlling the dialog.
-- **Styles:** Runtime CSS is injected once unless global configuration disables injection. No external image, font, or stylesheet is required.
+- **Styles:** styled-components injects generated rules into each target document. No external image, font, stylesheet, or CDN request is required.
 - **Trusted HTML:** General string `content`, `alert`, `confirm`, `msg`, `tips`, and `LayerTabItem.content` reach `innerHTML`. They are not sanitized. Loading labels and titles are text-only.
 - **Accessibility:** Modal-like records receive `role="dialog"`; shaded dialogs receive `aria-modal="true"`. Dialogs trap Tab focus, close on Escape unless `cancel` returns `false`, and restore prior focus when appropriate. Loading and simple status messages use `role="status"` and `aria-live="polite"`; tips use `role="tooltip"`.
 - **Callbacks:** Callbacks are synchronous unless closure uses the default exit animation. A defined first-button `yes` callback owns the action and must close the dialog when desired. Second buttons normally close unless `btn2` returns `false`. Close button, shade, and Escape call `cancel` and remain open when it returns `false`.
@@ -145,7 +145,7 @@ Prefer the specialized API when it matches. Do not choose `open` merely for flex
 - **Callbacks:** Empty/whitespace-only input refocuses the field. Overlong input opens a temporary tip. A valid value calls `yes`; the caller must close the prompt when desired.
 - **Typical use:** Small one-field input tasks.
 - **Important options:** `formType` (`0` text, `1` password, `2` textarea), `value`, `maxlength`, `maxlengthMessage`, title, and dialog options.
-- **Accessibility:** Uses dialog focus management. Verify a meaningful accessible label for the generated input; the current API does not expose a dedicated input-label option.
+- **Accessibility:** Uses dialog focus management. The generated control uses `ariaLabel`, the dialog title, or `Input` as its accessible label.
 - **Security:** The returned value is untrusted application input. Validate and encode it for its destination. The internally created input is an `HTMLElement`, and custom maxlength messages are rendered as text rather than HTML.
 - **DOM requirements:** Browser document/window and input element constructors.
 - **Common mistakes:** Expecting a Promise; treating whitespace as valid; forgetting to close after success; assuming maxlength validation sanitizes input; using it for multi-field forms.
@@ -155,17 +155,17 @@ Prefer the specialized API when it matches. Do not choose `open` merely for flex
 ### `tab`
 
 - **Purpose:** Open a page-style dialog containing simple Layer-owned tabs.
-- **Parameters:** `options: LayerTabOptions` with `tab: LayerTabItem[]`.
+- **Parameters:** `options: LayerTabOptions` with a non-empty `tab: LayerTabItem[]`; an empty list throws instead of emitting invalid tab/tabpanel relationships.
 - **Return:** Numeric dialog index.
 - **Callbacks:** Calls `success(layero, index)` and `change(activeIndex)` on click changes.
 - **Typical use:** Small sets of static tabbed dialog content.
 - **Important options:** Tab items plus page/dialog sizing, shade, buttons, and lifecycle options.
-- **Accessibility:** Emits tablist/tab/tabpanel roles, `aria-selected`, `aria-controls`, and labelled panels. It currently changes tabs on click only; verify keyboard arrow navigation and focus requirements before acceptance.
+- **Accessibility:** Emits tablist/tab/tabpanel roles, selected state, controls, and labelled panels. Arrow Left/Right and Home/End move selection and focus.
 - **Security:** Every `LayerTabItem.content` string is trusted HTML; item titles are text.
 - **DOM requirements:** Browser document/window.
 - **Common mistakes:** Passing untrusted tab HTML; expecting framework components or keyboard-complete tabs; using tabs for a normal page section.
 - **Example:** `tab({ tab: [{ title: "Summary", content: "<p>Ready</p>" }] });`
-- **Do not use when:** Tabs belong in document flow, require controlled framework state, or must meet keyboard behavior not implemented by the public API.
+- **Do not use when:** Tabs belong in document flow or require controlled framework state.
 
 ## Closing and lifecycle
 
@@ -191,7 +191,7 @@ Prefer the specialized API when it matches. Do not choose `open` merely for flex
 - **Return:** `void`.
 - **Callbacks:** The completion callback runs after every matching record has closed, including records that were already closing; it runs immediately when nothing matches.
 - **Typical use:** Scoped teardown or emergency cleanup.
-- **Important options:** Recognized internal type names are `dialog`, `page`, `iframe`, `loading`, and `tips`.
+- **Important options:** Recognized internal type names are `dialog`, `page`, `iframe`, `loading`, `tips`, and `message`.
 - **Accessibility:** Each record performs normal cleanup/focus restoration; test multi-dialog focus results.
 - **Security:** No content input; global closure can disrupt unrelated flows.
 - **DOM requirements:** Browser state when records exist.
@@ -199,20 +199,35 @@ Prefer the specialized API when it matches. Do not choose `open` merely for flex
 - **Example:** `closeAll("loading");`
 - **Do not use when:** Exact ownership matters; retain and close individual indexes instead.
 
+### `destroy`
+
+- **Purpose:** Close records and explicitly unmount the shared React host for one target document or every managed document.
+- **Parameters:** Optional `targetDocument?: Document`.
+- **Return:** `void`.
+- **Callbacks:** Each record performs normal synchronous end and close cleanup with exit animations disabled.
+- **Typical use:** Application teardown, isolated document disposal, or tests that require complete root cleanup.
+- **Important options:** Omit the document only when the caller owns every layer-esm host in the page context.
+- **Accessibility:** Restores moved nodes, scroll state, and eligible prior focus before unmounting.
+- **Security:** No content input; global destruction can interrupt unrelated flows.
+- **DOM requirements:** Existing hosts only; calling it before display is a no-op.
+- **Common mistakes:** Calling after every message and defeating host reuse; destroying records owned by another feature.
+- **Example:** `destroy(document);`
+- **Do not use when:** `close(index)` or scoped `closeAll(type)` provides sufficient ownership.
+
 ## Configuration and styles
 
 ### `config`
 
-- **Purpose:** Shallow-merge global defaults and configure runtime style injection.
+- **Purpose:** Shallow-merge global defaults and configure themes and runtime style injection.
 - **Parameters:** `options?: LayerConfigOptions`.
 - **Return:** The default Layer API object for chaining/compatibility.
 - **Callbacks:** None directly; inherited option callbacks become defaults for later records.
-- **Typical use:** One-time application-level defaults, CSP nonce, or disabling injection after styles are loaded separately.
-- **Important options:** All partial `LayerOptions`, plus `injectStyles` and `styleNonce`.
+- **Typical use:** One-time application-level defaults, light/dark/system/custom theme selection, or a CSP nonce.
+- **Important options:** All partial `LayerOptions`, plus `theme`, `styleNonce`, and the deprecated `injectStyles` field.
 - **Accessibility:** Global defaults can affect shade, titles, buttons, focus behavior, and labels across all dialogs; review carefully.
-- **Security:** Use only a genuine request nonce. A nonce configured after the style element already exists does not replace that element. `injectStyles: false` requires equivalent CSS to be loaded by the application.
-- **DOM requirements:** Calls style readiness immediately and therefore requires a browser-like document unless injection is disabled first in the same call.
-- **Common mistakes:** Changing globals for one dialog; inventing a nonce; disabling injection without consuming `layerStyles`; assuming deep merge.
+- **Security:** Use only a genuine request nonce. `styleNonce` is passed to styled-components' `StyleSheetManager`; runtime style injection is required.
+- **DOM requirements:** Configuration is import/SSR-safe. Existing browser hosts update immediately; display APIs create hosts lazily.
+- **Common mistakes:** Changing globals for one dialog; inventing a nonce; using `injectStyles: false` (which throws); assuming deep merge.
 - **Example:** `config({ styleNonce: window.__CSP_NONCE__ });`
 - **Do not use when:** Per-dialog options are sufficient or global mutation would make behavior harder to reason about.
 
@@ -233,18 +248,33 @@ Prefer the specialized API when it matches. Do not choose `open` merely for flex
 
 ### `layerStyles`
 
-- **Purpose:** Export the complete Layer CSS as a string.
+- **Purpose:** Deprecated compatibility marker retained so old imports fail gracefully during migration.
 - **Parameters:** None; constant string.
-- **Return:** CSS text value.
+- **Return:** A marker string, not complete CSS.
 - **Callbacks:** None.
-- **Typical use:** Feed CSS into the project's approved build/style pipeline before `config({ injectStyles: false })`.
-- **Important options:** Pair with global `injectStyles: false` only after equivalent styles are actually loaded.
+- **Typical use:** Detect and migrate the obsolete static-style workflow.
+- **Important options:** Do not use it as a stylesheet; styled-components output is dynamic.
 - **Accessibility:** CSS controls visible focus and dialog layout; preserve or replace those affordances deliberately.
 - **Security:** Treat CSS insertion as a CSP-governed operation. Do not inject it through an unapproved runtime path.
 - **DOM requirements:** Reading the string is DOM-independent; applying it is project-specific.
-- **Common mistakes:** Logging the CSS instead of loading it; disabling runtime injection without a stylesheet; importing an internal theme file.
-- **Example:** `import { config, layerStyles } from "layer-esm"; /* load layerStyles through the approved pipeline */ config({ injectStyles: false });`
-- **Do not use when:** Default runtime injection already satisfies the project's CSP and styling policy.
+- **Common mistakes:** Treating the marker as complete CSS or combining it with `injectStyles: false`.
+- **Example:** Migrate to `config({ styleNonce: nonce })` when CSP permits nonce-authorized runtime styles.
+- **Do not use when:** Implementing new code.
+
+### `lightTheme` and `darkTheme`
+
+- **Purpose:** Export complete typed default theme objects for inspection and custom-theme composition.
+- **Parameters:** None; constants.
+- **Return:** `LayerTheme` objects.
+- **Callbacks:** None.
+- **Typical use:** Build a custom theme with explicit defaults, such as `{ ...darkTheme, primary: "#a78bfa" }`.
+- **Important options:** Prefer `config({ theme: "light" | "dark" | "system" })` when no customization is needed.
+- **Accessibility:** Preserve contrast and visible focus when overriding colors.
+- **Security:** Do not insert untrusted strings into theme CSS values.
+- **DOM requirements:** Reading the objects is DOM-independent.
+- **Common mistakes:** Mutating exported constants; assuming partial custom themes inherit dark rather than light defaults.
+- **Example:** `config({ theme: { ...darkTheme, primary: "#a78bfa" } });`
+- **Do not use when:** A named built-in theme is sufficient.
 
 ### `title`
 
@@ -402,7 +432,7 @@ Prefer the specialized API when it matches. Do not choose `open` merely for flex
 
 ### `default` Layer API object
 
-- **Purpose:** Compatibility object containing version `v`, next-index and z-index getters, and every callable runtime helper except `layerStyles`.
+- **Purpose:** Compatibility object containing version `v`, next-index and z-index getters, and every callable runtime helper except theme constants and `layerStyles`.
 - **Parameters/return/callbacks:** Delegates to the selected member API.
 - **Typical use:** Existing code already established around a local Layer object.
 - **Important options:** Prefer the named helper documentation above.
@@ -415,22 +445,24 @@ Prefer the specialized API when it matches. Do not choose `open` merely for flex
 
 Import these from the package root with `import type`. They have no runtime value, callbacks, DOM effects, or automatic security guarantees; their browser/HTML fields still require the checks described above.
 
-| Type                 | Purpose and main values                                      | Important considerations / common mistakes                                                               |
-| -------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| `LayerType`          | Numeric record type `0 \| 1 \| 2 \| 3 \| 4`.                 | Maps to dialog, page, iframe, loading, tips; do not invent values.                                       |
-| `LayerOffsetKeyword` | `auto`, edge, and corner positioning keywords.               | Position semantics use viewport/scroll state; test mobile layouts.                                       |
-| `LayerOffset`        | Keyword, CSS-like string, number, or top/left tuple.         | Numbers and digit-only strings become pixels; arbitrary strings are inline positions.                    |
-| `LayerArea`          | Width or width/height tuple using strings or numbers.        | Numeric values become pixels; explicit width changes max-width behavior.                                 |
-| `LayerTitle`         | `false`, text string, or `[text, inlineStyle]`.              | Text is safe/text-only; tuple style is inline CSS and CSP-sensitive.                                     |
-| `LayerShade`         | Boolean, opacity number, or `[opacity, color]`.              | Shade presence affects modal semantics; validate values and contrast.                                    |
-| `LayerTipDirection`  | Tooltip direction `1 \| 2 \| 3 \| 4`.                        | Runtime may choose a lower-overflow direction.                                                           |
-| `LayerTabItem`       | `{ title: string; content: string }`.                        | Title is text; content is trusted HTML.                                                                  |
-| `LayerOptions`       | Complete creation/configuration and callback contract.       | `content` trust, callback-owned closure, global-vs-local use, and type-specific behavior require review. |
-| `LayerConfigOptions` | Partial `LayerOptions` plus `injectStyles` and `styleNonce`. | Global shallow merge; do not invent CSP settings.                                                        |
-| `LayerPromptOptions` | Prompt-safe subset plus form/value/maxlength message.        | Does not provide a dedicated input label or sanitization.                                                |
-| `LayerTipsOptions`   | Tips-safe subset plus direction/color.                       | Target is a separate required argument; tooltip association is not automatic.                            |
-| `LayerTabOptions`    | Page/dialog options plus required `tab` items.               | Tab HTML is trusted and keyboard behavior must be checked.                                               |
-| `LayerStyleOptions`  | Supported inline size/position/overflow fields.              | Not an arbitrary CSS object; untrusted CSS values remain unsafe.                                         |
+| Type                  | Purpose and main values                                                    | Important considerations / common mistakes                                                   |
+| --------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `LayerType`           | Numeric record type `0 \| 1 \| 2 \| 3 \| 4`.                               | Maps to dialog, page, iframe, loading, tips; do not invent values.                           |
+| `LayerOffsetKeyword`  | `auto`, edge, and corner positioning keywords.                             | Position semantics use viewport/scroll state; test mobile layouts.                           |
+| `LayerOffset`         | Keyword, CSS-like string, number, or top/left tuple.                       | Numbers and digit-only strings become pixels; arbitrary strings are inline positions.        |
+| `LayerArea`           | Width or width/height tuple using strings or numbers.                      | Numeric values become pixels; explicit width changes max-width behavior.                     |
+| `LayerTitle`          | `false`, text string, or `[text, inlineStyle]`.                            | Text is safe/text-only; tuple style is inline CSS and CSP-sensitive.                         |
+| `LayerShade`          | Boolean, opacity number, or `[opacity, color]`.                            | Shade presence affects modal semantics; validate values and contrast.                        |
+| `LayerTipDirection`   | Tooltip direction `1 \| 2 \| 3 \| 4`.                                      | Runtime may choose a lower-overflow direction.                                               |
+| `LayerTabItem`        | `{ title: string; content: string }`.                                      | Title is text; content is trusted HTML.                                                      |
+| `LayerOptions`        | Complete creation/configuration and callback contract.                     | Includes optional `targetDocument`; content trust and callback-owned closure require review. |
+| `LayerConfigOptions`  | Partial options plus theme, nonce, and deprecated injection flag.          | Global shallow merge; `injectStyles: false` throws.                                          |
+| `LayerPromptOptions`  | Prompt-safe subset plus form/value/maxlength message.                      | Uses `ariaLabel` or title for input labelling; does not sanitize values.                     |
+| `LayerTipsOptions`    | Tips-safe subset plus direction/color.                                     | Target is a separate required argument; tooltip association is not automatic.                |
+| `LayerTabOptions`     | Page/dialog options plus required `tab` items.                             | Tab HTML is trusted and keyboard behavior must be checked.                                   |
+| `LayerStyleOptions`   | Supported inline size/position/overflow fields.                            | Not an arbitrary CSS object; untrusted CSS values remain unsafe.                             |
+| `LayerTheme`          | Complete typed styled-components color, radius, shadow, and z-index theme. | Prefer partial overrides through `config`.                                                   |
+| `LayerThemeSelection` | `light`, `dark`, `system`, or a partial custom theme.                      | System mode follows runtime media-query changes.                                             |
 
 ## Rejection checklist
 
@@ -441,7 +473,7 @@ Reject the candidate and explain the mismatch when any required behavior fails:
 - A framework-controlled component cannot safely hand ownership/lifecycle to Layer.
 - Required focus, keyboard, labelling, live-region, or other accessibility behavior is absent.
 - The browser baseline is unsupported or the code runs during SSR/Node.js execution.
-- CSP forbids runtime style injection and the project cannot load `layerStyles` through an approved path.
+- CSP forbids nonce-authorized runtime style injection.
 - The public root API cannot express the interaction or cleanup contract.
 - Arbitrary untrusted HTML must be rendered but the project has no appropriate sanitizer.
 - A native API is clearly simpler and sufficient.

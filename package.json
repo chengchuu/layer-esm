@@ -16,9 +16,7 @@
     "README.md",
     "LICENSE"
   ],
-  "sideEffects": [
-    "**/*.css"
-  ],
+  "sideEffects": true,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -56,7 +54,7 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "src/**/*.ts"
+      "src/**/*.{ts,tsx}"
     ],
     "coverageDirectory": "coverage"
   },
@@ -85,6 +83,7 @@
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@babel/preset-env": "^7.23.2",
+    "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.23.2",
     "@commitlint/cli": "^17.8.1",
     "@commitlint/config-conventional": "^17.8.1",
@@ -92,6 +91,8 @@
     "@rollup/plugin-node-resolve": "^15.3.1",
     "@rollup/plugin-terser": "^1.0.0",
     "@types/node": "^25.0.9",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@typescript-eslint/eslint-plugin": "^8.64.0",
     "@typescript-eslint/parser": "^8.64.0",
     "bootstrap": "5.3.8",
@@ -112,9 +113,12 @@
     "typescript": "5.3.2",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^6.0.0"
+    "webpack-dev-server": "^6.0.0",
+    "mazey": "^5.5.1"
   },
   "dependencies": {
-    "mazey": "^5.5.1"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "styled-components": "^6.0.0"
   }
 }

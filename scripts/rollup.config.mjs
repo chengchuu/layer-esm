@@ -15,6 +15,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 const fromRoot = (...segments) => path.resolve(projectRoot, ...segments);
+const external = (id) =>
+  id === "react" ||
+  id === "react-dom" ||
+  id === "styled-components" ||
+  id.startsWith("react/") ||
+  id.startsWith("react-dom/") ||
+  id.startsWith("styled-components/");
 
 const pkgVersion =
   process.env.SCRIPTS_NPM_PACKAGE_VERSION ||
@@ -33,12 +40,12 @@ const banner =
 
 const plugins = [
   nodeResolve({
-    extensions: [...DEFAULT_EXTENSIONS, ".ts"],
+    extensions: [...DEFAULT_EXTENSIONS, ".ts", ".tsx"],
   }),
   babel({
     babelHelpers: "bundled",
     exclude: /node_modules/,
-    extensions: [...DEFAULT_EXTENSIONS, ".ts"],
+    extensions: [...DEFAULT_EXTENSIONS, ".ts", ".tsx"],
   }),
 ];
 
@@ -63,6 +70,7 @@ const cleanDist = {
 export default [
   {
     input: fromRoot("src/index.ts"),
+    external,
     output: [
       {
         file: fromRoot("dist/index.cjs"),
@@ -83,6 +91,7 @@ export default [
   },
   {
     input: fromRoot("src/index.ts"),
+    external,
     output: [
       {
         file: fromRoot("dist/index.d.ts"),

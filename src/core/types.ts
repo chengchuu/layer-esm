@@ -1,3 +1,5 @@
+import type { LayerTheme, LayerThemeSelection } from "../styles/theme";
+
 export type LayerType = 0 | 1 | 2 | 3 | 4;
 
 export type LayerOffsetKeyword =
@@ -71,11 +73,13 @@ export interface LayerOptions {
   cancel?: (index: number, layero: HTMLElement) => boolean | void;
   change?: (index: number) => void;
   tab?: LayerTabItem[];
+  targetDocument?: Document;
 }
 
 export interface LayerConfigOptions extends Partial<LayerOptions> {
   injectStyles?: boolean;
   styleNonce?: string;
+  theme?: LayerThemeSelection;
 }
 
 export interface LayerPromptOptions
@@ -136,40 +140,8 @@ export interface NormalizedLayerOptions
   value: string;
   maxlength: number;
   maxWidthExplicit: boolean;
-}
-
-export interface MovedContentState {
-  node: HTMLElement;
-  originalParent: Node | null;
-  originalNextSibling: Node | null;
-  placeholder: Comment | null;
-}
-
-export interface LayerRecord {
-  index: number;
-  options: NormalizedLayerOptions;
-  typeName: "dialog" | "page" | "iframe" | "loading" | "tips";
-  root: HTMLDivElement;
-  shade: HTMLDivElement | null;
-  title: HTMLDivElement | null;
-  content: HTMLDivElement;
-  buttons: HTMLDivElement | null;
-  closeButton: HTMLButtonElement | null;
-  minButton: HTMLButtonElement | null;
-  maxButton: HTMLButtonElement | null;
-  iframe: HTMLIFrameElement | null;
-  movedContent: MovedContentState | null;
-  cleanup: Array<() => void>;
-  timer: number | null;
-  closeTimer: number | null;
-  closeCallbacks: Array<() => void>;
-  closing: boolean;
-  activeGestureCleanup: (() => void) | null;
-  followTarget: HTMLElement | null;
-  restoreCssText: string | null;
-  windowState: "normal" | "minimized" | "full";
-  lockedScroll: boolean;
-  previouslyFocused: HTMLElement | null;
+  shadeColorExplicit: boolean;
+  tipsColorExplicit: boolean;
 }
 
 export interface LayerStyleOptions {
@@ -182,3 +154,5 @@ export interface LayerStyleOptions {
   position?: string;
   overflow?: string;
 }
+
+export type { LayerTheme, LayerThemeSelection };
