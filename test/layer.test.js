@@ -99,6 +99,24 @@ test("msg auto closes after its timeout", () => {
   expect(queryLayer(index)).toBeNull();
 });
 
+test("msg bottom offset does not stretch from the default center position", () => {
+  const { applyOffset } = require("../src/utils/position.ts");
+  // This jsdom version drops valid "auto" length values from CSSStyleDeclaration.
+  const style = {};
+  applyOffset({ style }, "b", true);
+
+  expect(style.top).toBe("auto");
+  expect(style.bottom).toBe("0");
+
+  const { msg } = loadLayer();
+  const index = msg("Saved", { offset: "b", time: 0 });
+  const root = queryLayer(index);
+
+  expect(root.style.bottom).toBe("0px");
+  expect(root.style.left).toBe("calc(50% + 0px)");
+  expect(root.style.transform).toBe("translateX(-50%)");
+});
+
 test("msg keeps icon, button, and callback customizations on its lightweight path", () => {
   const { msg } = loadLayer();
   const yes = jest.fn();

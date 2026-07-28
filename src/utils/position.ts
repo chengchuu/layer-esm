@@ -47,10 +47,10 @@ export const applyOffset = (
   offset: LayerOffset | undefined,
   fixed: boolean
 ): void => {
-  element.style.top = "";
-  element.style.left = "";
-  element.style.right = "";
-  element.style.bottom = "";
+  element.style.top = "auto";
+  element.style.left = "auto";
+  element.style.right = "auto";
+  element.style.bottom = "auto";
   element.style.transform = "";
 
   const scrollY = fixed ? 0 : window.scrollY;
