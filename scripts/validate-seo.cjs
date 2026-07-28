@@ -236,6 +236,15 @@ function validateApiPages() {
       fail(`API ${relative}: missing API theme stylesheet`);
     if (!attribute(html, "script", "src", `${assetPrefix}assets/api.js`))
       fail(`API ${relative}: missing API theme script`);
+    for (const control of [
+      'id="tsd-search-trigger"',
+      '<dialog id="tsd-search"',
+      'id="tsd-search-input"',
+      'id="tsd-search-results"',
+    ]) {
+      if (!html.includes(control))
+        fail(`API ${relative}: missing search dialog control ${control}`);
+    }
     const h1s = matches(html, /<h1\b[^>]*>([\s\S]*?)<\/h1>/gi);
     if (h1s.length !== 1 || !visibleText(h1s[0][1]))
       fail(`API ${relative}: expected exactly one non-empty h1`);
