@@ -709,7 +709,7 @@ test("closing during a drag removes document gesture listeners", () => {
   expect(root.style.left).toBe(left);
 });
 
-test("resize handles are only visible while the layer is hovered", () => {
+test("resize handles are only visible while the handle is hovered", () => {
   const { open } = loadLayer();
   const index = open({ content: "Resizable", resize: true });
   const handle = queryLayer(index).querySelector(".layer-esm__resize");
@@ -718,9 +718,56 @@ test("resize handles are only visible while the layer is hovered", () => {
     .join("\n");
 
   expect(handle).not.toBeNull();
-  expect(getComputedStyle(handle).visibility).toBe("hidden");
-  expect(getComputedStyle(handle).opacity).toBe("0");
-  expect(styleText).toMatch(
-    /:hover \.layer-esm__resize\{visibility:visible;opacity:1;/
+
+  const hoverClass = Array.from(handle.classList).find((className) =>
+    styleText.includes(`.${className}:hover{opacity:1;}`)
   );
+
+  expect(getComputedStyle(handle).opacity).toBe("0");
+  expect(hoverClass).toBeTruthy();
+  expect(styleText).not.toMatch(/:hover \.layer-esm__resize/);
+});
+
+test("resizing a centered layer keeps its top-left position anchored", () => {
+  const { open } = loadLayer();
+  const index = open({ content: "Resizable", resize: true });
+  const root = queryLayer(index);
+  const handle = root.querySelector(".layer-esm__resize");
+  root.getBoundingClientRect = () => ({
+    left: 100,
+    top: 80,
+    width: 300,
+    height: 200,
+    right: 400,
+    bottom: 280,
+    x: 100,
+    y: 80,
+    toJSON: () => ({}),
+  });
+
+  handle.dispatchEvent(
+    new MouseEvent("mousedown", {
+      button: 0,
+      clientX: 400,
+      clientY: 280,
+      bubbles: true,
+    })
+  );
+
+  expect(root.style.left).toBe("100px");
+  expect(root.style.top).toBe("80px");
+  expect(root.style.transform).toBe("");
+
+  document.dispatchEvent(
+    new MouseEvent("mousemove", {
+      clientX: 420,
+      clientY: 310,
+      bubbles: true,
+    })
+  );
+
+  expect(root.style.left).toBe("100px");
+  expect(root.style.top).toBe("80px");
+  expect(root.style.width).toBe("320px");
+  expect(root.style.height).toBe("230px");
 });

@@ -97,8 +97,16 @@ const useGesture = (
         const rect = root.getBoundingClientRect();
         const originX = event.clientX;
         const originY = event.clientY;
-        const move = (next: MouseEvent) => {
+        if (resize) {
+          const view = doc.defaultView;
+          const fixed = root.style.position === "fixed";
+          root.style.left = `${rect.left + (fixed ? 0 : view?.scrollX ?? 0)}px`;
+          root.style.top = `${rect.top + (fixed ? 0 : view?.scrollY ?? 0)}px`;
+          root.style.right = "";
+          root.style.bottom = "";
           root.style.transform = "";
+        }
+        const move = (next: MouseEvent) => {
           if (resize) {
             root.style.width = `${Math.max(
               240,
@@ -109,6 +117,7 @@ const useGesture = (
               rect.height + next.clientY - originY
             )}px`;
           } else {
+            root.style.transform = "";
             root.style.left = `${rect.left + next.clientX - originX}px`;
             root.style.top = `${rect.top + next.clientY - originY}px`;
             root.style.right = "";

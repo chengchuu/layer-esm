@@ -420,6 +420,9 @@ a {
 
 .playground-code-panel pre {
   max-height: 24rem;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .playground-code-panel [data-demo-source-label] {

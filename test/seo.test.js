@@ -136,6 +136,12 @@ test("site templates use the styled update, code panel, and muted section classe
   expect(stylesheet).toContain(".playground-demo-grid .card");
   expect(stylesheet).toContain(".playground-demo-grid .btn-outline-secondary");
   expect(stylesheet).toContain(".playground-code-panel pre");
+  const playgroundCodeStyles = stylesheet.match(
+    /\.playground-code-panel pre \{([^}]*)\}/
+  )?.[1];
+  expect(playgroundCodeStyles).toContain("overflow-x: hidden");
+  expect(playgroundCodeStyles).toContain("white-space: pre-wrap");
+  expect(playgroundCodeStyles).toContain("overflow-wrap: anywhere");
   expect(stylesheet).toContain(".site-footer nav");
   expect(stylesheet).toContain("gap: 0.75rem 1.25rem");
   expect(stylesheet).toContain(".code-panel {");
