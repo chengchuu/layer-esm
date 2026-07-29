@@ -15,7 +15,9 @@ graph instead of embedding duplicate runtimes in the layer-esm bundles.
 
 Use `config({ theme: "light" })`, `config({ theme: "dark" })`, or
 `config({ theme: "system" })`. System mode listens for color-scheme changes. A partial typed custom
-theme may override the exported `lightTheme` defaults.
+theme may override the exported `lightTheme` defaults. Without explicit theme configuration, Mazey
+resolves the initial light or dark theme from `?theme`, `layer-esm-theme` local storage, the current
+system preference, and the light fallback.
 
 ## CSP and generated styles
 
