@@ -37,7 +37,9 @@ test("API metadata transformation is complete and idempotent", () => {
     '<meta name="twitter:card" content="summary_large_image"/>'
   );
   expect(transformed).toContain('href="../assets/api.css"');
+  expect(transformed).toContain('<script src="../assets/theme.js"></script>');
   expect(transformed).toContain('src="../assets/api.js"');
+  expect(transformed).not.toContain("localStorage.getItem");
   expect(transformed).not.toMatch(/<button\b[^>]*data-pwa-install\b/);
   expect(transformed.match(/<h1\b/g)).toHaveLength(1);
   expect(transformed).toContain('id="tsd-search-trigger"');
@@ -112,6 +114,10 @@ test("site templates use the styled update, code panel, and muted section classe
     expect(template).not.toContain("data-pwa-install>");
     expect(template).not.toContain(">Basic usage<");
     expect(template).toContain(">Usage<");
+    expect(template).toContain(
+      '<script src="<%= THEME_SCRIPT_URL %>"></script>'
+    );
+    expect(template).not.toContain("localStorage.getItem");
   }
   expect(homepage).not.toContain('href="#features">Features</a>');
   expect(homepage.indexOf(">Home</a>")).toBeLessThan(
@@ -178,6 +184,7 @@ test("Pages assembly is repeatable without duplicating API metadata", () => {
       "<html><body><h1>Playground</h1></body></html>",
     "dist-dev/assets/api.css": "body {}",
     "dist-dev/assets/api.js": "void 0;",
+    "dist-dev/assets/theme.js": "void 0;",
     [`dist-dev/images/${projectConfig.seo.openGraphImage.file}`]:
       "open graph image",
     "site/service-worker.js":

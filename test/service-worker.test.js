@@ -104,6 +104,24 @@ test("activation removes only obsolete project caches", async () => {
   expect(self.clients.claim).toHaveBeenCalledTimes(1);
 });
 
+test("the app shell precaches the early theme bootstrap", async () => {
+  const { fetch, listeners, runtimeCache } = evaluateWorker();
+  const response = {
+    ok: true,
+    status: 200,
+    type: "basic",
+  };
+  fetch.mockResolvedValue(response);
+  let installation;
+
+  listeners.install({ waitUntil: (promise) => (installation = promise) });
+  await installation;
+
+  const themeScript = `${projectConfig.site.basePath}assets/theme.js`;
+  expect(fetch).toHaveBeenCalledWith(themeScript, { cache: "reload" });
+  expect(runtimeCache.put).toHaveBeenCalledWith(themeScript, response);
+});
+
 test("fetch handling ignores non-GET, cross-origin, and out-of-scope requests", () => {
   const { listeners } = evaluateWorker();
   const respondWith = jest.fn();

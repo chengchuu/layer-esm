@@ -55,7 +55,7 @@ const templateParameters = {
   THEME_PRIMARY_HOVER_RGB: projectConfig.site.theme.primary.light.hoverRgb,
   THEME_PRIMARY_RGB: projectConfig.site.theme.primary.light.rgb,
   THEME_PRIMARY_SOFT: projectConfig.site.theme.primary.light.soft,
-  THEME_STORAGE_KEY_JSON: JSON.stringify(projectConfig.site.theme.storageKey),
+  THEME_SCRIPT_URL: `${pagesBase}assets/theme.js`,
 };
 const runtimeConfig = {
   packageName: projectConfig.package.name,
@@ -73,6 +73,7 @@ const runtimeConfig = {
 module.exports = {
   mode: "development",
   entry: {
+    theme: _resolve("../site/theme-bootstrap.ts"),
     shared: [_resolve("../site/shared.ts"), ...siteImageEntries],
     home: {
       import: _resolve("../site/index.ts"),
