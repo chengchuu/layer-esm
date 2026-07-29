@@ -6,6 +6,13 @@ const projectConfig = require("../project.config.cjs");
 
 const { colorDark, colorLight, storageKey } = projectConfig.site.theme;
 
+afterEach(() => {
+  jest.restoreAllMocks();
+  localStorage.clear();
+  history.replaceState({}, "", "/");
+  document.documentElement.removeAttribute("data-theme-controls-ready");
+});
+
 test("theme selection follows the system and persists an explicit choice", () => {
   document.documentElement.removeAttribute("data-theme-controls-ready");
   document.head.innerHTML = `
@@ -88,6 +95,159 @@ test("theme changes support legacy MediaQueryList listeners", () => {
 
   cleanup();
   expect(removeListener).toHaveBeenCalledWith(listener);
+});
+
+test("initial theme follows URL, storage, system, and fallback precedence", () => {
+  document.head.innerHTML = `
+    <meta name="theme-color" content="${colorLight}" data-theme-color
+      data-theme-color-light="${colorLight}" data-theme-color-dark="${colorDark}">
+  `;
+  document.body.innerHTML = `
+    <select data-theme-select>
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  `;
+  history.replaceState({}, "", "/?theme=dark");
+  localStorage.setItem(storageKey, "light");
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: () => ({
+      matches: false,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    }),
+  });
+
+  const cleanup = initializeThemeControls(storageKey);
+
+  expect(document.documentElement.dataset.bsTheme).toBe("dark");
+  expect(document.querySelector("[data-theme-select]").value).toBe("dark");
+  expect(localStorage.getItem(storageKey)).toBe("dark");
+  cleanup();
+});
+
+test("an in-page system selection overrides an initial URL theme", () => {
+  document.body.innerHTML = `
+    <select data-theme-select>
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  `;
+  history.replaceState({}, "", "/?theme=dark");
+  let dark = false;
+  let listener;
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: () => ({
+      get matches() {
+        return dark;
+      },
+      addEventListener: (_name, callback) => {
+        listener = callback;
+      },
+      removeEventListener: jest.fn(),
+    }),
+  });
+  const cleanup = initializeThemeControls(storageKey);
+  const select = document.querySelector("[data-theme-select]");
+
+  expect(document.documentElement.dataset.bsTheme).toBe("dark");
+  select.value = "system";
+  select.dispatchEvent(new Event("change", { bubbles: true }));
+  expect(document.documentElement.dataset.bsTheme).toBe("light");
+  expect(localStorage.getItem(storageKey)).toBe("system");
+
+  dark = true;
+  listener({ matches: true });
+  expect(document.documentElement.dataset.bsTheme).toBe("dark");
+  expect(localStorage.getItem(storageKey)).toBe("system");
+  cleanup();
+});
+
+test("a rejected preference write still applies system mode for the session", () => {
+  document.head.innerHTML = `
+    <meta name="theme-color" content="${colorLight}" data-theme-color
+      data-theme-color-light="${colorLight}" data-theme-color-dark="${colorDark}">
+  `;
+  document.body.innerHTML = `
+    <select data-theme-select>
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  `;
+  let dark = false;
+  let listener;
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: () => ({
+      get matches() {
+        return dark;
+      },
+      addEventListener: (_name, callback) => {
+        listener = callback;
+      },
+      removeEventListener: jest.fn(),
+    }),
+  });
+  localStorage.setItem(storageKey, "dark");
+  const originalSetItem = Storage.prototype.setItem;
+  jest
+    .spyOn(Storage.prototype, "setItem")
+    .mockImplementation(function (key, value) {
+      if (key === storageKey) {
+        throw new DOMException("Storage write rejected", "SecurityError");
+      }
+      return originalSetItem.call(this, key, value);
+    });
+  const cleanup = initializeThemeControls(storageKey);
+  const select = document.querySelector("[data-theme-select]");
+
+  select.value = "system";
+  expect(() =>
+    select.dispatchEvent(new Event("change", { bubbles: true }))
+  ).not.toThrow();
+  expect(document.documentElement.dataset.bsTheme).toBe("light");
+  expect(select.value).toBe("system");
+  expect(localStorage.getItem(storageKey)).toBe("dark");
+
+  dark = true;
+  listener({ matches: true });
+  expect(document.documentElement.dataset.bsTheme).toBe("dark");
+  expect(select.value).toBe("system");
+  cleanup();
+});
+
+test("unsupported control values do not replace the current preference", () => {
+  document.body.innerHTML = `
+    <select data-theme-select>
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="unsupported">Unsupported</option>
+    </select>
+  `;
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: () => ({
+      matches: false,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    }),
+  });
+  const cleanup = initializeThemeControls(storageKey);
+  const select = document.querySelector("[data-theme-select]");
+
+  select.value = "unsupported";
+  expect(() =>
+    select.dispatchEvent(new Event("change", { bubbles: true }))
+  ).not.toThrow();
+  expect(select.value).toBe("system");
+  expect(localStorage.getItem(storageKey)).toBeNull();
+  cleanup();
 });
 
 test("Bootstrap navigation closes on Escape and restores toggle focus", () => {

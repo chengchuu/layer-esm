@@ -54,9 +54,7 @@
     <script type="application/ld+json">
       <%= PLAYGROUND_JSON_LD %>
     </script>
-    <script>
-      (()=>{try{const key=<%= THEME_STORAGE_KEY_JSON %>;const value=localStorage.getItem(key)||"system";const resolved=value==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):(value==="dark"?"dark":"light");document.documentElement.dataset.bsTheme=resolved;document.documentElement.dataset.theme=resolved;document.documentElement.style.colorScheme=resolved;const meta=document.querySelector('meta[name="theme-color"][data-theme-color]');if(meta)meta.content=resolved==="dark"?meta.dataset.themeColorDark:meta.dataset.themeColorLight;localStorage.setItem("tsd-theme",value==="system"?"os":value)}catch{}})();
-    </script>
+    <script src="<%= THEME_SCRIPT_URL %>"></script>
   </head>
   <body id="top">
     <a class="skip-link" href="#main-content">Skip to playground controls</a>

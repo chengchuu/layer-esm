@@ -8,6 +8,7 @@ const APP_SHELL = [
   `${PROJECT_BASE}api/`,
   `${PROJECT_BASE}manifest.webmanifest`,
   `${PROJECT_BASE}assets/shared.css`,
+  `${PROJECT_BASE}assets/theme.js`,
   `${PROJECT_BASE}assets/shared.js`,
   `${PROJECT_BASE}assets/home.js`,
   `${PROJECT_BASE}assets/playground.js`,
