@@ -8,6 +8,7 @@ import type {
   LayerType,
   NormalizedLayerOptions,
 } from "./types";
+import { resolveThemePreference, type ResolvedTheme } from "mazey";
 import type { CSSProperties } from "react";
 import { LayerDocumentHost } from "../host/host-registry";
 import type {
@@ -20,6 +21,7 @@ import { normalizeArea, normalizeShade } from "../utils/position";
 const TYPE_NAMES = ["dialog", "page", "iframe", "loading", "tips"] as const;
 const CLOSE_ANIMATION_MS = 180;
 const MINIMIZED_WIDTH = 180;
+const THEME_STORAGE_KEY = "layer-esm-theme";
 
 const captureWindowStyle = (record: LayerInstance): CSSProperties => {
   const root = record.root;
@@ -85,6 +87,7 @@ const runtime = {
   movedOwners: new WeakMap<HTMLElement, number>(),
   bodyLocks: new Map<Document, { count: number; overflow: string }>(),
   minimized: [] as number[],
+  defaultTheme: undefined as ResolvedTheme | undefined,
 };
 
 const ensureDocument = (preferred?: Document): Document => {
@@ -94,8 +97,14 @@ const ensureDocument = (preferred?: Document): Document => {
   throw new Error("layer-esm display APIs require a browser Document");
 };
 
+const runtimeTheme = () => {
+  if (runtime.config.theme !== undefined) return runtime.config.theme;
+  runtime.defaultTheme ??= resolveThemePreference(THEME_STORAGE_KEY).value;
+  return runtime.defaultTheme;
+};
+
 const hostConfig = () => ({
-  theme: runtime.config.theme,
+  theme: runtimeTheme(),
   styleNonce: runtime.config.styleNonce,
 });
 
