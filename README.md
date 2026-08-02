@@ -46,10 +46,11 @@ text.
 
 ## Themes
 
-When no theme is configured, the initial light or dark theme is resolved from `?theme=light|dark`,
-the `layer-esm-theme` local-storage value, the current system preference, and finally the light
-fallback. An explicit `system` setting responds to runtime `prefers-color-scheme` changes, and a
-partial custom theme is merged with safe light defaults.
+When no theme is configured, the initial theme is read once from the operating-system preference
+and cached for the runtime lifecycle. Light is used when the system preference cannot be determined.
+An explicit `config({ theme })` value overrides this automatic initial theme. The `system` setting
+continues to respond to runtime `prefers-color-scheme` changes, and a partial custom theme is merged
+with safe light defaults.
 
 ```javascript
 import { config, darkTheme, lightTheme } from "layer-esm";

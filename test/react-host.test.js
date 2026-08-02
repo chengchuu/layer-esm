@@ -9,6 +9,7 @@ const loadLayer = () => {
 const originalMatchMedia = window.matchMedia;
 
 beforeEach(() => {
+  jest.restoreAllMocks();
   document.documentElement.innerHTML = "<head></head><body></body>";
   history.replaceState({}, "", "/");
   localStorage.clear();
@@ -197,71 +198,92 @@ test("dark and custom themes update active layers", () => {
   expect(getComputedStyle(root).borderRadius).toBe("3px");
 });
 
-test("uses the Mazey theme preference when no theme is configured", () => {
-  localStorage.setItem("layer-esm-theme", "dark");
+test.each([
+  ["dark", true, "rgb(23, 32, 51)"],
+  ["light", false, "rgb(255, 255, 255)"],
+])(
+  "uses the %s system theme when no theme is configured",
+  (_, matches, color) => {
+    window.matchMedia = jest.fn(() => ({ matches }));
+    const runtime = loadLayer();
+    const index = runtime.open({ content: "System preference" });
+    const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
+
+    expect(window.matchMedia).toHaveBeenCalledTimes(1);
+    expect(window.matchMedia).toHaveBeenCalledWith(
+      "(prefers-color-scheme: dark)"
+    );
+    expect(getComputedStyle(root).backgroundColor).toBe(color);
+  }
+);
+
+test.each([
+  ["missing", () => delete window.matchMedia],
+  ["unavailable", () => (window.matchMedia = "not-a-function")],
+  [
+    "throwing",
+    () => {
+      window.matchMedia = jest.fn(() => {
+        throw new Error("matchMedia failed");
+      });
+    },
+  ],
+])("uses the light fallback when matchMedia is %s", (_, prepareMatchMedia) => {
+  prepareMatchMedia();
   const runtime = loadLayer();
-  const index = runtime.open({ content: "Preferred theme" });
-  const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
-
-  expect(getComputedStyle(root).backgroundColor).toBe("rgb(23, 32, 51)");
-});
-
-test("uses and persists the Mazey query theme when no theme is configured", () => {
-  history.replaceState({}, "", "/?theme=dark");
-  const runtime = loadLayer();
-  const index = runtime.open({ content: "Query theme" });
-  const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
-
-  expect(localStorage.getItem("layer-esm-theme")).toBe("dark");
-  expect(getComputedStyle(root).backgroundColor).toBe("rgb(23, 32, 51)");
-});
-
-test("uses the system theme when no stored or configured theme exists", () => {
-  window.matchMedia = jest.fn(() => ({ matches: true }));
-  const runtime = loadLayer();
-  const index = runtime.open({ content: "System preference" });
-  const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
-
-  expect(window.matchMedia).toHaveBeenCalledWith(
-    "(prefers-color-scheme: dark)"
-  );
-  expect(getComputedStyle(root).backgroundColor).toBe("rgb(23, 32, 51)");
-});
-
-test("explicit theme configuration overrides the Mazey preference", () => {
-  localStorage.setItem("layer-esm-theme", "dark");
-  const runtime = loadLayer();
-  runtime.config({ theme: "light" });
-  const index = runtime.open({ content: "Configured theme" });
+  const index = runtime.open({ content: "Fallback theme" });
   const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
 
   expect(getComputedStyle(root).backgroundColor).toBe("rgb(255, 255, 255)");
 });
 
-test("explicit theme configuration does not resolve or persist a query fallback", () => {
+test.each([
+  ["dark", false, "rgb(23, 32, 51)"],
+  ["light", true, "rgb(255, 255, 255)"],
+])(
+  "explicit %s configuration overrides the system theme",
+  (theme, matches, color) => {
+    window.matchMedia = jest.fn(() => ({ matches }));
+    const runtime = loadLayer();
+    runtime.config({ theme });
+    const index = runtime.open({ content: "Configured theme" });
+    const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
+
+    expect(window.matchMedia).not.toHaveBeenCalled();
+    expect(getComputedStyle(root).backgroundColor).toBe(color);
+  }
+);
+
+test("automatic theme resolution does not inspect URL or local storage", () => {
   history.replaceState({}, "", "/?theme=dark");
+  window.matchMedia = jest.fn(() => ({ matches: false }));
+  const getItem = jest.spyOn(Storage.prototype, "getItem");
+  const setItem = jest.spyOn(Storage.prototype, "setItem");
   const runtime = loadLayer();
-  runtime.config({ theme: "light" });
-  const index = runtime.open({ content: "Configured query theme" });
+  const index = runtime.open({ content: "Automatic theme" });
   const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
 
-  expect(localStorage.getItem("layer-esm-theme")).toBeNull();
   expect(getComputedStyle(root).backgroundColor).toBe("rgb(255, 255, 255)");
+  expect(getItem).not.toHaveBeenCalled();
+  expect(setItem).not.toHaveBeenCalled();
 });
 
-test("shares one resolved default across document hosts", () => {
-  localStorage.setItem("layer-esm-theme", "light");
+test("shares one cached system theme across document hosts and config updates", () => {
+  let dark = false;
+  window.matchMedia = jest.fn(() => ({ matches: dark }));
   const runtime = loadLayer();
   const mainIndex = runtime.open({ content: "Main theme" });
   const iframe = document.createElement("iframe");
   document.body.appendChild(iframe);
 
-  localStorage.setItem("layer-esm-theme", "dark");
+  dark = true;
   const frameIndex = runtime.open({
     content: "Frame theme",
     targetDocument: iframe.contentDocument,
   });
+  runtime.config({ styleNonce: "test-nonce" });
 
+  expect(window.matchMedia).toHaveBeenCalledTimes(1);
   expect(
     getComputedStyle(
       document.querySelector(`.layer-esm[data-index="${mainIndex}"]`)
@@ -274,18 +296,6 @@ test("shares one resolved default across document hosts", () => {
       )
     ).backgroundColor
   ).toBe("rgb(255, 255, 255)");
-});
-
-test("captures the default theme once for unrelated config updates", () => {
-  localStorage.setItem("layer-esm-theme", "light");
-  const runtime = loadLayer();
-  const index = runtime.open({ content: "Initial theme" });
-  const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
-
-  localStorage.setItem("layer-esm-theme", "dark");
-  runtime.config({ styleNonce: "test-nonce" });
-
-  expect(getComputedStyle(root).backgroundColor).toBe("rgb(255, 255, 255)");
 });
 
 test("changing themes does not reset focus inside an active layer", () => {
