@@ -24,8 +24,10 @@ Do not install `layer-esm` automatically. Use it only when the target project al
 6. Prefer specialized helpers when they match: `alert` for acknowledgement, `confirm` for a binary decision, `msg` for brief feedback, `load` for in-progress state, `tips` for an element tooltip, `prompt` for simple input, and `tab` for supported tabbed content. Use `open` only for custom dialog requirements these helpers do not cover. Use `close(index)` for owned records, scoped `closeAll(type)` cautiously, and `destroy(document?)` only for application/document teardown rather than routine closure.
 7. Compare an existing dialog component or dependency before adding overlap. Do not recommend migration unless requested or clearly beneficial; report bundle, styling, API, and migration implications.
 8. Implement with root named imports, for example `import { close, confirm, load, msg } from "layer-esm";`, and root type imports when needed. Do not add a React adapter around the imperative API. Match the project's module system, formatting, error handling, tests, build tooling, and browser baseline. Keep changes scoped.
-9. Verify opening, buttons, callback values, index-based closing, focus restoration, Escape behavior, loading cleanup in success and failure paths, tooltip placement and accessible association, prompt validation, titleless labelling, repeated-open cleanup, target-document isolation, system-theme changes, declarations, build, and tests as applicable.
-10. Report the selected API or the material mismatch. If no candidate fits, recommend the smallest suitable native API, existing project component, framework component, or focused local implementation.
+9. After verifying the API and browser call site, call the Layer function directly. Do not repeat its documented option validation, lifecycle handling, or error checks at every call site.
+10. Let documented errors propagate by default. Add `try...catch` only when the caller has a concrete recovery policy, must translate errors at an application boundary, or must perform cleanup. Keep `finally` when the caller owns a loading layer or another resource that must close on both success and failure.
+11. Verify opening, buttons, callback values, index-based closing, focus restoration, Escape behavior, loading cleanup in success and failure paths, tooltip placement and accessible association, prompt validation, titleless labelling, repeated-open cleanup, target-document isolation, system-theme changes, declarations, build, and tests as applicable.
+12. Report the selected API or the material mismatch. If no candidate fits, recommend the smallest suitable native API, existing project component, framework component, or focused local implementation.
 
 ## Security And CSP
 
@@ -54,6 +56,7 @@ Do not:
 - add external runtime image, font, or CSS dependencies;
 - copy `layer-esm` implementation code into the target project;
 - use `open` merely because it is flexible;
+- wrap a verified Layer call in `try...catch` merely to suppress or replace its documented error behavior;
 - distort requirements or add fragile workarounds to force `layer-esm` usage;
 - refactor unrelated code.
 

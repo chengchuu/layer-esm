@@ -8,7 +8,7 @@ import type {
   LayerType,
   NormalizedLayerOptions,
 } from "./types";
-import { resolveThemePreference, type ResolvedTheme } from "mazey";
+import { getSystemTheme, type ResolvedTheme } from "mazey";
 import type { CSSProperties } from "react";
 import { LayerDocumentHost } from "../host/host-registry";
 import type {
@@ -21,7 +21,6 @@ import { normalizeArea, normalizeShade } from "../utils/position";
 const TYPE_NAMES = ["dialog", "page", "iframe", "loading", "tips"] as const;
 const CLOSE_ANIMATION_MS = 180;
 const MINIMIZED_WIDTH = 180;
-const THEME_STORAGE_KEY = "layer-esm-theme";
 
 const captureWindowStyle = (record: LayerInstance): CSSProperties => {
   const root = record.root;
@@ -99,7 +98,7 @@ const ensureDocument = (preferred?: Document): Document => {
 
 const runtimeTheme = () => {
   if (runtime.config.theme !== undefined) return runtime.config.theme;
-  runtime.defaultTheme ??= resolveThemePreference(THEME_STORAGE_KEY).value;
+  runtime.defaultTheme ??= getSystemTheme() ?? "light";
   return runtime.defaultTheme;
 };
 
