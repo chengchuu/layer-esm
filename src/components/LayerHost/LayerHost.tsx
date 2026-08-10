@@ -12,6 +12,8 @@ import {
   DialogContent,
   Header,
   Icon,
+  IconCross,
+  IconLock,
   Input,
   LoadingShell,
   PromptField,
@@ -476,7 +478,13 @@ const LayerView = ({
             data-icon={ICONS[Math.min(options.icon, 6)] ?? "!"}
             aria-hidden="true"
           >
-            {ICONS[Math.min(options.icon, 6)] ?? "!"}
+            {options.icon === 2 ? (
+              <IconCross />
+            ) : options.icon === 4 ? (
+              <IconLock />
+            ) : (
+              ICONS[Math.min(options.icon, 6)] ?? "!"
+            )}
           </Icon>
           {body}
         </DialogContent>
