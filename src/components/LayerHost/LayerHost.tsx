@@ -406,7 +406,9 @@ const LayerView = ({
                     : undefined
                 }
                 onClick={() => select(index)}
-                onKeyDown={(event) => onTabKey(event, index)}
+                onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) =>
+                  onTabKey(event, index)
+                }
               >
                 {item.title}
               </Tab>
