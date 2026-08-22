@@ -22,8 +22,6 @@ Use layer-esm via [npm](https://www.npmjs.com/package/layer-esm).
 npm install layer-esm
 ```
 
-The ESM, CommonJS, and type declaration outputs are written to `dist/`.
-
 ## Usage
 
 ```javascript
