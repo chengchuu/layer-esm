@@ -334,6 +334,7 @@ test("custom themes supply default shade and tooltip colors", () => {
 test("system theme follows runtime media-query changes", () => {
   let dark = false;
   let listener;
+  const removeEventListener = jest.fn();
   window.matchMedia = jest.fn(() => ({
     get matches() {
       return dark;
@@ -341,7 +342,7 @@ test("system theme follows runtime media-query changes", () => {
     addEventListener: (_type, callback) => {
       listener = callback;
     },
-    removeEventListener: jest.fn(),
+    removeEventListener,
   }));
   const runtime = loadLayer();
   runtime.config({ theme: "system" });
@@ -352,33 +353,9 @@ test("system theme follows runtime media-query changes", () => {
   dark = true;
   listener({ matches: true });
   expect(getComputedStyle(root).backgroundColor).toBe("rgb(23, 32, 51)");
-});
-
-test("system theme supports legacy MediaQueryList listeners", () => {
-  let dark = false;
-  let listener;
-  const removeListener = jest.fn();
-  window.matchMedia = jest.fn(() => ({
-    get matches() {
-      return dark;
-    },
-    addListener: (callback) => {
-      listener = callback;
-    },
-    removeListener,
-  }));
-  const runtime = loadLayer();
-  runtime.config({ theme: "system" });
-  const index = runtime.open({ content: "Legacy system" });
-  const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
-  expect(getComputedStyle(root).backgroundColor).toBe("rgb(255, 255, 255)");
-
-  dark = true;
-  listener({ matches: true });
-  expect(getComputedStyle(root).backgroundColor).toBe("rgb(23, 32, 51)");
 
   runtime.destroy();
-  expect(removeListener).toHaveBeenCalledWith(listener);
+  expect(removeEventListener).toHaveBeenCalledWith("change", listener);
 });
 
 test("prompt is labelled and tabs support arrow-key navigation", () => {

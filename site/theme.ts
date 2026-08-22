@@ -73,14 +73,16 @@ export function initializeThemeControls(storageKey: string): () => void {
     const control = event.target;
     if (!(control instanceof HTMLSelectElement)) return;
     if (!control.matches("[data-theme-select]")) return;
-    const preference = control.value as ThemePreference;
-    try {
-      setThemePreference(storageKey, preference);
-    } catch (error) {
-      if (!(error instanceof TypeError)) throw error;
-      apply(selectedPreference, resolveSelectedTheme(selectedPreference));
+    const preference = control.value;
+    if (
+      preference !== "system" &&
+      preference !== "light" &&
+      preference !== "dark"
+    ) {
+      syncControls(selectedPreference);
       return;
     }
+    setThemePreference(storageKey, preference);
     selectedPreference = preference;
     apply(preference, resolveSelectedTheme(preference));
   };
