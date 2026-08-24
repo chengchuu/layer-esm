@@ -69,6 +69,8 @@ test("every generated code panel has an accessible copy control", () => {
     expect(button.tagName).toBe("BUTTON");
     expect(button.type).toBe("button");
     expect(button.textContent).toBe("Copy code");
+    expect(button.classList.contains("btn-outline-secondary")).toBe(true);
+    expect(button.classList.contains("btn-outline-light")).toBe(false);
     expect(status.classList.contains("visually-hidden")).toBe(true);
     expect(status.getAttribute("role")).toBe("status");
     expect(status.getAttribute("aria-live")).toBe("polite");

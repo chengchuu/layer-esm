@@ -871,7 +871,7 @@ if (app) {
       const label = document.createElement("span");
       label.dataset.demoSourceLabel = "";
       const copyButton = document.createElement("button");
-      copyButton.className = "btn btn-sm btn-outline-light";
+      copyButton.className = "btn btn-sm btn-outline-secondary";
       copyButton.type = "button";
       copyButton.dataset.demoSourceCopy = "";
       copyButton.textContent = "Copy code";
