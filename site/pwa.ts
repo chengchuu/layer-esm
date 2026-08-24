@@ -1,4 +1,9 @@
-import { listenMediaQueryChanges, watchServiceWorkerUpdates } from "mazey";
+import {
+  isSafePWAEnv,
+  isStandalonePWA,
+  listenMediaQueryChanges,
+  watchServiceWorkerUpdates,
+} from "mazey";
 
 export interface SitePwaConfig {
   appName: string;
@@ -39,29 +44,22 @@ function statusAnnouncer(documentRef: Document): (message: string) => void {
     regions.forEach((region) => (region.textContent = message));
 }
 
-export function isStandaloneMode(
-  windowRef: Window,
-  navigatorRef: NavigatorWithStandalone
-): boolean {
-  return (
-    windowRef.matchMedia("(display-mode: standalone)").matches ||
-    navigatorRef.standalone === true
-  );
-}
-
 export function shouldRegisterSiteServiceWorker(
   config: SitePwaConfig,
-  locationRef: Location,
+  documentRef: Document,
+  windowRef: Window,
   navigatorRef: Navigator
 ): boolean {
-  const isLocalhost = new Set(["localhost", "127.0.0.1", "[::1]"]).has(
-    locationRef.hostname
-  );
   return (
     config.enabled &&
-    "serviceWorker" in navigatorRef &&
-    (locationRef.protocol === "https:" || isLocalhost) &&
-    locationRef.pathname.startsWith(config.scope)
+    isSafePWAEnv({
+      scope: config.scope,
+      environment: {
+        window: windowRef,
+        navigator: navigatorRef,
+        document: documentRef,
+      },
+    })
   );
 }
 
@@ -79,6 +77,13 @@ export function initializeInstallExperience(
   );
   const announce = statusAnnouncer(documentRef);
   const displayMode = windowRef.matchMedia("(display-mode: standalone)");
+  const standaloneOptions = {
+    environment: {
+      window: windowRef,
+      navigator: navigatorRef,
+      document: documentRef,
+    },
+  };
   let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
   const setInstallButtonsHidden = (hidden: boolean) => {
@@ -98,7 +103,7 @@ export function initializeInstallExperience(
   };
 
   const handlePromptAvailable = (event: Event) => {
-    if (isStandaloneMode(windowRef, navigatorRef)) return;
+    if (isStandalonePWA(standaloneOptions)) return;
     const promptEvent = event as BeforeInstallPromptEvent;
     promptEvent.preventDefault();
     deferredPrompt = promptEvent;
@@ -138,11 +143,11 @@ export function initializeInstallExperience(
     announce(`${appName} was installed.`);
   };
   const handleDisplayMode = () => {
-    if (isStandaloneMode(windowRef, navigatorRef)) showInstalledState();
+    if (isStandalonePWA(standaloneOptions)) showInstalledState();
   };
 
   if (installButtons.length === 0) {
-    if (isStandaloneMode(windowRef, navigatorRef)) showInstalledState();
+    if (isStandalonePWA(standaloneOptions)) showInstalledState();
     windowRef.addEventListener("appinstalled", handleInstalled);
     const removeDisplayModeListener = listenMediaQueryChanges(
       displayMode,
@@ -154,7 +159,7 @@ export function initializeInstallExperience(
     };
   }
 
-  if (isStandaloneMode(windowRef, navigatorRef)) showInstalledState();
+  if (isStandalonePWA(standaloneOptions)) showInstalledState();
   installButtons.forEach((button) =>
     button.addEventListener("click", handleInstall)
   );
@@ -227,7 +232,12 @@ export async function registerSiteServiceWorker(
   navigatorRef: Navigator
 ): Promise<ServiceWorkerRegistration | null> {
   if (
-    !shouldRegisterSiteServiceWorker(config, windowRef.location, navigatorRef)
+    !shouldRegisterSiteServiceWorker(
+      config,
+      documentRef,
+      windowRef,
+      navigatorRef
+    )
   ) {
     return null;
   }
@@ -267,7 +277,7 @@ export function initializeSitePwa(config: SitePwaConfig): void {
   root.dataset.pwaReady = "true";
 
   initializeInstallExperience(document, window, navigator, config.appName);
-  if (!shouldRegisterSiteServiceWorker(config, window.location, navigator))
+  if (!shouldRegisterSiteServiceWorker(config, document, window, navigator))
     return;
 
   const scheduleRegistration = () => {
