@@ -16,7 +16,13 @@
         "exclude": ["@babel/plugin-transform-typeof-symbol"]
       }
     ],
-    "@babel/typescript"
+    "@babel/typescript",
+    [
+      "@babel/preset-react",
+      {
+        "runtime": "automatic"
+      }
+    ]
   ],
   "plugins": [],
   "sourceType": "unambiguous"

@@ -8,7 +8,7 @@
 [l-image]: https://img.shields.io/npm/l/layer-esm
 [l-url]: https://github.com/chengchuu/layer-esm
 
-Special thanks to 贤心, the original author of Layer, for creating a popup library that has been widely used across the web community for many years. layer-esm is a modern ESM adaptation and refactoring effort inspired by the original Layer project.
+Special thanks to Xianxin, the original author of Layer, for creating a popup library that has been widely used across the web community for many years. layer-esm is a modern TypeScript implementation inspired by the original Layer API.
 
 - [Project website](https://chengchuu.github.io/layer-esm/)
 - [Live playground](https://chengchuu.github.io/layer-esm/playground/)
@@ -19,10 +19,10 @@ Special thanks to 贤心, the original author of Layer, for creating a popup lib
 Use layer-esm via [npm](https://www.npmjs.com/package/layer-esm).
 
 ```bash
-npm install layer-esm --save
+npm install layer-esm
 ```
 
-Of course, you can also serve the built package files yourself. The ESM, CommonJS, and type declaration outputs are written to `dist/`.
+The ESM, CommonJS, and type declaration outputs are written to `dist/`.
 
 ## Usage
 
@@ -38,22 +38,51 @@ confirm("Continue?", {}, () => {
 ```
 
 Dialogs provide labelled dialog semantics, keyboard focus trapping, Escape handling, and focus
-restoration. String `content` values are treated as trusted HTML for Layer compatibility; use an
+restoration. Messages use a polite live region, tabs support arrow-key navigation, prompt controls
+are labelled, decorative icons are hidden from assistive technology, and animations honor reduced
+motion. String `content` values are treated as trusted HTML for Layer compatibility; use an
 `HTMLElement` or sanitize untrusted markup before passing it. Dynamic titles are always rendered as
 text.
 
-Runtime styles are injected once by default. Sites with a Content Security Policy can provide a
-nonce, or load the exported CSS text themselves and disable automatic injection:
+## Themes
+
+The default light theme can be changed globally. `system` responds to runtime
+`prefers-color-scheme` changes, and a partial custom theme is merged with safe light defaults.
 
 ```javascript
-import { config, layerStyles } from "layer-esm";
+import { config, darkTheme, lightTheme } from "layer-esm";
+
+config({ theme: "dark" });
+config({ theme: "system" });
+config({ theme: { primary: "#7c3aed", radius: "16px" } });
+```
+
+`lightTheme` and `darkTheme` are exported for typed composition.
+
+## Content Security Policy
+
+styled-components injects its generated rules into the target document. Sites with a Content
+Security Policy can attach their existing nonce:
+
+```javascript
+import { config } from "layer-esm";
 
 config({ styleNonce: window.__CSP_NONCE__ });
-
-// For a preloaded stylesheet instead:
-config({ injectStyles: false });
-console.log(layerStyles);
 ```
+
+The previous `injectStyles: false` and reusable `layerStyles` workflow cannot represent dynamic
+styled-components themes. `layerStyles` remains as a deprecated compatibility marker, while
+`config({ injectStyles: false })` throws a descriptive migration error instead of silently rendering
+an unstyled dialog. See the [React 19 migration guide](./guides/react-19-migration.md).
+
+## Architecture and lifecycle
+
+Display calls lazily create one shared React root per target `Document`. Typed commands update a
+small external store and all active layers render through that host. `close` clears timers and
+callbacks, restores moved DOM nodes, scroll state, and focus, and waits for the exit transition when
+enabled. The host is reused until `destroy()` explicitly closes its records and unmounts it. Importing
+the package does not access the DOM; calling a display API without a browser `Document` throws a
+clear error.
 
 The supported browser baseline is the latest two Chrome, Edge, Firefox, and Safari releases,
 Chrome for Android 100+, and iOS Safari 15+. The package does not install global polyfills.
@@ -61,7 +90,8 @@ Chrome for Android 100+, and iOS Safari 15+. The package does not install global
 ## Guides
 
 - [Introducing layer-esm](./guides/release-notes/introducing-layer-esm-v1.0.1.md)
-- [Release notes index](./guides/release-notes/README.md)
+- [React 19 migration](./guides/react-19-migration.md)
+- [Release notes index](./guides/README.md)
 
 ## Contributing
 
@@ -74,81 +104,25 @@ Chrome for Android 100+, and iOS Safari 15+. The package does not install global
 
 ### Scripts
 
-Install Dependencies:
-
 ```bash
+# Install dependencies
 npm i
-```
 
-Development:
-
-```bash
+# Development
 npm run dev
-```
 
-Build:
-
-```bash
+# Build
 npm run build
-```
 
-Test:
-
-```bash
+# Test
 npm test
-```
 
-Single test file:
-
-```bash
+# Single test file
 npm test -- test/layer.test.js
-```
 
-Documentation:
-
-```bash
+# Documentation
 npm run docs
 ```
-
-`npm run docs` creates the complete GitHub Pages artifact in `docs`, including the landing page,
-playground, TypeDoc API documentation, manifest, service worker, `robots.txt`, and `sitemap.xml`.
-Handwritten documentation belongs in `guides`; `docs` is generated output only. Validate the final
-SEO and PWA output independently with `npm run seo:validate` and `npm run pwa:validate`.
-
-Validate handwritten Markdown links without rebuilding the Pages artifact:
-
-```bash
-npm run docs:links
-```
-
-Synchronize the canonical `prefer-layer` Codex skill from `.agents/skills/prefer-layer/` to the sibling public skills repository:
-
-```bash
-npm run skill:sync
-npm run skill:sync:check
-```
-
-Use `npm run skill:sync:dry-run` to preview changes. The synchronization replaces the complete public skill directory, removes obsolete destination files, validates the public copy, and never stages or commits changes.
-
-Build and serve a production-like project-path preview at
-<http://127.0.0.1:4173/layer-esm/>:
-
-```bash
-npm run pwa:preview
-```
-
-Normal `npm run dev` serves the website at <http://localhost:8080/> and the playground at
-<http://localhost:8080/playground/> without registering the production service worker. When testing
-worker updates, unregister old workers or clear site data first. Installation remains available
-through each browser's native install or Add to Home Screen menu.
-
-Docker:
-
-```bash
-docker compose up -d --build
-```
-
-Visit: <http://localhost:8080>
 
 ## License
 

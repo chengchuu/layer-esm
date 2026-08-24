@@ -1,5 +1,13 @@
 import type { LayerOffset, LayerTipDirection, ShadeValue } from "../core/types";
-import { normalizeUnit } from "./dom";
+
+const normalizeUnit = (
+  value: string | number | undefined
+): string | undefined => {
+  if (value === undefined || value === "auto") return value;
+  return typeof value === "number" || /^-?\d+(?:\.\d+)?$/.test(value)
+    ? `${value}px`
+    : value;
+};
 
 export const normalizeShade = (
   shade: boolean | number | [number, string] | undefined
@@ -47,14 +55,15 @@ export const applyOffset = (
   offset: LayerOffset | undefined,
   fixed: boolean
 ): void => {
-  element.style.top = "";
-  element.style.left = "";
-  element.style.right = "";
-  element.style.bottom = "";
+  element.style.top = "auto";
+  element.style.left = "auto";
+  element.style.right = "auto";
+  element.style.bottom = "auto";
   element.style.transform = "";
 
-  const scrollY = fixed ? 0 : window.scrollY;
-  const scrollX = fixed ? 0 : window.scrollX;
+  const view = element.ownerDocument?.defaultView ?? window;
+  const scrollY = fixed ? 0 : view.scrollY;
+  const scrollX = fixed ? 0 : view.scrollX;
 
   if (Array.isArray(offset)) {
     element.style.top = normalizeUnit(offset[0]) ?? "";
@@ -128,14 +137,15 @@ export const applyTipsPlacement = (
 ): LayerTipDirection => {
   const targetRect = target.getBoundingClientRect();
   const layerRect = element.getBoundingClientRect();
-  const scrollX = fixed ? 0 : window.scrollX;
-  const scrollY = fixed ? 0 : window.scrollY;
+  const view = element.ownerDocument.defaultView ?? window;
+  const scrollX = fixed ? 0 : view.scrollX;
+  const scrollY = fixed ? 0 : view.scrollY;
   const gap = 12;
   const margin = 8;
   const viewportLeft = scrollX + margin;
   const viewportTop = scrollY + margin;
-  const viewportRight = scrollX + window.innerWidth - margin;
-  const viewportBottom = scrollY + window.innerHeight - margin;
+  const viewportRight = scrollX + view.innerWidth - margin;
+  const viewportBottom = scrollY + view.innerHeight - margin;
 
   const coordinates = (
     candidate: LayerTipDirection

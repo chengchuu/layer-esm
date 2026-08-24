@@ -63,13 +63,13 @@ test("API subpages receive self-referencing canonical URLs", () => {
 test("API guide links resolve to the handwritten GitHub source", () => {
   const source = typeDocHtml.replace(
     "</main>",
-    '<a href="../guides/release-notes/README.md">Release notes</a></main>'
+    '<a href="../guides/README.md">Release notes</a></main>'
   );
   const transformed = transformApiHtml(source, "index.html");
   expect(transformed).toContain(
-    `href="${projectConfig.urls.guidesSource}release-notes/README.md"`
+    `href="${projectConfig.urls.guidesSource}README.md"`
   );
-  expect(transformed).not.toContain('href="../guides/release-notes/README.md"');
+  expect(transformed).not.toContain('href="../guides/README.md"');
 });
 
 test("generated TypeDoc headings are normalized without changing content", () => {
@@ -115,8 +115,33 @@ test("site templates use the styled update, code panel, and muted section classe
   );
   expect(playgroundScript).not.toContain("bg-white");
   expect(playgroundScript).not.toContain("btn-outline-dark");
+  const demoIds = new Set(
+    Array.from(
+      playgroundScript.matchAll(/data-demo="([^"]+)"/g),
+      (match) => match[1]
+    )
+  );
+  const sourceBlock = playgroundScript.match(
+    /const demoSource: Record<string, string> = \{([\s\S]*?)\n\};\n\nif \(app\)/
+  )?.[1];
+  expect(sourceBlock).toBeDefined();
+  const sourceIds = new Set(
+    Array.from(sourceBlock.matchAll(/^ {2}"([^"]+)": `/gm), (match) => match[1])
+  );
+  expect(sourceIds).toEqual(demoIds);
+  expect(playgroundScript).toContain("code.textContent = source;");
+  expect(playgroundScript).toContain(
+    'panel.className = "code-panel playground-code-panel mt-3";'
+  );
   expect(stylesheet).toContain(".playground-demo-grid .card");
   expect(stylesheet).toContain(".playground-demo-grid .btn-outline-secondary");
+  expect(stylesheet).toContain(".playground-code-panel pre");
+  const playgroundCodeStyles = stylesheet.match(
+    /\.playground-code-panel pre \{([^}]*)\}/
+  )?.[1];
+  expect(playgroundCodeStyles).toContain("overflow-x: hidden");
+  expect(playgroundCodeStyles).toContain("white-space: pre-wrap");
+  expect(playgroundCodeStyles).toContain("overflow-wrap: anywhere");
   expect(stylesheet).toContain(".site-footer nav");
   expect(stylesheet).toContain("gap: 0.75rem 1.25rem");
   expect(stylesheet).toContain(".code-panel {");

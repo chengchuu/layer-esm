@@ -4,6 +4,7 @@ import layer, {
   closeAll,
   config,
   confirm,
+  destroy,
   full,
   getChildFrame,
   getFrameIndex,
@@ -38,9 +39,10 @@ import type {
   LayerTitle,
   LayerType,
 } from "./core/types";
-import { layerTheme } from "./styles/theme";
+import { darkTheme, layerStyles, lightTheme } from "./styles/theme";
+import type { LayerTheme, LayerThemeSelection } from "./styles/theme";
 
-export const layerStyles: string = layerTheme;
+export { darkTheme, layerStyles, lightTheme };
 
 export default layer;
 
@@ -59,6 +61,8 @@ export type {
   LayerTipsOptions,
   LayerTitle,
   LayerType,
+  LayerTheme,
+  LayerThemeSelection,
 };
 
 export {
@@ -67,6 +71,7 @@ export {
   closeAll,
   config,
   confirm,
+  destroy,
   full,
   getChildFrame,
   getFrameIndex,

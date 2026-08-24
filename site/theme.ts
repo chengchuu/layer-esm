@@ -1,3 +1,5 @@
+import { listenMediaQueryChanges } from "mazey";
+
 export type ThemePreference = "system" | "light" | "dark";
 
 const preferences = new Set<ThemePreference>(["system", "light", "dark"]);
@@ -70,11 +72,11 @@ export function initializeThemeControls(
   root.dataset.themeControlsReady = "true";
   apply(readPreference(windowRef.localStorage, storageKey), false);
   documentRef.addEventListener("change", handleChange);
-  media.addEventListener?.("change", handleSystemTheme);
+  const removeMediaListener = listenMediaQueryChanges(media, handleSystemTheme);
 
   return () => {
     documentRef.removeEventListener("change", handleChange);
-    media.removeEventListener?.("change", handleSystemTheme);
+    removeMediaListener();
     delete root.dataset.themeControlsReady;
   };
 }

@@ -215,7 +215,7 @@ test("prefer-layer API map covers root exports and has valid tables", () => {
     "utf8"
   );
   const exportNames = [
-    ...source.matchAll(/export (?:type )?\{([\s\S]*?)\n\};/g),
+    ...source.matchAll(/export (?:type )?\{([\s\S]*?)\};/g),
   ].flatMap((match) =>
     match[1]
       .split(",")

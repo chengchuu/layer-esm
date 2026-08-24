@@ -1,3 +1,5 @@
+import { listenMediaQueryChanges, watchServiceWorkerUpdates } from "mazey";
+
 export interface SitePwaConfig {
   appName: string;
   enabled: boolean;
@@ -142,10 +144,13 @@ export function initializeInstallExperience(
   if (installButtons.length === 0) {
     if (isStandaloneMode(windowRef, navigatorRef)) showInstalledState();
     windowRef.addEventListener("appinstalled", handleInstalled);
-    displayMode.addEventListener?.("change", handleDisplayMode);
+    const removeDisplayModeListener = listenMediaQueryChanges(
+      displayMode,
+      handleDisplayMode
+    );
     return () => {
       windowRef.removeEventListener("appinstalled", handleInstalled);
-      displayMode.removeEventListener?.("change", handleDisplayMode);
+      removeDisplayModeListener();
     };
   }
 
@@ -155,7 +160,10 @@ export function initializeInstallExperience(
   );
   windowRef.addEventListener("beforeinstallprompt", handlePromptAvailable);
   windowRef.addEventListener("appinstalled", handleInstalled);
-  displayMode.addEventListener?.("change", handleDisplayMode);
+  const removeDisplayModeListener = listenMediaQueryChanges(
+    displayMode,
+    handleDisplayMode
+  );
 
   return () => {
     installButtons.forEach((button) =>
@@ -163,7 +171,7 @@ export function initializeInstallExperience(
     );
     windowRef.removeEventListener("beforeinstallprompt", handlePromptAvailable);
     windowRef.removeEventListener("appinstalled", handleInstalled);
-    displayMode.removeEventListener?.("change", handleDisplayMode);
+    removeDisplayModeListener();
   };
 }
 
@@ -179,61 +187,36 @@ export function monitorServiceWorkerUpdates(
     "[data-pwa-update-now]"
   );
   const announce = statusAnnouncer(documentRef);
-  let waitingWorker: ServiceWorker | null = registration.waiting;
-  let installingWorker: ServiceWorker | null = null;
   let reloadRequested = false;
 
-  const showUpdate = (worker: ServiceWorker) => {
-    waitingWorker = worker;
-    if (notice) notice.hidden = false;
-    announce(`A new version of the ${appName} website is available.`);
-  };
-
-  const handleStateChange = () => {
-    if (
-      installingWorker?.state === "installed" &&
-      navigatorRef.serviceWorker.controller
-    )
-      showUpdate(installingWorker);
-  };
-  const handleUpdateFound = () => {
-    installingWorker?.removeEventListener("statechange", handleStateChange);
-    installingWorker = registration.installing;
-    installingWorker?.addEventListener("statechange", handleStateChange);
-    handleStateChange();
-  };
+  const watcher = watchServiceWorkerUpdates(
+    registration,
+    navigatorRef.serviceWorker,
+    {
+      onUpdateAvailable() {
+        if (notice) notice.hidden = false;
+        announce(`A new version of the ${appName} website is available.`);
+      },
+      onControllerChange() {
+        if (notice) notice.hidden = true;
+        if (!reloadRequested) return;
+        reloadRequested = false;
+        windowRef.location.reload();
+      },
+    }
+  );
   const handleUpdate = () => {
-    if (!waitingWorker) return;
+    if (!watcher.activateWaiting()) return;
     reloadRequested = true;
     if (updateButton) updateButton.disabled = true;
     announce("Updating the website now.");
-    waitingWorker.postMessage({ type: "SKIP_WAITING" });
-  };
-  const handleControllerChange = () => {
-    if (notice) notice.hidden = true;
-    if (!reloadRequested) return;
-    reloadRequested = false;
-    windowRef.location.reload();
   };
 
-  if (registration.waiting && navigatorRef.serviceWorker.controller)
-    showUpdate(registration.waiting);
-  registration.addEventListener("updatefound", handleUpdateFound);
-  if (registration.installing) handleUpdateFound();
   updateButton?.addEventListener("click", handleUpdate);
-  navigatorRef.serviceWorker.addEventListener(
-    "controllerchange",
-    handleControllerChange
-  );
 
   return () => {
-    registration.removeEventListener("updatefound", handleUpdateFound);
-    installingWorker?.removeEventListener("statechange", handleStateChange);
     updateButton?.removeEventListener("click", handleUpdate);
-    navigatorRef.serviceWorker.removeEventListener(
-      "controllerchange",
-      handleControllerChange
-    );
+    watcher.dispose();
   };
 }
 

@@ -52,6 +52,44 @@ test("theme selection follows the system and persists an explicit choice", () =>
   cleanup();
 });
 
+test("theme changes support legacy MediaQueryList listeners", () => {
+  document.documentElement.removeAttribute("data-theme-controls-ready");
+  document.body.innerHTML = `
+    <select data-theme-select>
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  `;
+  let dark = false;
+  let listener;
+  const removeListener = jest.fn();
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: () => ({
+      get matches() {
+        return dark;
+      },
+      addListener: (callback) => {
+        listener = callback;
+      },
+      removeListener,
+    }),
+  });
+  localStorage.clear();
+  localStorage.setItem(storageKey, "system");
+
+  const cleanup = initializeThemeControls(storageKey);
+  expect(document.documentElement.dataset.bsTheme).toBe("light");
+
+  dark = true;
+  listener({ matches: true });
+  expect(document.documentElement.dataset.bsTheme).toBe("dark");
+
+  cleanup();
+  expect(removeListener).toHaveBeenCalledWith(listener);
+});
+
 test("Bootstrap navigation closes on Escape and restores toggle focus", () => {
   document.documentElement.removeAttribute("data-nav-enhanced");
   document.body.innerHTML = `
