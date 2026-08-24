@@ -2,7 +2,6 @@
 
 const {
   initializeInstallExperience,
-  isStandaloneMode,
   monitorServiceWorkerUpdates,
   registerSiteServiceWorker,
   shouldRegisterSiteServiceWorker,
@@ -133,7 +132,6 @@ test("standalone mode and appinstalled hide installation controls", () => {
     navigator,
     appName
   );
-  expect(isStandaloneMode(window, navigator)).toBe(true);
   expect(document.querySelector("[data-pwa-install-help]").hidden).toBe(true);
   cleanup();
 
@@ -153,7 +151,7 @@ test("standalone mode and appinstalled hide installation controls", () => {
   secondCleanup();
 });
 
-test("service-worker registration is production-scoped and uses exact paths", async () => {
+test("service-worker registration delegates environment and scope checks", async () => {
   const registration = Object.assign(new EventTarget(), {
     installing: null,
     waiting: null,
@@ -165,32 +163,65 @@ test("service-worker registration is production-scoped and uses exact paths", as
   const navigatorRef = { serviceWorker };
   const config = pwaConfig;
   const siteUrl = new URL(projectConfig.site.url);
-  const productionLocation = {
-    hostname: siteUrl.hostname,
-    pathname: projectConfig.site.basePath,
-    protocol: siteUrl.protocol,
+  const windowRef = {
+    isSecureContext: true,
+    location: new URL(projectConfig.site.basePath, siteUrl),
+    matchMedia: jest.fn().mockReturnValue({ matches: false }),
   };
-  const windowRef = { location: productionLocation };
+  const documentRef = document.implementation.createHTMLDocument("Layer PWA");
+  const manifest = documentRef.createElement("link");
+  manifest.rel = "manifest";
+  manifest.href = "/manifest.webmanifest";
+  documentRef.head.appendChild(manifest);
 
   expect(
     shouldRegisterSiteServiceWorker(
       { ...config, enabled: false },
-      productionLocation,
+      documentRef,
+      windowRef,
       navigatorRef
     )
   ).toBe(false);
   expect(
-    shouldRegisterSiteServiceWorker(config, productionLocation, navigatorRef)
+    shouldRegisterSiteServiceWorker(
+      config,
+      documentRef,
+      windowRef,
+      navigatorRef
+    )
   ).toBe(true);
   expect(
     shouldRegisterSiteServiceWorker(
       config,
-      { ...productionLocation, pathname: "/another-project/" },
+      documentRef,
+      { ...windowRef, isSecureContext: false },
+      navigatorRef
+    )
+  ).toBe(false);
+  expect(
+    shouldRegisterSiteServiceWorker(config, documentRef, windowRef, {})
+  ).toBe(false);
+  expect(
+    shouldRegisterSiteServiceWorker(
+      config,
+      document.implementation.createHTMLDocument("No manifest"),
+      windowRef,
+      navigatorRef
+    )
+  ).toBe(false);
+  expect(
+    shouldRegisterSiteServiceWorker(
+      config,
+      documentRef,
+      {
+        ...windowRef,
+        location: new URL("/another-project/", siteUrl),
+      },
       navigatorRef
     )
   ).toBe(false);
 
-  await registerSiteServiceWorker(config, document, windowRef, navigatorRef);
+  await registerSiteServiceWorker(config, documentRef, windowRef, navigatorRef);
   expect(serviceWorker.register).toHaveBeenCalledWith(
     projectConfig.pwa.serviceWorkerUrl,
     { scope: projectConfig.site.basePath }

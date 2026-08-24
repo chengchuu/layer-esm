@@ -97,16 +97,16 @@ clean, project-independent contract. They are ordered by extraction value.
 
 ## Existing overlap to reuse, not extract again
 
-| Local functionality                      | Existing Mazey API                             | Assessment                                                                                     |
-| ---------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Package manifest metadata                | `derivePackageMetadata`                        | Reuse directly; retain only Layer's `bundleBaseName` compatibility alias.                      |
-| Media-query listener compatibility       | `listenMediaQueryChanges`                      | Reuse for host themes, site themes, and PWA display-mode listeners.                            |
-| Service-worker update state              | `watchServiceWorkerUpdates`                    | Reuse the state machine; keep Layer's selectors, messages, and reload policy in its site code. |
-| `javaScriptGlobal`                       | `toJavaScriptGlobalName`                       | Direct overlap; compose the existing API.                                                      |
-| `repositoryDetails`                      | `parseGitHubRepository`                        | Parsing already exists; only manifest-field adaptation belongs at the caller.                  |
-| Theme preference reading and persistence | `resolveThemePreference`, `setThemePreference` | Reuse the established validation and fallback behavior; keep DOM application site-specific.    |
-| `isStandaloneMode`                       | `isStandalonePWA`                              | Behavioral overlap; retain dependency injection only if tests or alternate globals require it. |
-| Secure service-worker environment checks | `isSafePWAEnv`                                 | Reuse for protocol, manifest, and scope safety; keep project enablement policy local.          |
+| Local functionality                      | Existing Mazey API                             | Adoption status  | Layer boundary                                                                                 |
+| ---------------------------------------- | ---------------------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
+| Package manifest metadata                | `derivePackageMetadata`                        | Already adopted  | Retain only Layer's meaningful `bundleBaseName` alias.                                         |
+| Media-query listener compatibility       | `listenMediaQueryChanges`                      | Already adopted  | Reuse for host themes, site themes, and PWA display-mode listeners.                            |
+| Service-worker update state              | `watchServiceWorkerUpdates`                    | Already adopted  | Keep Layer's selectors, messages, update confirmation, and reload policy local.                |
+| `javaScriptGlobal`                       | `derivePackageMetadata().iifeGlobal`           | Already subsumed | Package metadata derives the browser global; no separate Layer helper is needed.               |
+| `repositoryDetails`                      | `parseGitHubRepository`                        | Adapter retained | Keep package-manifest string/object extraction, then delegate GitHub parsing to Mazey.         |
+| Theme preference reading and persistence | `resolveThemePreference`, `setThemePreference` | Already adopted  | Keep DOM application and controls site-specific.                                               |
+| Standalone presentation detection        | `isStandalonePWA`                              | Newly adopted    | Inject Layer's current browser objects; keep install-control behavior local.                   |
+| Secure service-worker environment checks | `isSafePWAEnv`                                 | Newly adopted    | Inject browser objects and scope; keep Layer's `config.enabled` policy and registration local. |
 
 Layer-specific shade defaults, numeric direction codes, dialog offset policy,
 theme merging, and DOM style mutation are intentionally excluded. The local
