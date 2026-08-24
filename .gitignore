@@ -39,6 +39,4 @@ yarn-error.log*
 selenium-debug.log*
 
 # Alternative package-manager lock files
-# pnpm-lock.yaml
-pnpm-workspace.yaml
 package-lock.json
