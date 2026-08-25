@@ -18,7 +18,7 @@ const projectConfig = require("../project.config.cjs");
 const { displayName } = projectConfig.brand;
 const { pages } = projectConfig.site;
 
-const typeDocHtml = `<!doctype html><html><head><title>${displayName}</title><meta name="description" content="old"><link rel="canonical" href="https://example.com/"><link rel="icon" href="old.png"></head><body><script>document.body.style.display="none"</script><header><div class="tsd-toolbar-contents container"></div></header><div class="tsd-page-title"><h1>${displayName}</h1></div><main><h1>${displayName}</h1><h2>API</h2><p>Public API documentation content.</p></main></body></html>`;
+const typeDocHtml = `<!doctype html><html><head><title>${displayName}</title><meta name="description" content="old"><link rel="canonical" href="https://example.com/"><link rel="icon" href="old.png"></head><body><script>document.body.style.display="none"</script><header><div class="tsd-toolbar-contents container"><button id="tsd-search-trigger" aria-label="Search"></button><dialog id="tsd-search"><input id="tsd-search-input"><ul id="tsd-search-results"></ul></dialog></div></header><div class="tsd-page-title"><h1>${displayName}</h1></div><main><h1>${displayName}</h1><h2>API</h2><p>Public API documentation content.</p></main></body></html>`;
 
 test("API metadata transformation is complete and idempotent", () => {
   const transformed = transformApiHtml(typeDocHtml, "index.html");
@@ -37,9 +37,15 @@ test("API metadata transformation is complete and idempotent", () => {
     '<meta name="twitter:card" content="summary_large_image"/>'
   );
   expect(transformed).toContain('href="../assets/api.css"');
+  expect(transformed).toContain('<script src="../assets/theme.js"></script>');
   expect(transformed).toContain('src="../assets/api.js"');
+  expect(transformed).not.toContain("localStorage.getItem");
   expect(transformed).not.toMatch(/<button\b[^>]*data-pwa-install\b/);
   expect(transformed.match(/<h1\b/g)).toHaveLength(1);
+  expect(transformed).toContain('id="tsd-search-trigger"');
+  expect(transformed).toContain('<dialog id="tsd-search"');
+  expect(transformed).toContain('id="tsd-search-input"');
+  expect(transformed).toContain('id="tsd-search-results"');
   expect(transformed).not.toContain('document.body.style.display="none"');
   expect(() =>
     JSON.parse(
@@ -108,6 +114,10 @@ test("site templates use the styled update, code panel, and muted section classe
     expect(template).not.toContain("data-pwa-install>");
     expect(template).not.toContain(">Basic usage<");
     expect(template).toContain(">Usage<");
+    expect(template).toContain(
+      '<script src="<%= THEME_SCRIPT_URL %>"></script>'
+    );
+    expect(template).not.toContain("localStorage.getItem");
   }
   expect(homepage).not.toContain('href="#features">Features</a>');
   expect(homepage.indexOf(">Home</a>")).toBeLessThan(
@@ -174,6 +184,7 @@ test("Pages assembly is repeatable without duplicating API metadata", () => {
       "<html><body><h1>Playground</h1></body></html>",
     "dist-dev/assets/api.css": "body {}",
     "dist-dev/assets/api.js": "void 0;",
+    "dist-dev/assets/theme.js": "void 0;",
     [`dist-dev/images/${projectConfig.seo.openGraphImage.file}`]:
       "open graph image",
     "site/service-worker.js":

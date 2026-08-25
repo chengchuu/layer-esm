@@ -108,9 +108,6 @@ function transformApiHtml(html, relativeFile) {
   const assetPrefix = "../".repeat(
     relativeFile.replaceAll(path.sep, "/").split("/").length
   );
-  const themeInitializer = `(()=>{try{const k=${JSON.stringify(
-    theme.storageKey
-  )},v=localStorage.getItem(k)||"system",t=v==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):v,r=t==="dark"?"dark":"light",m=document.querySelector('meta[name="theme-color"][data-theme-color]');document.documentElement.dataset.bsTheme=r;document.documentElement.dataset.theme=r;document.documentElement.style.colorScheme=r;if(m)m.content=r==="dark"?m.dataset.themeColorDark:m.dataset.themeColorLight;localStorage.setItem("tsd-theme",v==="system"?"os":v)}catch{}})();`;
   const structuredData = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "TechArticle",
@@ -157,7 +154,7 @@ function transformApiHtml(html, relativeFile) {
       socialImage.alt
     )}"/>`,
     `<script type="application/ld+json">${structuredData}</script>`,
-    `<script>${themeInitializer}</script>`,
+    `<script src="${assetPrefix}assets/theme.js"></script>`,
     `<script src="${assetPrefix}assets/api.js" defer></script>`,
     seoEnd,
   ].join("")}`;
@@ -343,6 +340,7 @@ function buildPages({ rootDir = defaultRoot } = {}) {
     path.join(dist, "playground", "index.html"),
     path.join(dist, "assets", "api.css"),
     path.join(dist, "assets", "api.js"),
+    path.join(dist, "assets", "theme.js"),
     path.join(dist, "images", socialImage.file),
     path.join(site, "service-worker.js"),
     ...projectConfig.pwa.icons.map((icon) =>

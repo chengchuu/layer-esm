@@ -236,6 +236,17 @@ function validateApiPages() {
       fail(`API ${relative}: missing API theme stylesheet`);
     if (!attribute(html, "script", "src", `${assetPrefix}assets/api.js`))
       fail(`API ${relative}: missing API theme script`);
+    if (!attribute(html, "script", "src", `${assetPrefix}assets/theme.js`))
+      fail(`API ${relative}: missing shared theme script`);
+    for (const control of [
+      'id="tsd-search-trigger"',
+      '<dialog id="tsd-search"',
+      'id="tsd-search-input"',
+      'id="tsd-search-results"',
+    ]) {
+      if (!html.includes(control))
+        fail(`API ${relative}: missing search dialog control ${control}`);
+    }
     const h1s = matches(html, /<h1\b[^>]*>([\s\S]*?)<\/h1>/gi);
     if (h1s.length !== 1 || !visibleText(h1s[0][1]))
       fail(`API ${relative}: expected exactly one non-empty h1`);
@@ -255,6 +266,7 @@ function validateStaticFiles() {
   const sitemapPath = path.join(docs, "sitemap.xml");
   for (const asset of [
     "assets/shared.css",
+    "assets/theme.js",
     "assets/shared.js",
     "assets/home.js",
     "assets/playground.js",
@@ -343,6 +355,7 @@ function validateSite() {
       expectedDescription: sitePages.home.description,
       expectedCss: `${projectConfig.site.basePath}assets/shared.css`,
       expectedScripts: [
+        `${projectConfig.site.basePath}assets/theme.js`,
         `${projectConfig.site.basePath}assets/shared.js`,
         `${projectConfig.site.basePath}assets/home.js`,
       ],
@@ -365,6 +378,7 @@ function validateSite() {
       expectedDescription: sitePages.playground.description,
       expectedCss: `${projectConfig.site.basePath}assets/shared.css`,
       expectedScripts: [
+        `${projectConfig.site.basePath}assets/theme.js`,
         `${projectConfig.site.basePath}assets/shared.js`,
         `${projectConfig.site.basePath}assets/playground.js`,
       ],
@@ -378,7 +392,7 @@ function validateSite() {
       expectedTitle: sitePages.api.title,
       expectedDescription: sitePages.api.description,
       expectedCss: "../assets/api.css",
-      expectedScripts: ["../assets/api.js"],
+      expectedScripts: ["../assets/theme.js", "../assets/api.js"],
     }),
   ].filter(Boolean);
   const titles = validatedPages.map((page) => page.title);

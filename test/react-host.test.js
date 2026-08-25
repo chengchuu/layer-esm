@@ -6,8 +6,15 @@ const loadLayer = () => {
   return require("../src/index.ts");
 };
 
+const originalMatchMedia = window.matchMedia;
+
 beforeEach(() => {
+  jest.restoreAllMocks();
   document.documentElement.innerHTML = "<head></head><body></body>";
+  history.replaceState({}, "", "/");
+  localStorage.clear();
+  if (originalMatchMedia) window.matchMedia = originalMatchMedia;
+  else delete window.matchMedia;
   jest.useRealTimers();
 });
 
@@ -189,6 +196,106 @@ test("dark and custom themes update active layers", () => {
   runtime.config({ theme: { background: "rgb(1, 2, 3)", radius: "3px" } });
   expect(getComputedStyle(root).backgroundColor).toBe("rgb(1, 2, 3)");
   expect(getComputedStyle(root).borderRadius).toBe("3px");
+});
+
+test.each([
+  ["dark", true, "rgb(23, 32, 51)"],
+  ["light", false, "rgb(255, 255, 255)"],
+])(
+  "uses the %s system theme when no theme is configured",
+  (_, matches, color) => {
+    window.matchMedia = jest.fn(() => ({ matches }));
+    const runtime = loadLayer();
+    const index = runtime.open({ content: "System preference" });
+    const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
+
+    expect(window.matchMedia).toHaveBeenCalledTimes(1);
+    expect(window.matchMedia).toHaveBeenCalledWith(
+      "(prefers-color-scheme: dark)"
+    );
+    expect(getComputedStyle(root).backgroundColor).toBe(color);
+  }
+);
+
+test.each([
+  ["missing", () => delete window.matchMedia],
+  ["unavailable", () => (window.matchMedia = "not-a-function")],
+  [
+    "throwing",
+    () => {
+      window.matchMedia = jest.fn(() => {
+        throw new Error("matchMedia failed");
+      });
+    },
+  ],
+])("uses the light fallback when matchMedia is %s", (_, prepareMatchMedia) => {
+  prepareMatchMedia();
+  const runtime = loadLayer();
+  const index = runtime.open({ content: "Fallback theme" });
+  const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
+
+  expect(getComputedStyle(root).backgroundColor).toBe("rgb(255, 255, 255)");
+});
+
+test.each([
+  ["dark", false, "rgb(23, 32, 51)"],
+  ["light", true, "rgb(255, 255, 255)"],
+])(
+  "explicit %s configuration overrides the system theme",
+  (theme, matches, color) => {
+    window.matchMedia = jest.fn(() => ({ matches }));
+    const runtime = loadLayer();
+    runtime.config({ theme });
+    const index = runtime.open({ content: "Configured theme" });
+    const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
+
+    expect(window.matchMedia).not.toHaveBeenCalled();
+    expect(getComputedStyle(root).backgroundColor).toBe(color);
+  }
+);
+
+test("automatic theme resolution does not inspect URL or local storage", () => {
+  history.replaceState({}, "", "/?theme=dark");
+  window.matchMedia = jest.fn(() => ({ matches: false }));
+  const getItem = jest.spyOn(Storage.prototype, "getItem");
+  const setItem = jest.spyOn(Storage.prototype, "setItem");
+  const runtime = loadLayer();
+  const index = runtime.open({ content: "Automatic theme" });
+  const root = document.querySelector(`.layer-esm[data-index="${index}"]`);
+
+  expect(getComputedStyle(root).backgroundColor).toBe("rgb(255, 255, 255)");
+  expect(getItem).not.toHaveBeenCalled();
+  expect(setItem).not.toHaveBeenCalled();
+});
+
+test("shares one cached system theme across document hosts and config updates", () => {
+  let dark = false;
+  window.matchMedia = jest.fn(() => ({ matches: dark }));
+  const runtime = loadLayer();
+  const mainIndex = runtime.open({ content: "Main theme" });
+  const iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+
+  dark = true;
+  const frameIndex = runtime.open({
+    content: "Frame theme",
+    targetDocument: iframe.contentDocument,
+  });
+  runtime.config({ styleNonce: "test-nonce" });
+
+  expect(window.matchMedia).toHaveBeenCalledTimes(1);
+  expect(
+    getComputedStyle(
+      document.querySelector(`.layer-esm[data-index="${mainIndex}"]`)
+    ).backgroundColor
+  ).toBe("rgb(255, 255, 255)");
+  expect(
+    iframe.contentWindow.getComputedStyle(
+      iframe.contentDocument.querySelector(
+        `.layer-esm[data-index="${frameIndex}"]`
+      )
+    ).backgroundColor
+  ).toBe("rgb(255, 255, 255)");
 });
 
 test("changing themes does not reset focus inside an active layer", () => {

@@ -8,6 +8,7 @@ import type {
   LayerType,
   NormalizedLayerOptions,
 } from "./types";
+import { getSystemTheme, type ResolvedTheme } from "mazey";
 import type { CSSProperties } from "react";
 import { LayerDocumentHost } from "../host/host-registry";
 import type {
@@ -85,6 +86,7 @@ const runtime = {
   movedOwners: new WeakMap<HTMLElement, number>(),
   bodyLocks: new Map<Document, { count: number; overflow: string }>(),
   minimized: [] as number[],
+  defaultTheme: undefined as ResolvedTheme | undefined,
 };
 
 const ensureDocument = (preferred?: Document): Document => {
@@ -94,8 +96,14 @@ const ensureDocument = (preferred?: Document): Document => {
   throw new Error("layer-esm display APIs require a browser Document");
 };
 
+const runtimeTheme = () => {
+  if (runtime.config.theme !== undefined) return runtime.config.theme;
+  runtime.defaultTheme ??= getSystemTheme() ?? "light";
+  return runtime.defaultTheme;
+};
+
 const hostConfig = () => ({
-  theme: runtime.config.theme,
+  theme: runtimeTheme(),
   styleNonce: runtime.config.styleNonce,
 });
 

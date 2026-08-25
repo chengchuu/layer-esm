@@ -4,6 +4,7 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const guides = path.join(root, "guides");
 const generatedDocs = path.join(root, "docs");
+const generatedTypeDocMedia = path.join(generatedDocs, "api", "media");
 const obsoleteReleaseNotes = path.join(root, "release-notes");
 const failures = [];
 const headingCache = new Map();
@@ -119,6 +120,7 @@ if (!existsSync(guides))
 if (existsSync(obsoleteReleaseNotes))
   failures.push("Obsolete source directory still exists: release-notes/");
 for (const file of markdownFiles(generatedDocs)) {
+  if (file.startsWith(`${generatedTypeDocMedia}${path.sep}`)) continue;
   failures.push(
     `Generated docs directory contains Markdown source: ${path.relative(
       root,

@@ -46,8 +46,11 @@ text.
 
 ## Themes
 
-The default light theme can be changed globally. `system` responds to runtime
-`prefers-color-scheme` changes, and a partial custom theme is merged with safe light defaults.
+When no theme is configured, the initial theme is read once from the operating-system preference
+and cached for the runtime lifecycle. Light is used when the system preference cannot be determined.
+An explicit `config({ theme })` value overrides this automatic initial theme. The `system` setting
+continues to respond to runtime `prefers-color-scheme` changes, and a partial custom theme is merged
+with safe light defaults.
 
 ```javascript
 import { config, darkTheme, lightTheme } from "layer-esm";
