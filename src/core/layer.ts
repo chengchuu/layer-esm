@@ -8,7 +8,7 @@ import type {
   LayerType,
   NormalizedLayerOptions,
 } from "./types";
-import { getSystemTheme, type ResolvedTheme } from "mazey";
+import { escapeHtmlAttribute, getSystemTheme, type ResolvedTheme } from "mazey";
 import type { CSSProperties } from "react";
 import { LayerDocumentHost } from "../host/host-registry";
 import type {
@@ -732,15 +732,6 @@ export const tips = (
     ...options,
   });
 
-const escapeHTML = (value: string): string =>
-  value.replace(
-    /[&<>"']/g,
-    (character) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[
-        character
-      ] ?? character)
-  );
-
 export const prompt = (
   options: LayerPromptOptions = {},
   yes?: (
@@ -770,7 +761,7 @@ export const prompt = (
           typeof options.maxlengthMessage === "function"
             ? options.maxlengthMessage(maxlength, value)
             : options.maxlengthMessage ?? `Enter up to ${maxlength} characters`;
-        tips(escapeHTML(message), input, {
+        tips(escapeHtmlAttribute(message), input, {
           tips: [1, "#111827"],
           time: 2,
           targetDocument: input.ownerDocument,

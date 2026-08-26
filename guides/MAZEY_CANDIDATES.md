@@ -1,7 +1,7 @@
 # Mazey Extraction Candidates
 
 This audit compares `layer-esm` runtime, site, and maintenance helpers with the
-installed Mazey 5.6.0 API and the sibling `mazey` and `mazey-npm-template`
+installed Mazey 5.9.0 API and the sibling `mazey` and `mazey-npm-template`
 implementations. The candidates below either have demonstrated duplication or a
 clean, project-independent contract. They are ordered by extraction value.
 
@@ -97,16 +97,18 @@ clean, project-independent contract. They are ordered by extraction value.
 
 ## Existing overlap to reuse, not extract again
 
-| Local functionality                      | Existing Mazey API                             | Adoption status  | Layer boundary                                                                                 |
-| ---------------------------------------- | ---------------------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
-| Package manifest metadata                | `derivePackageMetadata`                        | Already adopted  | Retain only Layer's meaningful `bundleBaseName` alias.                                         |
-| Media-query listener compatibility       | `listenMediaQueryChanges`                      | Already adopted  | Reuse for host themes, site themes, and PWA display-mode listeners.                            |
-| Service-worker update state              | `watchServiceWorkerUpdates`                    | Already adopted  | Keep Layer's selectors, messages, update confirmation, and reload policy local.                |
-| `javaScriptGlobal`                       | `derivePackageMetadata().iifeGlobal`           | Already subsumed | Package metadata derives the browser global; no separate Layer helper is needed.               |
-| `repositoryDetails`                      | `parseGitHubRepository`                        | Adapter retained | Keep package-manifest string/object extraction, then delegate GitHub parsing to Mazey.         |
-| Theme preference reading and persistence | `resolveThemePreference`, `setThemePreference` | Already adopted  | Keep DOM application and controls site-specific.                                               |
-| Standalone presentation detection        | `isStandalonePWA`                              | Newly adopted    | Inject Layer's current browser objects; keep install-control behavior local.                   |
-| Secure service-worker environment checks | `isSafePWAEnv`                                 | Newly adopted    | Inject browser objects and scope; keep Layer's `config.enabled` policy and registration local. |
+| Local functionality                      | Existing Mazey API                             | Adoption status  | Layer boundary                                                                                     |
+| ---------------------------------------- | ---------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------- |
+| Package manifest metadata                | `derivePackageMetadata`                        | Already adopted  | Retain only Layer's meaningful `bundleBaseName` alias.                                             |
+| Recursive configuration freezing         | `deepFreeze`                                   | Newly adopted    | Freeze the project configuration directly without retaining a renaming wrapper.                    |
+| HTML attribute and text serialization    | `escapeHtmlAttribute`                          | Newly adopted    | Reuse for quoted metadata attributes and encoded prompt text; it does not sanitize arbitrary HTML. |
+| Media-query listener compatibility       | `listenMediaQueryChanges`                      | Already adopted  | Reuse for host themes, site themes, and PWA display-mode listeners.                                |
+| Service-worker update state              | `watchServiceWorkerUpdates`                    | Already adopted  | Keep Layer's selectors, messages, update confirmation, and reload policy local.                    |
+| `javaScriptGlobal`                       | `derivePackageMetadata().iifeGlobal`           | Already subsumed | Package metadata derives the browser global; no separate Layer helper is needed.                   |
+| `repositoryDetails`                      | `parseGitHubRepository`                        | Adapter retained | Keep package-manifest string/object extraction, then delegate GitHub parsing to Mazey.             |
+| Theme preference reading and persistence | `resolveThemePreference`, `setThemePreference` | Already adopted  | Keep DOM application and controls site-specific.                                                   |
+| Standalone presentation detection        | `isStandalonePWA`                              | Newly adopted    | Inject Layer's current browser objects; keep install-control behavior local.                       |
+| Secure service-worker environment checks | `isSafePWAEnv`                                 | Newly adopted    | Inject browser objects and scope; keep Layer's `config.enabled` policy and registration local.     |
 
 Layer-specific shade defaults, numeric direction codes, dialog offset policy,
 theme merging, and DOM style mutation are intentionally excluded. The local

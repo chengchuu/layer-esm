@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       mazey:
-        specifier: ^5.8.0
-        version: 5.8.0
+        specifier: ^5.9.0
+        version: 5.9.0
       react:
         specifier: ^19.0.0
         version: 19.2.8
@@ -2994,8 +2994,8 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
-  mazey@5.8.0:
-    resolution: {integrity: sha512-h9VpEgY6kjG0aUFoBLh+JWTMRHQLjRcLZmo8PWklhZsY0EjInwkXLAo1C+XoBSFhjSTkFPRLoduNqJgEo20XrA==}
+  mazey@5.9.0:
+    resolution: {integrity: sha512-qSij1OxA3agawqquqs0lXKeQ86bQvWqprKqIgNXJ+0O9qT4RZKgmbrKWJ2OROqJgD0GBk2lL/DRQEse0vjTgBA==}
 
   mdurl@2.1.0:
     resolution: {integrity: sha512-1+HBaOx0zi/dQWht8rNv9MYf9qqpqL/kxI0hXImU6Y547zM6Sni8BQibt7ifgMcYtQg41ao3Ivd6cnSM86inpg==}
@@ -7739,7 +7739,7 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
-  mazey@5.8.0: {}
+  mazey@5.9.0: {}
 
   mdurl@2.1.0: {}
 
