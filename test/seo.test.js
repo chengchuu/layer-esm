@@ -158,6 +158,10 @@ test("site templates use the styled update, code panel, and muted section classe
   expect(stylesheet).toContain(".code-panel-header {");
   expect(stylesheet).toContain(".pwa-update-notice {");
   expect(stylesheet).toContain(".section-band--muted {");
+  const featureCardStyles = stylesheet.match(/\.feature-card \{([^}]*)\}/)?.[1];
+  expect(featureCardStyles).toContain("padding: 1.5rem");
+  expect(featureCardStyles).toContain("border: 1px solid var(--mn-border)");
+  expect(stylesheet).not.toMatch(/\[data-bs-theme="dark"\]\s+\.layer-esm/);
 });
 
 test("Pages assembly fails clearly for missing sources", () => {

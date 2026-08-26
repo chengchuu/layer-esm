@@ -264,12 +264,26 @@ test("dialog icons render distinct legacy-compatible glyphs", () => {
 
     expect(iconNode).not.toBeNull();
     expect(iconNode.dataset.icon).toBe(expectedIcon);
+    const cross = iconNode.querySelector(".layer-esm__icon-cross");
+    expect(cross !== null).toBe(icon === 2);
+    if (cross) {
+      expect(getComputedStyle(cross).display).toBe("block");
+      expect(getComputedStyle(cross).width).toBe("10px");
+    }
+    const lock = iconNode.querySelector(".layer-esm__icon-lock");
+    expect(lock !== null).toBe(icon === 4);
+    if (lock) {
+      expect(getComputedStyle(lock).display).toBe("block");
+      expect(getComputedStyle(lock).boxSizing).toBe("border-box");
+      expect(getComputedStyle(lock).width).toBe("11px");
+      expect(getComputedStyle(lock).height).toBe("12px");
+    }
 
     close(index);
   });
 });
 
-test("message icons use compact dimensions without shrinking dialog icons", () => {
+test("message and dialog icons use balanced dimensions", () => {
   const { msg, open } = loadLayer();
   const messageIndex = msg("Common Notice", { icon: 5, time: 0 });
   const dialogIndex = open({ content: "Dialog Notice", icon: 5 });
@@ -285,8 +299,9 @@ test("message icons use compact dimensions without shrinking dialog icons", () =
   expect(getComputedStyle(messageIcon).height).toBe("26px");
   expect(getComputedStyle(messageIcon).fontSize).toBe("16px");
   expect(getComputedStyle(messageRow).alignItems).toBe("center");
-  expect(getComputedStyle(dialogIcon).width).toBe("34px");
-  expect(getComputedStyle(dialogIcon).height).toBe("34px");
+  expect(getComputedStyle(dialogIcon).width).toBe("22px");
+  expect(getComputedStyle(dialogIcon).height).toBe("22px");
+  expect(getComputedStyle(dialogIcon).fontSize).toBe("14px");
 });
 
 test("numeric animation options select distinct entrance animations", () => {

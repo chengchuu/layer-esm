@@ -68,9 +68,11 @@ const iframeUrl = `data:text/html;charset=utf-8,${encodeURIComponent(
   iframeHtml
 )}`;
 
+const alertDemoIcon = 1;
+
 const demoSource: Record<string, string> = {
   "alert-basic": `alert("Content");`,
-  "alert-icon": `alert("Great to See You", { icon: 6 });`,
+  "alert-icon": `alert("Great to See You", { icon: ${alertDemoIcon} });`,
   "confirm-basic": `confirm(
   "What Do You Think About Frontend Development?",
   { btn: ["Important", "Unusual"] },
@@ -498,7 +500,7 @@ if (app) {
       alert("Content");
     },
     "alert-icon": () => {
-      alert("Great to See You", { icon: 6 });
+      alert("Great to See You", { icon: alertDemoIcon });
     },
     "confirm-basic": () => {
       confirm(
@@ -832,10 +834,5 @@ if (app) {
       showDemoSource(button);
       demoActions[demoId]();
     });
-  });
-
-  msg("Hi, Welcome to the layer-esm Example Page", {
-    offset: "t",
-    anim: 6,
   });
 }

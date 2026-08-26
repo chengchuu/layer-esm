@@ -339,7 +339,8 @@ a {
 
 .feature-card {
   height: 100%;
-  border-color: var(--mn-border);
+  padding: 1.5rem;
+  border: 1px solid var(--mn-border);
   border-radius: 0.5rem;
   background: var(--mn-surface);
   box-shadow: none;
@@ -429,48 +430,6 @@ a {
   color: #c7d2fe;
   font-weight: 600;
   text-align: right;
-}
-
-[data-bs-theme="dark"]
-  .layer-esm:not(.layer-esm--loading, .layer-esm--tips, .layer-esm--message) {
-  color: var(--mn-text);
-  border-color: var(--mn-border);
-  background: var(--mn-surface);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
-}
-
-[data-bs-theme="dark"] .layer-esm__title {
-  color: var(--mn-text);
-  border-bottom-color: var(--mn-border);
-}
-
-[data-bs-theme="dark"] .layer-esm__toolbar-button {
-  color: var(--mn-muted);
-}
-
-[data-bs-theme="dark"] .layer-esm__toolbar-button:hover,
-[data-bs-theme="dark"] .layer-esm__button,
-[data-bs-theme="dark"] .layer-esm__tab-trigger--active {
-  color: var(--mn-text);
-  background: var(--mn-surface-muted);
-}
-
-[data-bs-theme="dark"] .layer-esm__button {
-  border-color: var(--mn-border);
-}
-
-[data-bs-theme="dark"] .layer-esm__button--primary {
-  color: #101528;
-  border-color: var(--mn-primary);
-  background: var(--mn-primary);
-}
-
-[data-bs-theme="dark"] .layer-esm__input,
-[data-bs-theme="dark"] .layer-esm__textarea,
-[data-bs-theme="dark"] .layer-esm__tab-header {
-  color: var(--mn-text);
-  border-color: var(--mn-border);
-  background: var(--mn-background);
 }
 
 .playground-output {
