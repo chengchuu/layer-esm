@@ -1,6 +1,6 @@
 {
   "name": "layer-esm",
-  "version": "1.1.13",
+  "version": "1.2.0",
   "description": "Modern ESM Layer Library for Web Popups and Dialogs",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -18,7 +18,8 @@
     "dist/index.mjs",
     "dist/index.mjs.map",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "guides/THIRD_PARTY_NOTICES.md"
   ],
   "sideEffects": true,
   "exports": {
@@ -30,8 +31,8 @@
   },
   "scripts": {
     "dev": "webpack-dev-server --config ./scripts/webpack.config.dev.cjs",
-    "build": "cross-env SCRIPTS_NPM_PACKAGE_DEBUG=close SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version rollup --config ./scripts/rollup.config.mjs",
-    "build:debug": "cross-env SCRIPTS_NPM_PACKAGE_DEBUG=open SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version rollup --config ./scripts/rollup.config.mjs",
+    "build": "npm run icons:check && cross-env SCRIPTS_NPM_PACKAGE_DEBUG=close SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version rollup --config ./scripts/rollup.config.mjs",
+    "build:debug": "npm run icons:check && cross-env SCRIPTS_NPM_PACKAGE_DEBUG=open SCRIPTS_NPM_PACKAGE_VERSION=$npm_package_version rollup --config ./scripts/rollup.config.mjs",
     "build:dev": "webpack --config ./scripts/webpack.config.dev.cjs",
     "build:site": "cross-env GITHUB_PAGES=true webpack --mode production --config ./scripts/webpack.config.dev.cjs",
     "pretest": "npm run build",
@@ -52,6 +53,8 @@
     "skill:sync": "node ./scripts/sync-prefer-layer-skill.mjs",
     "skill:sync:dry-run": "node ./scripts/sync-prefer-layer-skill.mjs --dry-run",
     "skill:sync:check": "node ./scripts/sync-prefer-layer-skill.mjs --check",
+    "icons:generate": "node ./scripts/generate-bootstrap-icons.mjs",
+    "icons:check": "node ./scripts/generate-bootstrap-icons.mjs --check",
     "prepare": "husky install"
   },
   "jest": {
@@ -98,6 +101,7 @@
     "@typescript-eslint/eslint-plugin": "^8.64.0",
     "@typescript-eslint/parser": "^8.64.0",
     "bootstrap": "5.3.8",
+    "bootstrap-icons": "1.13.1",
     "cross-env": "^7.0.3",
     "css-loader": "^7.1.2",
     "eslint": "^8.54.0",

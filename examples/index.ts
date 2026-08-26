@@ -68,11 +68,11 @@ const iframeUrl = `data:text/html;charset=utf-8,${encodeURIComponent(
   iframeHtml
 )}`;
 
-const alertDemoIcon = 1;
+const alertDemoIcon = "success" as const;
 
 const demoSource: Record<string, string> = {
   "alert-basic": `alert("Content");`,
-  "alert-icon": `alert("Great to See You", { icon: ${alertDemoIcon} });`,
+  "alert-icon": `alert("Great to See You", { icon: "success" });`,
   "confirm-basic": `confirm(
   "What Do You Think About Frontend Development?",
   { btn: ["Important", "Unusual"] },
@@ -159,8 +159,8 @@ window.setTimeout(() => {
   close(index);
   msg("Loading Style 2 Finished", { icon: 1 });
 }, 1600);`,
-  "loading-msg": `msg("Loading", {
-  icon: 6,
+  "loading-msg": `load("success", {
+  content: "Saved",
   shade: 0.01,
   time: 2,
 });`,
@@ -406,12 +406,12 @@ if (app) {
               <div class="card shadow-sm h-100">
                 <div class="card-body">
                   <h2 class="h5 card-title">Loading States</h2>
-                  <p class="card-text text-secondary">Demonstrates the CSS-based loading styles from icon 0 through 2.</p>
+                  <p class="card-text text-secondary">Numeric values 0 through 2 animate; named icons render a static loading status.</p>
                   <div class="d-grid gap-2">
                     <button class="btn btn-outline-secondary" data-demo="loading-0">Loading style 0</button>
                     <button class="btn btn-outline-secondary" data-demo="loading-1">Loading style 1</button>
                     <button class="btn btn-outline-secondary" data-demo="loading-2">Loading style 2</button>
-                    <button class="btn btn-outline-secondary" data-demo="loading-msg">Message-style loading</button>
+                    <button class="btn btn-outline-secondary" data-demo="loading-msg">Static success icon</button>
                   </div>
                 </div>
               </div>
@@ -602,8 +602,8 @@ if (app) {
       runLoading(2);
     },
     "loading-msg": () => {
-      msg("Loading", {
-        icon: 6,
+      load("success", {
+        content: "Saved",
         shade: 0.01,
         time: 2,
       });

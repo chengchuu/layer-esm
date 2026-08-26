@@ -4,6 +4,7 @@ import { StyleSheetManager, ThemeProvider } from "styled-components";
 import type { LayerStore } from "../../store/layer-store";
 import type { LayerInstance } from "../../store/types";
 import type { LayerTheme } from "../../styles/theme";
+import { resolveLayerIcon, type LayerIconDescriptor } from "../../icons";
 import { applyOffset, applyTipsPlacement } from "../../utils/position";
 import {
   Button,
@@ -12,8 +13,6 @@ import {
   DialogContent,
   Header,
   Icon,
-  IconCross,
-  IconLock,
   Input,
   LoadingShell,
   PromptField,
@@ -40,7 +39,26 @@ const FOCUSABLE = [
   "iframe",
   "[tabindex]:not([tabindex='-1'])",
 ].join(",");
-const ICONS = ["!", "✓", "×", "?", "", "☹", "☺"];
+
+const BootstrapIcon = ({ descriptor }: { descriptor: LayerIconDescriptor }) => (
+  <svg
+    width="1em"
+    height="1em"
+    viewBox={descriptor.definition.viewBox}
+    fill="currentColor"
+    aria-hidden="true"
+    focusable="false"
+    data-bootstrap-icon={descriptor.definition.bootstrapName}
+  >
+    {descriptor.definition.paths.map((path, index) => (
+      <path
+        key={`${descriptor.definition.bootstrapName}-${index}`}
+        d={path.d}
+        fillRule={path.fillRule}
+      />
+    ))}
+  </svg>
+);
 
 const focusableElements = (root: HTMLElement): HTMLElement[] =>
   Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
@@ -197,6 +215,20 @@ const LayerView = ({
     record.typeName === "loading" ||
     (record.typeName === "dialog" && options.title === false && !options.btn);
   const interactive = !statusLike && record.typeName !== "tips";
+  const iconDescriptor = resolveLayerIcon(options.icon);
+
+  const renderIcon = (compact: boolean) =>
+    iconDescriptor ? (
+      <Icon
+        className={`layer-esm__icon layer-esm__icon--${options.icon}`}
+        $compact={compact}
+        $icon={iconDescriptor.numericValue}
+        data-icon={iconDescriptor.definition.bootstrapName}
+        aria-hidden="true"
+      >
+        <BootstrapIcon descriptor={iconDescriptor} />
+      </Icon>
+    ) : null;
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -335,14 +367,18 @@ const LayerView = ({
     if (record.typeName === "loading") {
       return (
         <LoadingShell>
-          <Spinner
-            $variant={Math.max(options.icon, 0)}
-            aria-hidden="true"
-            className={`layer-esm__spinner layer-esm__spinner--${Math.max(
-              options.icon,
-              0
-            )}`}
-          />
+          {typeof options.icon === "number" ? (
+            <Spinner
+              $variant={Math.max(options.icon, 0)}
+              aria-hidden="true"
+              className={`layer-esm__spinner layer-esm__spinner--${Math.max(
+                options.icon,
+                0
+              )}`}
+            />
+          ) : (
+            renderIcon(true)
+          )}
           {typeof options.content === "string" && options.content ? (
             <span>{options.content}</span>
           ) : null}
@@ -470,24 +506,10 @@ const LayerView = ({
     if (typeof options.content !== "string")
       return <ExternalContent record={record} />;
     const body = <TrustedHtml html={options.content} />;
-    if (options.icon >= 0)
+    if (iconDescriptor)
       return (
         <DialogContent $compact={record.typeName === "message"}>
-          <Icon
-            className={`layer-esm__icon layer-esm__icon--${options.icon}`}
-            $compact={record.typeName === "message"}
-            $icon={options.icon}
-            data-icon={ICONS[Math.min(options.icon, 6)] ?? "!"}
-            aria-hidden="true"
-          >
-            {options.icon === 2 ? (
-              <IconCross />
-            ) : options.icon === 4 ? (
-              <IconLock />
-            ) : (
-              ICONS[Math.min(options.icon, 6)] ?? "!"
-            )}
-          </Icon>
+          {renderIcon(record.typeName === "message")}
           {body}
         </DialogContent>
       );

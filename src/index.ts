@@ -26,6 +26,8 @@ import layer, {
 import type {
   LayerArea,
   LayerConfigOptions,
+  LayerIcon,
+  LayerIconName,
   LayerOffset,
   LayerOffsetKeyword,
   LayerOptions,
@@ -49,6 +51,8 @@ export default layer;
 export type {
   LayerArea,
   LayerConfigOptions,
+  LayerIcon,
+  LayerIconName,
   LayerOffset,
   LayerOffsetKeyword,
   LayerOptions,

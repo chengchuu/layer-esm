@@ -105,13 +105,41 @@ test("copies current source and restarts feedback timing", async () => {
   demoButton.click();
   expect(copyButton.textContent).toBe("Copy code");
   expect(status.textContent).toBe("");
-  expect(code.textContent).toBe('alert("Great to See You", { icon: 1 });');
+  expect(code.textContent).toBe(
+    'alert("Great to See You", { icon: "success" });'
+  );
   copyButton.click();
   await flushClipboard();
   expect(writeText).toHaveBeenLastCalledWith(code.textContent);
   jest.advanceTimersByTime(2000);
   expect(copyButton.textContent).toBe("Copy code");
   expect(status.textContent).toBe("");
+});
+
+test("named icon demos execute the same code shown in their panels", () => {
+  loadPlayground();
+
+  const alertButton = document.querySelector('[data-demo="alert-icon"]');
+  alertButton.click();
+  expect(mockLayerApi.alert).toHaveBeenLastCalledWith("Great to See You", {
+    icon: "success",
+  });
+  expect(
+    alertButton.closest(".card-body").querySelector("[data-demo-source-code]")
+      .textContent
+  ).toBe('alert("Great to See You", { icon: "success" });');
+
+  const loadingButton = document.querySelector('[data-demo="loading-msg"]');
+  loadingButton.click();
+  expect(mockLayerApi.load).toHaveBeenLastCalledWith("success", {
+    content: "Saved",
+    shade: 0.01,
+    time: 2,
+  });
+  expect(
+    loadingButton.closest(".card-body").querySelector("[data-demo-source-code]")
+      .textContent
+  ).toContain('load("success", {');
 });
 
 test.each([

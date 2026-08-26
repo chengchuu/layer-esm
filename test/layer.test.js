@@ -249,38 +249,90 @@ test("a timed message closed by success does not leave a stale timer", () => {
   expect(end).toHaveBeenCalledTimes(1);
 });
 
-test("dialog icons render distinct legacy-compatible glyphs", () => {
+test("numeric and named icons render the same embedded Bootstrap SVGs", () => {
   const { open, close } = loadLayer();
-  const expectedIcons = ["!", "✓", "×", "?", "", "☹", "☺"];
+  const mappings = [
+    [0, "warning", "exclamation-lg"],
+    [1, "success", "check-lg"],
+    [2, "error", "x-lg"],
+    [3, "question", "question-lg"],
+    [4, "lock", "lock-fill"],
+    [5, "sad", "emoji-frown"],
+    [6, "smile", "emoji-smile"],
+  ];
 
-  expectedIcons.forEach((expectedIcon, icon) => {
-    const index = open({
-      content: `Icon ${icon}`,
-      icon,
+  mappings.forEach(([numericIcon, alias, bootstrapName]) => {
+    const numericIndex = open({
+      content: `Icon ${numericIcon}`,
+      icon: numericIcon,
     });
-    const iconNode = document.querySelector(
-      `.layer-esm[data-index="${index}"] .layer-esm__icon--${icon}`
+    const aliasIndex = open({ content: `Icon ${alias}`, icon: alias });
+    const numericNode = queryLayer(numericIndex).querySelector(
+      `.layer-esm__icon--${numericIcon}`
+    );
+    const aliasNode = queryLayer(aliasIndex).querySelector(
+      `.layer-esm__icon--${alias}`
+    );
+    const numericSvg = numericNode.querySelector("svg");
+    const aliasSvg = aliasNode.querySelector("svg");
+
+    expect(numericNode.dataset.icon).toBe(bootstrapName);
+    expect(aliasNode.dataset.icon).toBe(bootstrapName);
+    expect(numericSvg.outerHTML).toBe(aliasSvg.outerHTML);
+    expect(numericSvg.getAttribute("aria-hidden")).toBe("true");
+    expect(numericSvg.getAttribute("focusable")).toBe("false");
+    expect(numericSvg.getAttribute("fill")).toBe("currentColor");
+    expect(numericSvg.querySelectorAll("path").length).toBeGreaterThan(0);
+    expect(getComputedStyle(numericNode).backgroundColor).toBe(
+      getComputedStyle(aliasNode).backgroundColor
     );
 
-    expect(iconNode).not.toBeNull();
-    expect(iconNode.dataset.icon).toBe(expectedIcon);
-    const cross = iconNode.querySelector(".layer-esm__icon-cross");
-    expect(cross !== null).toBe(icon === 2);
-    if (cross) {
-      expect(getComputedStyle(cross).display).toBe("block");
-      expect(getComputedStyle(cross).width).toBe("10px");
-    }
-    const lock = iconNode.querySelector(".layer-esm__icon-lock");
-    expect(lock !== null).toBe(icon === 4);
-    if (lock) {
-      expect(getComputedStyle(lock).display).toBe("block");
-      expect(getComputedStyle(lock).boxSizing).toBe("border-box");
-      expect(getComputedStyle(lock).width).toBe("11px");
-      expect(getComputedStyle(lock).height).toBe("12px");
-    }
-
-    close(index);
+    close(numericIndex);
+    close(aliasIndex);
   });
+});
+
+test("unknown icon names fail before host, index, and config mutation", () => {
+  jest.useFakeTimers();
+  const runtime = loadLayer();
+
+  expect(() =>
+    runtime.open({ content: "Invalid", icon: "unknown", time: 2 })
+  ).toThrow(TypeError);
+  expect(() => runtime.load("unknown", { icon: "success" })).toThrow(TypeError);
+  expect(document.querySelector("[data-layer-esm-host]")).toBeNull();
+  expect(jest.getTimerCount()).toBe(0);
+
+  runtime.config({ icon: "success", theme: "light" });
+  expect(() => runtime.config({ icon: "unknown", theme: "dark" })).toThrow(
+    TypeError
+  );
+  const index = runtime.open({ content: "Valid" });
+
+  expect(index).toBe(0);
+  expect(
+    queryLayer(index).querySelector(".layer-esm__icon--success")
+  ).not.toBeNull();
+  expect(getComputedStyle(queryLayer(index)).backgroundColor).toBe(
+    "rgb(255, 255, 255)"
+  );
+});
+
+test("numeric icons retain legacy missing and out-of-range behavior", () => {
+  const { open } = loadLayer();
+  const hiddenIndex = open({ content: "Hidden", icon: -1 });
+  const nanIndex = open({ content: "NaN", icon: Number.NaN });
+  const fractionalIndex = open({ content: "Fractional", icon: 1.5 });
+  const highIndex = open({ content: "High", icon: 99 });
+
+  expect(queryLayer(hiddenIndex).querySelector(".layer-esm__icon")).toBeNull();
+  expect(queryLayer(nanIndex).querySelector(".layer-esm__icon")).toBeNull();
+  expect(
+    queryLayer(fractionalIndex).querySelector('[data-icon="exclamation-lg"]')
+  ).not.toBeNull();
+  expect(
+    queryLayer(highIndex).querySelector('[data-icon="emoji-smile"]')
+  ).not.toBeNull();
 });
 
 test("message and dialog icons use balanced dimensions", () => {
@@ -341,6 +393,23 @@ test("load uses one styled-components sheet and renders CSS spinner", () => {
 
   close(first);
   close(second);
+});
+
+test("named load icons are static while numeric variants remain spinners", () => {
+  const { load } = loadLayer();
+  const spinnerIndex = load(0, { content: "Loading" });
+  const staticIndex = load("success", { content: "Saved" });
+
+  expect(
+    queryLayer(spinnerIndex).querySelector(".layer-esm__spinner--0")
+  ).not.toBeNull();
+  expect(queryLayer(spinnerIndex).querySelector("svg")).toBeNull();
+  expect(
+    queryLayer(staticIndex).querySelector(".layer-esm__spinner")
+  ).toBeNull();
+  expect(
+    queryLayer(staticIndex).querySelector('[data-bootstrap-icon="check-lg"]')
+  ).not.toBeNull();
 });
 
 test("style injection supports CSP nonces and rejects the obsolete preloaded-style mode", () => {
