@@ -1,18 +1,11 @@
+const { deepFreeze } = require("mazey");
 const pkg = require("./package.json");
 const {
   packageDetails,
   repositoryDetails,
 } = require("./scripts/project-config-utils.cjs");
 
-function deepFreeze(value) {
-  Object.freeze(value);
-  Object.values(value).forEach((entry) => {
-    if (entry && typeof entry === "object" && !Object.isFrozen(entry))
-      deepFreeze(entry);
-  });
-  return value;
-}
-
+const shortName = "layer-esm";
 const packageConfig = packageDetails(pkg);
 const repository = repositoryDetails(pkg.repository);
 const siteUrl = new URL(pkg.homepage);
@@ -23,7 +16,6 @@ siteUrl.pathname = basePath;
 siteUrl.search = "";
 siteUrl.hash = "";
 const displayName = pkg.name;
-const shortName = "layer-esm";
 const githubUrl = repository.url;
 const npmUrl = `https://www.npmjs.com/package/${pkg.name}`;
 const faviconFile = "logo-dark-circle-transparent-32x32.png";

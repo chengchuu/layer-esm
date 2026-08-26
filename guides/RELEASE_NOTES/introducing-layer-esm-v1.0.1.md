@@ -1,30 +1,40 @@
-# Introducing layer-esm
+# layer-esm v1.0.1: Layer-style dialogs for modern web projects
 
-`layer-esm` is a modern dialog layer library for web applications. It keeps the familiar Layer-style API while moving the implementation to a module-based ESM package that is easier to bundle, test, and maintain.
+`layer-esm` brings the familiar Layer-style imperative API to npm-based browser projects. Version
+1.0.1 provides ESM, CommonJS, and TypeScript declaration outputs, so applications can import the
+APIs they need instead of relying on a global `window.layer` object.
 
-If you already know the legacy `layer` library, the new package should feel familiar:
-
-- message prompts still use `msg`
-- confirmation dialogs still use `confirm`
-- loading overlays still use `load`
-
-The difference is how you consume it: instead of relying on a global `window.layer`, you import the APIs you need.
+Special thanks to [Xianxin](https://github.com/sentsin), the original author of
+[Layer](https://github.com/layui/layer), for creating the library and API that inspired this
+project.
 
 ## Install
+
+Install the package from npm:
 
 ```bash
 npm install layer-esm
 ```
 
-## Basic usage
+## Import the API
+
+Named imports make each dependency explicit:
 
 ```ts
 import { close, confirm, load, msg } from "layer-esm";
 ```
 
-## `msg`: quick message feedback
+The default export is also available when a namespace-style API makes migration easier:
 
-Use `msg` for short notifications and lightweight user feedback.
+```ts
+import layer from "layer-esm";
+
+layer.msg("Saved.");
+```
+
+## Show a message with `msg`
+
+Use `msg` for brief notifications and lightweight feedback:
 
 ```ts
 import { msg } from "layer-esm";
@@ -32,7 +42,7 @@ import { msg } from "layer-esm";
 msg("Saved successfully.");
 ```
 
-You can also customize the icon, display duration, and position:
+Pass options to customize the icon, duration, or position:
 
 ```ts
 msg("Upload complete.", {
@@ -42,42 +52,32 @@ msg("Upload complete.", {
 });
 ```
 
-Typical use cases:
+## Request confirmation with `confirm`
 
-- save success messages
-- validation reminders
-- short progress updates
-
-## `confirm`: user decisions with callbacks
-
-Use `confirm` when the user must choose whether to continue.
+Use `confirm` when the user must choose whether to continue:
 
 ```ts
 import { confirm, msg } from "layer-esm";
 
-confirm("Delete this record?", {
-  btn: [ "Delete", "Cancel" ],
-}, () => {
-  msg("Deleted.", { icon: 1 });
-}, () => {
-  msg("Cancelled.");
-});
+confirm(
+  "Delete this record?",
+  {
+    btn: ["Delete", "Cancel"],
+  },
+  () => {
+    msg("Deleted.", { icon: 1 });
+  },
+  () => {
+    msg("Cancelled.");
+  }
+);
 ```
 
-This keeps the familiar Layer pattern:
+The first callback handles the primary button. The second callback handles the second button.
 
-- the first callback handles confirmation
-- the second callback handles cancellation
+## Track loading work with `load`
 
-It works well for:
-
-- destructive actions
-- publish/submit confirmations
-- workflow checkpoints
-
-## `load`: loading state and async work
-
-Use `load` when you need to show that an action is in progress.
+`load` returns a layer index. Store the index and pass it to `close` when the work finishes:
 
 ```ts
 import { close, load } from "layer-esm";
@@ -92,7 +92,7 @@ setTimeout(() => {
 }, 1500);
 ```
 
-`load` supports multiple visual styles:
+The first argument selects one of the available loading styles:
 
 ```ts
 load(0);
@@ -100,159 +100,55 @@ load(1);
 load(2);
 ```
 
-This is useful for:
+In application code, close the loading layer in every completion path so failed operations do not
+leave it open.
 
-- API requests
-- startup or initialization tasks
-- background processing feedback
+## Migrate from legacy Layer
 
-## Migrating from legacy `layer`
+The main migration step is replacing the global script dependency with package imports.
 
-The biggest migration change is moving from a global browser dependency to module imports.
-
-### Legacy usage
+Legacy usage:
 
 ```html
 <script src="layer.js"></script>
 <script>
-  layer.msg("Saved");
+  layer.msg("Saved.");
 </script>
 ```
 
-### New usage
+Package usage:
 
 ```ts
 import { msg } from "layer-esm";
 
-msg("Saved");
+msg("Saved.");
 ```
 
-## Migration mapping
+Use the following mapping for common calls:
 
-### Message
+| Legacy call              | Named import                 |
+|:-------------------------|:-----------------------------|
+| `layer.msg(content)`     | `msg(content)`               |
+| `layer.confirm(content)` | `confirm(content)`           |
+| `layer.load(style)`      | `load(style)`                |
+| `layer.close(index)`     | `close(index)`               |
+| `layer.closeAll()`       | `closeAll()`                 |
 
-Legacy:
+Migrate incrementally:
 
-```js
-layer.msg("A short notification message.");
-```
+1. Install `layer-esm` and remove the global script only where the replacement is ready.
+2. Replace high-frequency calls such as `msg`, `confirm`, and `load` with named imports.
+3. Store returned layer indexes when later code must close or modify a layer.
+4. Verify option and callback behavior before removing the legacy dependency from the application.
 
-New:
+## Content security
 
-```ts
-import { msg } from "layer-esm";
+String `content` values are treated as trusted HTML for Layer compatibility. Do not pass untrusted
+user input directly. Sanitize untrusted markup first, or use an `HTMLElement` when structured DOM
+content is appropriate.
 
-msg("A short notification message.");
-```
+## Next steps
 
-### Confirm
-
-Legacy:
-
-```js
-layer.confirm("What do you think about frontend development?", {
-  btn: ["Important", "Unusual"],
-}, function () {
-  layer.msg("It really is important.", { icon: 1 });
-}, function () {
-  layer.msg("That answer works too.");
-});
-```
-
-New:
-
-```ts
-import { confirm, msg } from "layer-esm";
-
-confirm("What do you think about frontend development?", {
-  btn: [ "Important", "Unusual" ],
-}, () => {
-  msg("It really is important.", { icon: 1 });
-}, () => {
-  msg("That answer works too.");
-});
-```
-
-### Loading
-
-Legacy:
-
-```js
-var index = layer.load(1, {
-  shade: [0.1, "#fff"],
-});
-
-setTimeout(function () {
-  layer.close(index);
-}, 1500);
-```
-
-New:
-
-```ts
-import { close, load } from "layer-esm";
-
-const index = load(1, {
-  shade: [0.1, "#fff"],
-});
-
-setTimeout(() => {
-  close(index);
-}, 1500);
-```
-
-## What changes during migration
-
-### 1. Import instead of global access
-
-Old:
-
-```js
-layer.msg("Hi");
-```
-
-New:
-
-```ts
-import { msg } from "layer-esm";
-
-msg("Hi");
-```
-
-### 2. Prefer named imports for direct actions
-
-For actions like closing a loading layer, a named import keeps the call site simple:
-
-```ts
-import { close, load } from "layer-esm";
-
-const index = load();
-close(index);
-```
-
-If you prefer, the default `layer` export is still available, but named imports are usually cleaner in modern ESM code.
-
-### 3. Remove script-tag dependency assumptions
-
-The new package is designed for module-based usage in modern app builds:
-
-- npm package installation
-- ESM-friendly bundlers
-- TypeScript projects
-
-## Recommended migration strategy
-
-1. Replace the global script include with an npm dependency.
-2. Start by migrating `msg`, `confirm`, and `load` first because they are usually the most common calls.
-3. Add named imports like `close`, `closeAll`, and `msg` directly from `"layer-esm"` as you replace old global calls.
-4. Move page-by-page or feature-by-feature until the old global dependency is no longer needed.
-
-## Summary
-
-`layer-esm` keeps the Layer interaction style while fitting modern frontend projects much better. If your current code mainly depends on `msg`, `confirm`, and `load`, migration is straightforward:
-
-- install the package
-- replace global calls with imports
-- keep the same Layer-style API patterns
-
-That makes `layer-esm` a practical path forward for teams that want a familiar dialog layer API without staying on the legacy global implementation.
+- Try the [live playground](https://chengchuu.github.io/layer-esm/playground/).
+- Review the [API documentation](https://chengchuu.github.io/layer-esm/api/).
+- Read the current [project documentation](https://github.com/chengchuu/layer-esm).

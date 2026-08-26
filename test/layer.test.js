@@ -393,6 +393,7 @@ test("prompt controls fill the available dialog content width", () => {
 
 test("prompt renders a custom maxlength message as text", () => {
   const { prompt } = loadLayer();
+  const inputValue = `<img data-proof="raw">& "'`;
   const index = prompt({
     maxlength: 1,
     maxlengthMessage: (_maxlength, value) => `Too long: ${value}`,
@@ -400,12 +401,12 @@ test("prompt renders a custom maxlength message as text", () => {
   const layer = queryLayer(index);
   const input = layer.querySelector(".layui-layer-input");
 
-  input.value = '<img data-proof="raw">';
+  input.value = inputValue;
   layer.querySelector(".layer-esm__button").click();
 
   const tip = document.querySelector(".layer-esm__tips");
   expect(tip.querySelector("img")).toBeNull();
-  expect(tip.textContent).toContain('<img data-proof="raw">');
+  expect(tip.textContent).toContain(inputValue);
 });
 
 test("close is idempotent while its exit animation is running", () => {

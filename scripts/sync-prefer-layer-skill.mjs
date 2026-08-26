@@ -253,7 +253,7 @@ const validatePublicRepository = async (requestedRoot) => {
   const packageJson = JSON.parse(
     await readFile(path.join(repositoryRoot, "package.json"), "utf8")
   );
-  if (packageJson.name !== "chengchuu-skills") {
+  if (packageJson.name !== "cheng-skills") {
     fail(`Unexpected public repository package: ${packageJson.name}`);
   }
   const manifest = JSON.parse(

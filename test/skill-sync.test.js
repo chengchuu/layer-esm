@@ -39,7 +39,7 @@ const createPublicRepository = (validator = "") => {
   mkdirSync(path.join(root, "skills"), { recursive: true });
   writeFile(
     path.join(root, "package.json"),
-    `${JSON.stringify({ name: "chengchuu-skills" }, null, 2)}\n`
+    `${JSON.stringify({ name: "cheng-skills" }, null, 2)}\n`
   );
   writeFile(
     path.join(root, ".codex-plugin", "plugin.json"),
