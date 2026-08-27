@@ -15,10 +15,19 @@ import {
   tips,
   title,
 } from "../src";
+import { siteThemeChangeEvent } from "../site/theme-events";
 
 const app = document.querySelector("#demo-gallery");
 
-config({ theme: "system" });
+const syncLayerTheme = (): void => {
+  config({
+    theme:
+      document.documentElement.dataset.bsTheme === "dark" ? "dark" : "light",
+  });
+};
+
+syncLayerTheme();
+document.documentElement.addEventListener(siteThemeChangeEvent, syncLayerTheme);
 
 const iframeHtml = `
 <!doctype html>
@@ -68,11 +77,11 @@ const iframeUrl = `data:text/html;charset=utf-8,${encodeURIComponent(
   iframeHtml
 )}`;
 
-const alertDemoIcon = 1;
+const alertDemoIcon = "success" as const;
 
 const demoSource: Record<string, string> = {
   "alert-basic": `alert("Content");`,
-  "alert-icon": `alert("Great to See You", { icon: ${alertDemoIcon} });`,
+  "alert-icon": `alert("Great to See You", { icon: "success" });`,
   "confirm-basic": `confirm(
   "What Do You Think About Frontend Development?",
   { btn: ["Important", "Unusual"] },
@@ -104,6 +113,13 @@ const demoSource: Record<string, string> = {
   offset: "t",
   anim: 6,
 });`,
+  "icon-warning": `msg("Warning", { icon: "warning" });`,
+  "icon-success": `msg("Success", { icon: "success" });`,
+  "icon-error": `msg("Error", { icon: "error" });`,
+  "icon-question": `msg("Question", { icon: "question" });`,
+  "icon-lock": `msg("Lock", { icon: "lock" });`,
+  "icon-sad": `msg("Sad", { icon: "sad" });`,
+  "icon-smile": `msg("Smile", { icon: "smile" });`,
   "capture-page": `open({
   type: 1,
   shade: false,
@@ -159,8 +175,8 @@ window.setTimeout(() => {
   close(index);
   msg("Loading Style 2 Finished", { icon: 1 });
 }, 1600);`,
-  "loading-msg": `msg("Loading", {
-  icon: 6,
+  "loading-msg": `load("success", {
+  content: "Saved",
   shade: 0.01,
   time: 2,
 });`,
@@ -366,6 +382,24 @@ if (app) {
             <div class="col-md-6 col-xl-4">
               <div class="card shadow-sm h-100">
                 <div class="card-body">
+                  <h2 class="h5 card-title">Single Icons</h2>
+                  <p class="card-text text-secondary">Each button demonstrates one typed icon alias through the message API.</p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-sm btn-outline-warning" data-demo="icon-warning">Warning</button>
+                    <button class="btn btn-sm btn-outline-success" data-demo="icon-success">Success</button>
+                    <button class="btn btn-sm btn-outline-danger" data-demo="icon-error">Error</button>
+                    <button class="btn btn-sm btn-outline-info" data-demo="icon-question">Question</button>
+                    <button class="btn btn-sm btn-outline-secondary" data-demo="icon-lock">Lock</button>
+                    <button class="btn btn-sm btn-outline-danger" data-demo="icon-sad">Sad</button>
+                    <button class="btn btn-sm btn-outline-success" data-demo="icon-smile">Smile</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
                   <h2 class="h5 card-title">Captured Page Layer</h2>
                   <p class="card-text text-secondary">Reuses an existing DOM block, similar to the legacy captured-page example.</p>
                   <button class="btn btn-secondary w-100 mb-3" data-demo="capture-page">Open captured card</button>
@@ -406,12 +440,12 @@ if (app) {
               <div class="card shadow-sm h-100">
                 <div class="card-body">
                   <h2 class="h5 card-title">Loading States</h2>
-                  <p class="card-text text-secondary">Demonstrates the CSS-based loading styles from icon 0 through 2.</p>
+                  <p class="card-text text-secondary">Numeric values 0 through 2 animate; named icons render a static loading status.</p>
                   <div class="d-grid gap-2">
                     <button class="btn btn-outline-secondary" data-demo="loading-0">Loading style 0</button>
                     <button class="btn btn-outline-secondary" data-demo="loading-1">Loading style 1</button>
                     <button class="btn btn-outline-secondary" data-demo="loading-2">Loading style 2</button>
-                    <button class="btn btn-outline-secondary" data-demo="loading-msg">Message-style loading</button>
+                    <button class="btn btn-outline-secondary" data-demo="loading-msg">Static success icon</button>
                   </div>
                 </div>
               </div>
@@ -545,6 +579,27 @@ if (app) {
         anim: 6,
       });
     },
+    "icon-warning": () => {
+      msg("Warning", { icon: "warning" });
+    },
+    "icon-success": () => {
+      msg("Success", { icon: "success" });
+    },
+    "icon-error": () => {
+      msg("Error", { icon: "error" });
+    },
+    "icon-question": () => {
+      msg("Question", { icon: "question" });
+    },
+    "icon-lock": () => {
+      msg("Lock", { icon: "lock" });
+    },
+    "icon-sad": () => {
+      msg("Sad", { icon: "sad" });
+    },
+    "icon-smile": () => {
+      msg("Smile", { icon: "smile" });
+    },
     "capture-page": () => {
       if (!captureSource) {
         return;
@@ -602,8 +657,8 @@ if (app) {
       runLoading(2);
     },
     "loading-msg": () => {
-      msg("Loading", {
-        icon: 6,
+      load("success", {
+        content: "Saved",
         shade: 0.01,
         time: 2,
       });

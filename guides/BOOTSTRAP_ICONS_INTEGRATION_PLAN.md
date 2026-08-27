@@ -66,7 +66,7 @@ negative, out-of-range, and default numeric values.
   ordinary dialogs and messages.
 - Retain the current colored wrapper, semantic color mapping, contextual sizing, themes, and
   layouts. Remove the obsolete Unicode glyph array and custom cross and lock drawing code.
-- Add Bootstrap Icons' MIT attribution to `THIRD_PARTY_NOTICES.md` and include the notice in the
+- Add Bootstrap Icons' MIT attribution to `guides/THIRD_PARTY_NOTICES.md` and include the notice in the
   package `files` allowlist.
 - Update `AGENTS.md` to allow locally bundled Bootstrap SVG definitions while continuing to forbid
   runtime icon fonts, external CSS, images, CDN dependencies, and network-loaded assets.

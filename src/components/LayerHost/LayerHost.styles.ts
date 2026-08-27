@@ -219,68 +219,8 @@ export const Icon = styled.span<{ $compact: boolean; $icon: number }>`
   border-radius: 50%;
   font-size: ${({ $compact }) => ($compact ? "16px" : "14px")};
   font-weight: 700;
-`;
-
-export const IconCross = styled.span.attrs({
-  className: "layer-esm__icon-cross",
-})`
-  position: relative;
-  display: block;
-  width: 10px;
-  height: 10px;
-
-  &::before,
-  &::after {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 11px;
-    height: 2px;
-    border-radius: 999px;
-    background: currentColor;
-    content: "";
-  }
-
-  &::before {
-    transform: translate(-50%, -50%) rotate(45deg);
-  }
-
-  &::after {
-    transform: translate(-50%, -50%) rotate(-45deg);
-  }
-`;
-
-export const IconLock = styled.span.attrs({
-  className: "layer-esm__icon-lock",
-})`
-  position: relative;
-  display: block;
-  box-sizing: border-box;
-  width: 11px;
-  height: 12px;
-
-  &::before {
-    position: absolute;
-    top: 0;
-    left: 2px;
-    box-sizing: inherit;
-    width: 7px;
-    height: 7px;
-    border: 2px solid currentColor;
-    border-bottom: 0;
-    border-radius: 5px 5px 0 0;
-    content: "";
-  }
-
-  &::after {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 7px;
-    border-radius: 2px;
-    background: currentColor;
-    content: "";
+  svg {
+    display: block;
   }
 `;
 

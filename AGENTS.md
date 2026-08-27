@@ -25,6 +25,7 @@ This file applies to work inside `layer-esm/` only. The repository is an indepen
 - `src/host/` — lazy per-`Document` React root registry, styled-components providers, and host teardown.
 - `src/store/` — external store and typed layer lifecycle state.
 - `src/components/` — React rendering for dialogs, shades, messages, loading states, tips, prompts, tabs, buttons, and resize behavior; colocated styled-components own component presentation.
+- `src/icons/` — generated embedded Bootstrap Icons definitions plus icon-name validation and numeric-alias resolution. Regenerate the registry from the installed package; do not hand-edit it.
 - `src/styles/` — typed light, dark, system, and custom theme resolution plus shared style compatibility helpers.
 - `src/utils/` — positioning and focused shared utilities. Before duplicating a generic helper, verify whether the installed Mazey version already exports a suitable API.
 - `examples/` and `site/` — playground, landing page, navigation, runtime theme bootstrap, and PWA source.
@@ -57,6 +58,8 @@ npm run dev
 npm run typecheck
 npm run lint
 npm run format:check
+npm run icons:generate
+npm run icons:check
 npm run build
 npm test
 npm run test:consumer
@@ -65,6 +68,8 @@ npm run preview
 ```
 
 Use the narrowest relevant checks while iterating. `npm test` runs `pretest`, so it rebuilds `dist/` before Jest. A focused test can be run with `npm test -- test/react-host.test.js`. `npm run docs` generates the final Pages artifact and runs documentation-link, SEO, and PWA validation. `npm run preview` is the release-oriented full verification pipeline. Use `npm pack --dry-run` for package metadata or publishing changes.
+
+`npm run icons:generate` is the explicit write path for the tracked icon registry. Normal package builds run `npm run icons:check` and fail when the generated definitions do not match Bootstrap Icons 1.13.1.
 
 For runtime changes, add focused regression tests and cover public callbacks, return values, multiple simultaneous layers, cleanup, focus, keyboard behavior, theme changes, trusted HTML, moved DOM nodes, and multiple target documents as applicable. Do not assert generated styled-components class names.
 
