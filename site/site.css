@@ -430,6 +430,17 @@ a {
   min-width: 0;
 }
 
+.playground-code-panel .btn-outline-secondary {
+  --bs-btn-color: var(--mn-code-text);
+  --bs-btn-border-color: #9ca3af;
+  --bs-btn-hover-color: #111827;
+  --bs-btn-hover-bg: var(--mn-code-text);
+  --bs-btn-hover-border-color: var(--mn-code-text);
+  --bs-btn-active-color: #111827;
+  --bs-btn-active-bg: var(--mn-code-text);
+  --bs-btn-active-border-color: var(--mn-code-text);
+}
+
 .playground-code-panel [data-demo-source-label] {
   margin-left: auto;
   color: #c7d2fe;

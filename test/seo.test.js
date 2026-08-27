@@ -149,6 +149,18 @@ test("site templates use the styled update, code panel, and muted section classe
   expect(stylesheet).toContain(".playground-demo-grid .card");
   expect(stylesheet).toContain(".playground-demo-grid .btn-outline-secondary");
   expect(stylesheet).toContain(".playground-code-panel pre");
+  const playgroundCopyButtonStyles = stylesheet.match(
+    /\.playground-code-panel \.btn-outline-secondary \{([^}]*)\}/
+  )?.[1];
+  expect(playgroundCopyButtonStyles).toContain(
+    "--bs-btn-color: var(--mn-code-text)"
+  );
+  expect(playgroundCopyButtonStyles).toContain(
+    "--bs-btn-border-color: #9ca3af"
+  );
+  expect(playgroundCopyButtonStyles).toContain(
+    "--bs-btn-hover-bg: var(--mn-code-text)"
+  );
   const playgroundCodeStyles = stylesheet.match(
     /\.playground-code-panel pre \{([^}]*)\}/
   )?.[1];

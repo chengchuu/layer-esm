@@ -4,6 +4,7 @@ import {
   setThemePreference,
 } from "mazey";
 import type { ResolvedTheme, ThemePreference } from "mazey";
+import { siteThemeChangeEvent } from "./theme-events";
 
 export type { ThemePreference } from "mazey";
 
@@ -63,6 +64,11 @@ export function initializeThemeControls(storageKey: string): () => void {
     }
 
     syncControls(preference);
+    root.dispatchEvent(
+      new CustomEvent(siteThemeChangeEvent, {
+        detail: { theme: resolvedTheme },
+      })
+    );
   };
 
   const initialTheme = resolveThemePreference(storageKey);
