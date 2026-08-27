@@ -30,7 +30,6 @@ const pkgVersion =
   process.env.VERSION ||
   pkg.version ||
   "unknown";
-const debugMode = process.env.SCRIPTS_NPM_PACKAGE_DEBUG;
 const banner =
   "/*!\n" +
   ` * ${pkg.name} v${pkgVersion}\n` +
@@ -51,16 +50,13 @@ const plugins = [
   }),
 ];
 
-const cjsOutputPlugins =
-  debugMode === "open"
-    ? []
-    : [
-        terser({
-          format: {
-            comments: /^!\n\s\*\slayer-esm/,
-          },
-        }),
-      ];
+const cjsOutputPlugins = [
+  terser({
+    format: {
+      comments: /^!\n\s\*\slayer-esm/,
+    },
+  }),
+];
 
 const cleanDist = {
   name: "clean-dist",
