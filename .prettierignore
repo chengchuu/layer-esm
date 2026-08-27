@@ -4,4 +4,5 @@ dist-dev/
 docs/
 coverage/
 lib/
-guides/release-notes/
+pnpm-lock.yaml
+guides/RELEASE_NOTES/

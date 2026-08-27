@@ -106,22 +106,11 @@ Chrome for Android 100+, and iOS Safari 15+. The package does not install global
 ### Scripts
 
 ```bash
-# Install dependencies
 npm i
-
-# Development
 npm run dev
-
-# Build
 npm run build
-
-# Test
 npm test
-
-# Single test file
 npm test -- test/layer.test.js
-
-# Documentation
 npm run docs
 ```
 

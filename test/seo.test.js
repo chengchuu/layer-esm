@@ -143,6 +143,9 @@ test("site templates use the styled update, code panel, and muted section classe
   expect(playgroundScript).toContain(
     'panel.className = "code-panel playground-code-panel mt-3";'
   );
+  expect(playgroundScript).toContain("copyButton.dataset.demoSourceCopy");
+  expect(playgroundScript).toContain("copyStatus.dataset.demoSourceCopyStatus");
+  expect(playgroundScript).toContain("language.dataset.demoSourceLanguage");
   expect(stylesheet).toContain(".playground-demo-grid .card");
   expect(stylesheet).toContain(".playground-demo-grid .btn-outline-secondary");
   expect(stylesheet).toContain(".playground-code-panel pre");
@@ -152,6 +155,15 @@ test("site templates use the styled update, code panel, and muted section classe
   expect(playgroundCodeStyles).toContain("overflow-x: hidden");
   expect(playgroundCodeStyles).toContain("white-space: pre-wrap");
   expect(playgroundCodeStyles).toContain("overflow-wrap: anywhere");
+  expect(stylesheet).toMatch(
+    /@media \(max-width: 575\.98px\) \{[\s\S]*?\.playground-code-panel \.code-panel-header \{[^}]*display: grid;[^}]*grid-template-columns: minmax\(0, 1fr\) max-content;/
+  );
+  expect(stylesheet).toMatch(
+    /@media \(max-width: 575\.98px\) \{[\s\S]*?\[data-demo-source-label\] \{[^}]*grid-column: 1 \/ -1;[^}]*grid-row: 2;/
+  );
+  expect(stylesheet).toMatch(
+    /@media \(max-width: 575\.98px\) \{[\s\S]*?\[data-demo-source-copy\] \{[^}]*grid-column: 2;[^}]*grid-row: 1;/
+  );
   expect(stylesheet).toContain(".site-footer nav");
   expect(stylesheet).toContain("gap: 0.75rem 1.25rem");
   expect(stylesheet).toContain(".code-panel {");

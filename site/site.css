@@ -426,10 +426,44 @@ a {
   overflow-wrap: anywhere;
 }
 
+.playground-code-panel {
+  min-width: 0;
+}
+
 .playground-code-panel [data-demo-source-label] {
+  margin-left: auto;
   color: #c7d2fe;
   font-weight: 600;
   text-align: right;
+}
+
+.playground-code-panel [data-demo-source-copy] {
+  flex: none;
+}
+
+@media (max-width: 575.98px) {
+  .playground-code-panel .code-panel-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    align-items: center;
+  }
+
+  .playground-code-panel [data-demo-source-language] {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .playground-code-panel [data-demo-source-label] {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .playground-code-panel [data-demo-source-copy] {
+    grid-column: 2;
+    grid-row: 1;
+  }
 }
 
 .playground-output {

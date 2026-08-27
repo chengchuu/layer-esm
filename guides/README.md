@@ -1,7 +1,7 @@
 # Release Notes
 
 - [Introducing layer-esm](./RELEASE_NOTES/introducing-layer-esm-v1.0.1.md)
-- [《layer-esm》v1.0.1 中文介绍](./RELEASE_NOTES/introducing-layer-esm-v1.0.1-zh.md)
+- [layer-esm v1.0.1 项目介绍](./RELEASE_NOTES/introducing-layer-esm-v1.0.1-zh.md)
 - [Change Record](./CHANGES.md)
 - [Publish Log](./PUBLISH_LOG.md)
 

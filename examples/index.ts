@@ -771,6 +771,81 @@ if (app) {
     },
   };
 
+  interface CopyFeedbackState {
+    requestId: number;
+    resetTimer: number | null;
+  }
+
+  const copyFeedback = new WeakMap<HTMLButtonElement, CopyFeedbackState>();
+
+  const stateForCopyButton = (button: HTMLButtonElement): CopyFeedbackState => {
+    let state = copyFeedback.get(button);
+    if (!state) {
+      state = { requestId: 0, resetTimer: null };
+      copyFeedback.set(button, state);
+    }
+    return state;
+  };
+
+  const resetCopyFeedback = (panel: HTMLElement): void => {
+    const button = panel.querySelector<HTMLButtonElement>(
+      "[data-demo-source-copy]"
+    )!;
+    const status = panel.querySelector<HTMLElement>(
+      "[data-demo-source-copy-status]"
+    )!;
+
+    const state = stateForCopyButton(button);
+    state.requestId += 1;
+    if (state.resetTimer !== null) {
+      window.clearTimeout(state.resetTimer);
+      state.resetTimer = null;
+    }
+    button.textContent = "Copy code";
+    status.textContent = "";
+  };
+
+  const copyDemoSource = async (button: HTMLButtonElement): Promise<void> => {
+    const panel = button.closest<HTMLElement>("[data-demo-source-panel]")!;
+    const code = panel.querySelector<HTMLElement>("[data-demo-source-code]")!;
+    const status = panel.querySelector<HTMLElement>(
+      "[data-demo-source-copy-status]"
+    )!;
+
+    const state = stateForCopyButton(button);
+    state.requestId += 1;
+    const requestId = state.requestId;
+    if (state.resetTimer !== null) {
+      window.clearTimeout(state.resetTimer);
+      state.resetTimer = null;
+    }
+
+    let buttonText = "Copied";
+    let announcement = "Code copied to the clipboard.";
+    try {
+      if (typeof navigator.clipboard?.writeText !== "function") {
+        throw new Error("Clipboard API is unavailable.");
+      }
+      await navigator.clipboard.writeText(code.textContent!);
+    } catch {
+      buttonText = "Copy unavailable";
+      announcement = "Copy unavailable. Select the code manually.";
+    }
+
+    if (state.requestId !== requestId) {
+      return;
+    }
+    button.textContent = buttonText;
+    status.textContent = announcement;
+    state.resetTimer = window.setTimeout(() => {
+      if (state.requestId === requestId) {
+        button.textContent = "Copy code";
+        status.textContent = "";
+        state.resetTimer = null;
+      }
+    }, 2000);
+  };
+
   const showDemoSource = (button: HTMLElement): void => {
     const demoId = button.dataset.demo ?? "";
     const source = demoSource[demoId];
@@ -791,10 +866,24 @@ if (app) {
       const header = document.createElement("div");
       header.className = "code-panel-header";
       const language = document.createElement("span");
+      language.dataset.demoSourceLanguage = "";
       language.textContent = "TypeScript";
       const label = document.createElement("span");
       label.dataset.demoSourceLabel = "";
-      header.append(language, label);
+      const copyButton = document.createElement("button");
+      copyButton.className = "btn btn-sm btn-outline-secondary";
+      copyButton.type = "button";
+      copyButton.dataset.demoSourceCopy = "";
+      copyButton.textContent = "Copy code";
+      copyButton.addEventListener("click", () => {
+        void copyDemoSource(copyButton);
+      });
+      const copyStatus = document.createElement("span");
+      copyStatus.className = "visually-hidden";
+      copyStatus.dataset.demoSourceCopyStatus = "";
+      copyStatus.setAttribute("role", "status");
+      copyStatus.setAttribute("aria-live", "polite");
+      header.append(language, label, copyButton, copyStatus);
 
       const pre = document.createElement("pre");
       pre.tabIndex = 0;
@@ -807,6 +896,7 @@ if (app) {
 
     const label = panel.querySelector<HTMLElement>("[data-demo-source-label]");
     const code = panel.querySelector<HTMLElement>("[data-demo-source-code]");
+    resetCopyFeedback(panel);
     if (label) {
       label.textContent = button.textContent?.trim() ?? "Example";
     }
