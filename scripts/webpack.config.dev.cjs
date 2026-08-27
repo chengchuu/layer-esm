@@ -72,6 +72,10 @@ const runtimeConfig = {
 
 module.exports = {
   mode: "development",
+  // HtmlWebpackPlugin owns the generated pages; avoid a second HTML pipeline.
+  experiments: {
+    html: false,
+  },
   entry: {
     theme: _resolve("../site/theme-bootstrap.ts"),
     shared: [_resolve("../site/shared.ts"), ...siteImageEntries],
