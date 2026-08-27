@@ -1,15 +1,27 @@
 # layer-esm v1.0.1：面向现代 Web 项目的 Layer 风格弹层库
 
-`layer-esm` 将熟悉的 Layer 风格命令式 API 带入基于 npm 的浏览器项目。v1.0.1 同时提供
-ESM、CommonJS 和 TypeScript 类型声明。应用可以按需导入 API，不再依赖全局
-`window.layer` 对象。
-
 ![layer-esm](http://blog.mazey.net/wp-content/uploads/2026/06/layer-esm-SF-s7x3.jpg)
 
-## 致谢
+layer-esm 将熟悉的 Layer 风格命令式 API 带入基于 npm 的浏览器项目。v1.0.1 同时提供
+ESM、CommonJS 和 TypeScript 类型声明。应用可以按需导入 API，不再依赖全局
+window.layer 对象。
 
-特别感谢 [贤心 (Xianxin)](https://github.com/sentsin)。他是
-[Layer](https://github.com/layui/layer) 的原作者，也是 `layer-esm` 所沿用 API 风格的创始人。
+- [`layer-esm` 的定位](#layer-esm-的定位)
+- [安装与导入](#安装与导入)
+  - [安装](#安装)
+  - [导入所需 API](#导入所需-api)
+- [基本用法](#基本用法)
+  - [使用 `msg` 显示消息](#使用-msg-显示消息)
+  - [使用 `confirm` 请求确认](#使用-confirm-请求确认)
+  - [使用 `load` 标识加载状态](#使用-load-标识加载状态)
+- [从旧版 Layer 迁移](#从旧版-layer-迁移)
+  - [更改接入方式](#更改接入方式)
+  - [替换常用 API](#替换常用-api)
+  - [逐步完成迁移](#逐步完成迁移)
+- [内容安全](#内容安全)
+- [后续阅读](#后续阅读)
+- [版权声明](#版权声明)
+
 
 ## `layer-esm` 的定位
 
@@ -27,9 +39,9 @@ npm 包导入所需 API。
 npm install layer-esm
 ```
 
-### 具名导入
+### 导入所需 API
 
-具名导入可以明确展示当前模块依赖的 API:
+从包中导入所需 API，可以明确展示当前模块的依赖:
 
 ```javascript
 import { close, confirm, load, msg } from "layer-esm";

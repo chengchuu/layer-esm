@@ -113,7 +113,7 @@ Chrome for Android 100+, and iOS Safari 15+. The package does not install global
 
 ## Guides
 
-- [layer-esm v1.0.1: Layer-style dialogs for modern web projects](./guides/RELEASE_NOTES/introducing-layer-esm-v1.0.1.md)
+- [layer-esm v1.0.1: Layer-style dialogs for modern web projects](./guides/RELEASE_NOTES/introducing-layer-esm-v1.0.1.en-US.md)
 - [React 19 migration](./guides/REACT19_MIGRATION.md)
 - [Release notes index](./guides/README.md)
 
