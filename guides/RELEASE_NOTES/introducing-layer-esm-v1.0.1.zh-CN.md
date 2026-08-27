@@ -1,4 +1,4 @@
-# layer-esm v1.0.1：面向现代 Web 项目的 Layer 风格弹层库
+# layer-esm v1.0.1: 面向现代 Web 项目的 Layer 风格弹层库
 
 ![layer-esm](http://blog.mazey.net/wp-content/uploads/2026/06/layer-esm-SF-s7x3.jpg)
 
@@ -19,15 +19,12 @@ window.layer 对象。
   - [替换常用 API](#替换常用-api)
   - [逐步完成迁移](#逐步完成迁移)
 - [内容安全](#内容安全)
-- [后续阅读](#后续阅读)
 - [版权声明](#版权声明)
 
 
 ## `layer-esm` 的定位
 
-`layer-esm` 面向 Web 应用提供弹层、消息提示和对话框能力。常用方法仍包括 `msg`、
-`confirm` 和 `load`。主要变化在于接入方式：旧版代码依赖全局 `window.layer`，新代码则从
-npm 包导入所需 API。
+`layer-esm` 面向 Web 应用提供弹层、消息提示和对话框能力。常用方法仍包括 `msg`、`confirm` 和 `load`。主要变化在于接入方式: 旧版代码依赖全局 `window.layer`，新代码则从 npm 包导入所需 API。
 
 ## 安装与导入
 
@@ -124,7 +121,7 @@ load(2);
 </script>
 ```
 
-包导入写法:
+`layer-esm` 写法:
 
 ```javascript
 import { msg } from "layer-esm";
@@ -142,7 +139,7 @@ msg("保存成功");
 layer.msg("一段提示信息");
 ```
 
-包导入写法:
+`layer-esm` 写法:
 
 ```javascript
 import { msg } from "layer-esm";
@@ -164,7 +161,7 @@ layer.confirm("如何看待前端开发？", {
 });
 ```
 
-包导入写法:
+`layer-esm` 写法:
 
 ```javascript
 import { confirm, msg } from "layer-esm";
@@ -190,7 +187,7 @@ setTimeout(function () {
 }, 1500);
 ```
 
-包导入写法:
+`layer-esm` 写法:
 
 ```javascript
 import { close, load } from "layer-esm";
@@ -204,29 +201,19 @@ setTimeout(() => {
 
 ### 逐步完成迁移
 
-建议先迁移 `msg`、`confirm` 和 `load` 等高频调用。仅导入当前模块使用的方法，可以减少
-`layer.xxx` 形式的层级访问，也便于识别依赖。
+建议先迁移 `msg`、`confirm` 和 `load` 等高频调用。仅导入当前模块使用的方法，可以减少 `layer.xxx` 形式的层级访问，也便于识别依赖。
 
-按页面或功能模块逐步替换弹层逻辑。可以先处理保存提示、删除确认和加载遮罩。确认这些
-场景行为正确后，再迁移其他能力。删除旧版依赖前，请验证选项和回调行为。
+按页面或功能模块逐步替换弹层逻辑。可以先处理保存提示、删除确认和加载遮罩。确认这些场景行为正确后，再迁移其他能力。删除旧版依赖前，请验证选项和回调行为。
 
 ## 内容安全
 
-为了兼容 Layer，字符串类型的 `content` 会被视为可信 HTML。请勿直接传入不可信的用户输入。
-应当先清理不可信标记，或者在需要结构化 DOM 内容时使用 `HTMLElement`。
-
-## 后续阅读
-
-- 使用[在线演示](https://chengchuu.github.io/layer-esm/playground/)测试常用 API。
-- 查看 [API 文档](https://chengchuu.github.io/layer-esm/api/)。
-- 阅读[当前项目文档](https://github.com/chengchuu/layer-esm)。
+为了兼容 Layer，字符串类型的 `content` 会被视为可信 HTML。请勿直接传入不可信的用户输入。应当先清理不可信标记，或者在需要结构化 DOM 内容时使用 `HTMLElement`。
 
 ## 版权声明
 
 本文为原创文章，作者保留版权。转载请保留本文完整内容，并以超链接形式注明作者及原文出处。
 
-作者：[除除](https://github.com/chengchuu)
+作者: [除除](https://github.com/chengchuu)
+原文: <http://blog.mazey.net/6443.html>
 
-原文：<http://blog.mazey.net/6443.html>
-
-<!-- ID: introducing-layer-esm-v1.0.1-zh -->
+<!-- ID: RELEASE_NOTES/introducing-layer-esm-v1.0.1.zh-CN -->
