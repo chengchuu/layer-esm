@@ -1,5 +1,7 @@
 # layer-esm
 
+English | [简体中文](./README.zh-CN.md)
+
 [![npm version][npm-image]][npm-url]
 [![l][l-image]][l-url]
 
@@ -97,7 +99,7 @@ config({ styleNonce: window.__CSP_NONCE__ });
 The previous `injectStyles: false` and reusable `layerStyles` workflow cannot represent dynamic
 styled-components themes. `layerStyles` remains as a deprecated compatibility marker, while
 `config({ injectStyles: false })` throws a descriptive migration error instead of silently rendering
-an unstyled dialog. See the [React 19 migration guide](./guides/REACT19_MIGRATION.md).
+an unstyled dialog.
 
 ## Architecture and lifecycle
 
@@ -113,8 +115,7 @@ Chrome for Android 100+, and iOS Safari 15+. The package does not install global
 
 ## Guides
 
-- [layer-esm v1.0.1: Layer-style dialogs for modern web projects](./guides/RELEASE_NOTES/introducing-layer-esm-v1.0.1.md)
-- [React 19 migration](./guides/REACT19_MIGRATION.md)
+- [layer-esm v1.0.1: Layer-style dialogs for modern web projects](./guides/RELEASE_NOTES/introducing-layer-esm-v1.0.1.en-US.md)
 - [Release notes index](./guides/README.md)
 
 ## Contributing
