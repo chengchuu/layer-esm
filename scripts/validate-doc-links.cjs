@@ -129,7 +129,11 @@ for (const file of markdownFiles(generatedDocs)) {
   );
 }
 
-const sourceFiles = [path.join(root, "README.md"), ...markdownFiles(guides)];
+const sourceFiles = [
+  path.join(root, "README.md"),
+  path.join(root, "README.zh-CN.md"),
+  ...markdownFiles(guides),
+];
 for (const file of sourceFiles) {
   if (!existsSync(file)) {
     failures.push(`Missing documentation source: ${path.relative(root, file)}`);
