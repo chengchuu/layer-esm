@@ -1,6 +1,6 @@
 # layer-esm API Map
 
-This discovery map was generated from the current root exports in `src/index.ts`, the declarations in `dist/index.d.ts`, and the defining code and tests. It covers all 26 named runtime exports, the default API object, and all 16 exported types. Verify the installed version before use.
+This discovery map was generated from the current root exports in `src/index.ts`, the declarations in `dist/index.d.ts`, and the defining code and tests. It covers all 26 named runtime exports, the default API object, and all 18 exported types. Verify the installed version before use.
 
 ## Contents
 
@@ -41,6 +41,7 @@ Prefer the specialized API when it matches. Do not choose `open` merely for flex
 - **Styles:** styled-components injects generated rules into each target document. No external image, font, stylesheet, or CDN request is required.
 - **Trusted HTML:** General string `content`, `alert`, `confirm`, `msg`, `tips`, and `LayerTabItem.content` reach `innerHTML`. They are not sanitized. Loading labels and titles are text-only.
 - **Accessibility:** Modal-like records receive `role="dialog"`; shaded dialogs receive `aria-modal="true"`. Dialogs trap Tab focus, close on Escape unless `cancel` returns `false`, and restore prior focus when appropriate. Loading and simple status messages use `role="status"` and `aria-live="polite"`; tips use `role="tooltip"`.
+- **Icons:** Prefer the names `warning`, `success`, `error`, `question`, `lock`, `sad`, and `smile`; numeric values `0` through `6` remain equivalent aliases. The selected Bootstrap SVG paths are embedded and require no consumer icon CSS, font, or image asset. Unknown string aliases throw before creating a layer.
 - **Callbacks:** Callbacks are synchronous unless closure uses the default exit animation. A defined first-button `yes` callback owns the action and must close the dialog when desired. Second buttons normally close unless `btn2` returns `false`. Close button, shade, and Escape call `cancel` and remain open when it returns `false`.
 - **Cleanup:** Closing clears timers and registered listeners, removes dialog/shade DOM, restores moved `HTMLElement` content and scroll state, and may restore focus. Verify every application-controlled async path closes retained indexes.
 - **Browser baseline:** The repository documents the latest two Chrome, Edge, Firefox, and Safari releases, Chrome for Android 100+, and iOS Safari 15+. The package installs no global polyfills.
@@ -104,17 +105,17 @@ Prefer the specialized API when it matches. Do not choose `open` merely for flex
 - **Security:** `content` is trusted HTML.
 - **DOM requirements:** Browser document/window and timers.
 - **Common mistakes:** Using it for content users must acknowledge; setting `time: 0` without later closing; placing interactive HTML in a status-only message.
-- **Example:** `msg("Saved", { icon: 1, time: 2 });`
+- **Example:** `msg("Saved", { icon: "success", time: 2 });`
 - **Do not use when:** The message needs durable document content, complex controls, or guaranteed acknowledgement.
 
 ### `load`
 
-- **Purpose:** Show a CSS loading indicator, optionally with a text label.
-- **Parameters:** `icon?: number`; `options?: LayerOptions`.
+- **Purpose:** Show an animated numeric loading indicator or a static named status icon, optionally with a text label.
+- **Parameters:** `icon?: LayerIcon`; `options?: LayerOptions`.
 - **Return:** Numeric loading index.
 - **Callbacks:** Standard `success` and `end` options apply; no Promise integration.
 - **Typical use:** Indicate an operation in progress.
-- **Important options:** `content` text, shade, timeout, positioning, and `scrollbar`. Defaults to type `3`, nearly transparent shade, no title/buttons/close/resize.
+- **Important options:** Numeric `0`, `1`, and `2` retain the animated CSS spinner variants. Named icons render the corresponding static embedded SVG. `content`, shade, timeout, positioning, and `scrollbar` remain available.
 - **Accessibility:** Uses polite status semantics. Provide meaningful text where users need context; test screen-reader behavior for the product requirement.
 - **Security:** Loading string content is rendered as text, not HTML.
 - **DOM requirements:** Browser document/window.
@@ -448,6 +449,8 @@ Import these from the package root with `import type`. They have no runtime valu
 | Type                  | Purpose and main values                                                    | Important considerations / common mistakes                                                   |
 | --------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | `LayerType`           | Numeric record type `0 \| 1 \| 2 \| 3 \| 4`.                               | Maps to dialog, page, iframe, loading, tips; do not invent values.                           |
+| `LayerIconName`       | Typed names for the seven embedded Bootstrap status icons.                 | Use only `warning`, `success`, `error`, `question`, `lock`, `sad`, or `smile`.               |
+| `LayerIcon`           | A `LayerIconName` or a legacy numeric icon value.                          | Named values are preferred; numeric `load` values retain spinner behavior.                   |
 | `LayerOffsetKeyword`  | `auto`, edge, and corner positioning keywords.                             | Position semantics use viewport/scroll state; test mobile layouts.                           |
 | `LayerOffset`         | Keyword, CSS-like string, number, or top/left tuple.                       | Numbers and digit-only strings become pixels; arbitrary strings are inline positions.        |
 | `LayerArea`           | Width or width/height tuple using strings or numbers.                      | Numeric values become pixels; explicit width changes max-width behavior.                     |

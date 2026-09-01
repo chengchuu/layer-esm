@@ -10,6 +10,7 @@ const {
 } = require("node:fs");
 const { createHash } = require("node:crypto");
 const path = require("node:path");
+const { escapeHtmlAttribute } = require("mazey");
 const projectConfig = require("../project.config.cjs");
 
 const defaultRoot = path.resolve(__dirname, "..");
@@ -21,14 +22,6 @@ const seoStart = `<!-- ${markerPrefix}-seo:start -->`;
 const seoEnd = `<!-- ${markerPrefix}-seo:end -->`;
 const pwaUiStart = `<!-- ${markerPrefix}-pwa-ui:start -->`;
 const pwaUiEnd = `<!-- ${markerPrefix}-pwa-ui:end -->`;
-
-function escapeAttribute(value) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -121,9 +114,9 @@ function transformApiHtml(html, relativeFile) {
     },
     about: projectConfig.seo.software,
   });
-  const metadata = `<title>${escapeAttribute(title)}</title>${[
+  const metadata = `<title>${escapeHtmlAttribute(title)}</title>${[
     seoStart,
-    `<meta name="description" content="${escapeAttribute(description)}"/>`,
+    `<meta name="description" content="${escapeHtmlAttribute(description)}"/>`,
     `<link rel="canonical" href="${url}"/>`,
     `<link rel="icon" href="${projectConfig.assets.faviconUrl}" type="image/png"/>`,
     `<link rel="manifest" href="${projectConfig.pwa.manifestUrl}"/>`,
@@ -131,9 +124,11 @@ function transformApiHtml(html, relativeFile) {
     `<style>:root{--project-theme-primary:${theme.colorPrimary};--project-theme-primary-hover:${theme.primary.light.hover};--project-theme-primary-active:${theme.primary.light.active};--project-theme-primary-soft:${theme.primary.light.soft};--project-theme-primary-rgb:${theme.primary.light.rgb};--project-theme-primary-hover-rgb:${theme.primary.light.hoverRgb};--project-theme-primary-dark:${theme.primary.dark.base};--project-theme-primary-dark-hover:${theme.primary.dark.hover};--project-theme-primary-dark-active:${theme.primary.dark.active};--project-theme-primary-dark-soft:${theme.primary.dark.soft};--project-theme-primary-dark-rgb:${theme.primary.dark.rgb};--project-theme-primary-dark-hover-rgb:${theme.primary.dark.hoverRgb};--project-theme-light:${theme.colorLight};--project-theme-dark:${theme.colorDark}}</style>`,
     `<link rel="stylesheet" href="${assetPrefix}assets/api.css"/>`,
     '<meta property="og:type" content="website"/>',
-    `<meta property="og:site_name" content="${escapeAttribute(displayName)}"/>`,
-    `<meta property="og:title" content="${escapeAttribute(title)}"/>`,
-    `<meta property="og:description" content="${escapeAttribute(
+    `<meta property="og:site_name" content="${escapeHtmlAttribute(
+      displayName
+    )}"/>`,
+    `<meta property="og:title" content="${escapeHtmlAttribute(title)}"/>`,
+    `<meta property="og:description" content="${escapeHtmlAttribute(
       description
     )}"/>`,
     `<meta property="og:url" content="${url}"/>`,
@@ -141,16 +136,16 @@ function transformApiHtml(html, relativeFile) {
     `<meta property="og:image:type" content="${socialImage.type}"/>`,
     `<meta property="og:image:width" content="${socialImage.width}"/>`,
     `<meta property="og:image:height" content="${socialImage.height}"/>`,
-    `<meta property="og:image:alt" content="${escapeAttribute(
+    `<meta property="og:image:alt" content="${escapeHtmlAttribute(
       socialImage.alt
     )}"/>`,
     '<meta name="twitter:card" content="summary_large_image"/>',
-    `<meta name="twitter:title" content="${escapeAttribute(title)}"/>`,
-    `<meta name="twitter:description" content="${escapeAttribute(
+    `<meta name="twitter:title" content="${escapeHtmlAttribute(title)}"/>`,
+    `<meta name="twitter:description" content="${escapeHtmlAttribute(
       description
     )}"/>`,
     `<meta name="twitter:image" content="${socialImage.url}"/>`,
-    `<meta name="twitter:image:alt" content="${escapeAttribute(
+    `<meta name="twitter:image:alt" content="${escapeHtmlAttribute(
       socialImage.alt
     )}"/>`,
     `<script type="application/ld+json">${structuredData}</script>`,
@@ -195,7 +190,7 @@ function transformApiHtml(html, relativeFile) {
   const pwaUi = [
     pwaUiStart,
     '<aside class="site-pwa-update" aria-label="Website update" data-pwa-update hidden>',
-    `<span>A new version of the ${escapeAttribute(
+    `<span>A new version of the ${escapeHtmlAttribute(
       displayName
     )} website is available.</span>`,
     '<button type="button" data-pwa-update-now>Update now</button>',
@@ -209,7 +204,7 @@ function transformApiHtml(html, relativeFile) {
     } else {
       output = output.replace(
         /<main\b([^>]*)>/i,
-        `<main$1><h1>${escapeAttribute(title)}</h1>`
+        `<main$1><h1>${escapeHtmlAttribute(title)}</h1>`
       );
     }
   }
@@ -299,7 +294,9 @@ function writeSeoAssets(docs) {
     `User-agent: *\nAllow: /\n\nSitemap: ${projectConfig.urls.sitemap}\n`
   );
   const locations = [pages.home.url, pages.api.url, pages.playground.url]
-    .map((url) => `  <url>\n    <loc>${escapeAttribute(url)}</loc>\n  </url>`)
+    .map(
+      (url) => `  <url>\n    <loc>${escapeHtmlAttribute(url)}</loc>\n  </url>`
+    )
     .join("\n");
   writeFileSync(
     path.join(docs, "sitemap.xml"),

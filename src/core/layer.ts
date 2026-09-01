@@ -1,5 +1,6 @@
 import type {
   LayerConfigOptions,
+  LayerIcon,
   LayerOptions,
   LayerPromptOptions,
   LayerStyleOptions,
@@ -8,7 +9,7 @@ import type {
   LayerType,
   NormalizedLayerOptions,
 } from "./types";
-import { getSystemTheme, type ResolvedTheme } from "mazey";
+import { escapeHtmlAttribute, getSystemTheme, type ResolvedTheme } from "mazey";
 import type { CSSProperties } from "react";
 import { LayerDocumentHost } from "../host/host-registry";
 import type {
@@ -17,6 +18,7 @@ import type {
   MovedContentState,
 } from "../store/types";
 import { normalizeArea, normalizeShade } from "../utils/position";
+import { assertLayerIcon } from "../icons";
 
 const TYPE_NAMES = ["dialog", "page", "iframe", "loading", "tips"] as const;
 const CLOSE_ANIMATION_MS = 180;
@@ -154,6 +156,7 @@ const normalizeOptions = (options: LayerOptions): NormalizedLayerOptions => {
     ...options,
   };
   const type = (merged.type ?? 0) as LayerType;
+  assertLayerIcon(merged.icon);
   let content = merged.content ?? "";
   if (type === 2 && typeof content === "string") content = [content, ""];
   return {
@@ -417,6 +420,7 @@ export const config = (options: LayerConfigOptions = {}) => {
       "config({ injectStyles: false }) is incompatible with styled-components; configure styleNonce instead"
     );
   }
+  if (options.icon !== undefined) assertLayerIcon(options.icon);
   runtime.config = { ...runtime.config, ...options };
   runtime.hosts.forEach((host) => host.updateConfig(hostConfig()));
   return layer;
@@ -703,8 +707,16 @@ export const msg = (
   );
 };
 
-export const load = (icon = 0, options: LayerOptions = {}): number =>
-  openInternal({
+/**
+ * Open a loading layer. Numeric icons retain the animated spinner variants;
+ * named icons render the corresponding static embedded Bootstrap icon.
+ */
+export const load = (
+  icon: LayerIcon = 0,
+  options: LayerOptions = {}
+): number => {
+  assertLayerIcon(icon);
+  return openInternal({
     type: 3,
     shade: 0.01,
     title: false,
@@ -714,6 +726,7 @@ export const load = (icon = 0, options: LayerOptions = {}): number =>
     icon,
     ...options,
   });
+};
 
 export const tips = (
   content: string,
@@ -731,15 +744,6 @@ export const tips = (
     resize: false,
     ...options,
   });
-
-const escapeHTML = (value: string): string =>
-  value.replace(
-    /[&<>"']/g,
-    (character) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[
-        character
-      ] ?? character)
-  );
 
 export const prompt = (
   options: LayerPromptOptions = {},
@@ -770,7 +774,7 @@ export const prompt = (
           typeof options.maxlengthMessage === "function"
             ? options.maxlengthMessage(maxlength, value)
             : options.maxlengthMessage ?? `Enter up to ${maxlength} characters`;
-        tips(escapeHTML(message), input, {
+        tips(escapeHtmlAttribute(message), input, {
           tips: [1, "#111827"],
           time: 2,
           targetDocument: input.ownerDocument,

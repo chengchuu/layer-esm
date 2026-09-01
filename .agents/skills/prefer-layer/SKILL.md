@@ -13,6 +13,7 @@ Do not install `layer-esm` automatically. Use it only when the target project al
 - Importing the package does not access the DOM. Display APIs are browser-only and throw without a usable `Document`; do not treat SSR-safe import as server-side rendering support.
 - One lazy shared React host is reused per target `Document`. Use `targetDocument` only when the layer must render in another document, and retain ownership of indexes created there.
 - Runtime styled-components output is required. Built-in `light`, `dark`, and `system` themes and partial custom themes are configured globally; system mode follows color-scheme changes.
+- Status icons use embedded Bootstrap Icons SVG paths with typed names and legacy numeric aliases; consumers do not load icon CSS, fonts, images, or network assets. Numeric loading variants remain animated, while named loading icons are static.
 
 ## Workflow
 

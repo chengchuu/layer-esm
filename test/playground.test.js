@@ -23,6 +23,8 @@ const mockLayerApi = {
 
 jest.mock("../src", () => mockLayerApi);
 
+const { siteThemeChangeEvent } = require("../site/theme-events");
+
 const loadPlayground = () => {
   jest.resetModules();
   require("../examples/index.ts");
@@ -105,7 +107,9 @@ test("copies current source and restarts feedback timing", async () => {
   demoButton.click();
   expect(copyButton.textContent).toBe("Copy code");
   expect(status.textContent).toBe("");
-  expect(code.textContent).toBe('alert("Great to See You", { icon: 1 });');
+  expect(code.textContent).toBe(
+    'alert("Great to See You", { icon: "success" });'
+  );
   copyButton.click();
   await flushClipboard();
   expect(writeText).toHaveBeenLastCalledWith(code.textContent);
@@ -113,6 +117,101 @@ test("copies current source and restarts feedback timing", async () => {
   expect(copyButton.textContent).toBe("Copy code");
   expect(status.textContent).toBe("");
 });
+
+test("named icon demos execute the same code shown in their panels", () => {
+  loadPlayground();
+
+  const alertButton = document.querySelector('[data-demo="alert-icon"]');
+  alertButton.click();
+  expect(mockLayerApi.alert).toHaveBeenLastCalledWith("Great to See You", {
+    icon: "success",
+  });
+  expect(
+    alertButton.closest(".card-body").querySelector("[data-demo-source-code]")
+      .textContent
+  ).toBe('alert("Great to See You", { icon: "success" });');
+
+  const loadingButton = document.querySelector('[data-demo="loading-msg"]');
+  loadingButton.click();
+  expect(mockLayerApi.load).toHaveBeenLastCalledWith("success", {
+    content: "Saved",
+    shade: 0.01,
+    time: 2,
+  });
+  expect(
+    loadingButton.closest(".card-body").querySelector("[data-demo-source-code]")
+      .textContent
+  ).toContain('load("success", {');
+});
+
+test("keeps the layer theme synchronized with the resolved page theme", () => {
+  document.documentElement.dataset.bsTheme = "light";
+  loadPlayground();
+
+  expect(mockLayerApi.config).toHaveBeenLastCalledWith({ theme: "light" });
+
+  document.documentElement.dataset.bsTheme = "dark";
+  document.documentElement.dispatchEvent(
+    new CustomEvent(siteThemeChangeEvent, {
+      detail: { theme: "dark" },
+    })
+  );
+  expect(mockLayerApi.config).toHaveBeenLastCalledWith({ theme: "dark" });
+
+  document.documentElement.dataset.bsTheme = "light";
+  document.documentElement.dispatchEvent(
+    new CustomEvent(siteThemeChangeEvent, {
+      detail: { theme: "light" },
+    })
+  );
+  expect(mockLayerApi.config).toHaveBeenLastCalledWith({ theme: "light" });
+});
+
+test("places the compact single-icons card after message variants", () => {
+  loadPlayground();
+
+  const titles = Array.from(
+    document.querySelectorAll(".playground-demo-grid .card-title"),
+    (title) => title.textContent
+  );
+  expect(titles.slice(0, 4)).toEqual([
+    "Alert & Confirm",
+    "Message Variants",
+    "Single Icons",
+    "Captured Page Layer",
+  ]);
+
+  const controls = document.querySelector(
+    '[data-demo="icon-warning"]'
+  ).parentElement;
+  expect(controls.classList.contains("d-flex")).toBe(true);
+  expect(controls.classList.contains("flex-wrap")).toBe(true);
+});
+
+test.each([
+  ["warning", "Warning"],
+  ["success", "Success"],
+  ["error", "Error"],
+  ["question", "Question"],
+  ["lock", "Lock"],
+  ["sad", "Sad"],
+  ["smile", "Smile"],
+])(
+  "runs the %s single-icon example and displays matching source",
+  (icon, label) => {
+    loadPlayground();
+
+    const button = document.querySelector(`[data-demo="icon-${icon}"]`);
+    expect(button).not.toBeNull();
+    button.click();
+
+    expect(mockLayerApi.msg).toHaveBeenLastCalledWith(label, { icon });
+    expect(
+      button.closest(".card-body").querySelector("[data-demo-source-code]")
+        .textContent
+    ).toBe(`msg("${label}", { icon: "${icon}" });`);
+  }
+);
 
 test.each([
   ["is unavailable", null],

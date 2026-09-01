@@ -2,6 +2,7 @@
 
 const { initializeNavigation } = require("../site/navigation");
 const { initializeThemeControls } = require("../site/theme");
+const { siteThemeChangeEvent } = require("../site/theme-events");
 const projectConfig = require("../project.config.cjs");
 
 const { colorDark, colorLight, storageKey } = projectConfig.site.theme;
@@ -44,6 +45,12 @@ test("theme selection follows the system and persists an explicit choice", () =>
   });
   localStorage.clear();
   localStorage.setItem(storageKey, "system");
+  const appliedThemes = [];
+  const handleThemeChange = (event) => appliedThemes.push(event.detail.theme);
+  document.documentElement.addEventListener(
+    siteThemeChangeEvent,
+    handleThemeChange
+  );
   cleanupTheme = initializeThemeControls(storageKey);
   const select = document.querySelector("[data-theme-select]");
 
@@ -60,6 +67,11 @@ test("theme selection follows the system and persists an explicit choice", () =>
   );
   expect(localStorage.getItem(storageKey)).toBe("light");
   expect(localStorage.getItem("tsd-theme")).toBe("light");
+  expect(appliedThemes).toEqual(["dark", "light"]);
+  document.documentElement.removeEventListener(
+    siteThemeChangeEvent,
+    handleThemeChange
+  );
   expect(mediaListeners).toHaveLength(1);
   cleanupTheme();
   cleanupTheme = () => undefined;

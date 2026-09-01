@@ -14,9 +14,14 @@ const {
   transformApiHtml,
 } = require("../scripts/build-pages.cjs");
 const projectConfig = require("../project.config.cjs");
+const webpackConfig = require("../scripts/webpack.config.dev.cjs");
 
 const { displayName } = projectConfig.brand;
 const { pages } = projectConfig.site;
+
+test("HtmlWebpackPlugin remains the only owner of generated site HTML", () => {
+  expect(webpackConfig.experiments.html).toBe(false);
+});
 
 const typeDocHtml = `<!doctype html><html><head><title>${displayName}</title><meta name="description" content="old"><link rel="canonical" href="https://example.com/"><link rel="icon" href="old.png"></head><body><script>document.body.style.display="none"</script><header><div class="tsd-toolbar-contents container"><button id="tsd-search-trigger" aria-label="Search"></button><dialog id="tsd-search"><input id="tsd-search-input"><ul id="tsd-search-results"></ul></dialog></div></header><div class="tsd-page-title"><h1>${displayName}</h1></div><main><h1>${displayName}</h1><h2>API</h2><p>Public API documentation content.</p></main></body></html>`;
 
@@ -149,6 +154,18 @@ test("site templates use the styled update, code panel, and muted section classe
   expect(stylesheet).toContain(".playground-demo-grid .card");
   expect(stylesheet).toContain(".playground-demo-grid .btn-outline-secondary");
   expect(stylesheet).toContain(".playground-code-panel pre");
+  const playgroundCopyButtonStyles = stylesheet.match(
+    /\.playground-code-panel \.btn-outline-secondary \{([^}]*)\}/
+  )?.[1];
+  expect(playgroundCopyButtonStyles).toContain(
+    "--bs-btn-color: var(--mn-code-text)"
+  );
+  expect(playgroundCopyButtonStyles).toContain(
+    "--bs-btn-border-color: #9ca3af"
+  );
+  expect(playgroundCopyButtonStyles).toContain(
+    "--bs-btn-hover-bg: var(--mn-code-text)"
+  );
   const playgroundCodeStyles = stylesheet.match(
     /\.playground-code-panel pre \{([^}]*)\}/
   )?.[1];

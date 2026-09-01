@@ -2,6 +2,19 @@ import type { LayerTheme, LayerThemeSelection } from "../styles/theme";
 
 export type LayerType = 0 | 1 | 2 | 3 | 4;
 
+/** Supported names for the seven embedded Bootstrap status icons. */
+export type LayerIconName =
+  | "warning"
+  | "success"
+  | "error"
+  | "question"
+  | "lock"
+  | "sad"
+  | "smile";
+
+/** A legacy numeric icon value or its typed string alias. */
+export type LayerIcon = number | LayerIconName;
+
 export type LayerOffsetKeyword =
   | "auto"
   | "t"
@@ -48,7 +61,8 @@ export interface LayerOptions {
   maxWidth?: number;
   anim?: number;
   isOutAnim?: boolean;
-  icon?: number;
+  /** A numeric legacy icon or one of the embedded Bootstrap icon aliases. */
+  icon?: LayerIcon;
   area?: LayerArea;
   offset?: LayerOffset;
   btn?: false | string | string[];
@@ -127,7 +141,7 @@ export interface NormalizedLayerOptions
   maxWidth: number;
   anim: number;
   isOutAnim: boolean;
-  icon: number;
+  icon: LayerIcon;
   btnAlign: "l" | "c" | "r" | string;
   skin: string;
   className: string;

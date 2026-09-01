@@ -1,5 +1,7 @@
 # layer-esm
 
+English | [简体中文](./README.zh-CN.md)
+
 [![npm version][npm-image]][npm-url]
 [![l][l-image]][l-url]
 
@@ -16,8 +18,6 @@ Special thanks to Xianxin, the original author of Layer, for creating a popup li
 
 ## Install
 
-Use layer-esm via [npm](https://www.npmjs.com/package/layer-esm).
-
 ```bash
 npm install layer-esm
 ```
@@ -30,14 +30,39 @@ import { close, confirm, load, msg } from "layer-esm";
 const loadingIndex = load();
 
 confirm("Continue?", {}, () => {
-  msg("Confirmed");
+  msg("Confirmed", { icon: "success" });
   close(loadingIndex);
 });
 ```
 
+## Icons
+
+Use a typed name for new code or the equivalent numeric value for compatibility. The selected
+Bootstrap Icons SVG paths are embedded in the JavaScript bundle, inherit `currentColor`, and require
+no consumer stylesheet, font, image, or network request.
+
+| Name       | Numeric value | Bootstrap Icon   |
+| ---------- | ------------- | ---------------- |
+| `warning`  | `0`           | `exclamation-lg` |
+| `success`  | `1`           | `check-lg`       |
+| `error`    | `2`           | `x-lg`           |
+| `question` | `3`           | `question-lg`    |
+| `lock`     | `4`           | `lock-fill`      |
+| `sad`      | `5`           | `emoji-frown`    |
+| `smile`    | `6`           | `emoji-smile`    |
+
+```javascript
+msg("Saved", { icon: "success" });
+alert("Delete this item?", { icon: "warning" });
+```
+
+`load(0)`, `load(1)`, and `load(2)` retain the animated CSS spinner variants. A named value such as
+`load("success")` renders the corresponding static status icon instead. Unknown string names throw
+a `TypeError` before a layer is created.
+
 Dialogs provide labelled dialog semantics, keyboard focus trapping, Escape handling, and focus
 restoration. Messages use a polite live region, tabs support arrow-key navigation, prompt controls
-are labelled, decorative icons are hidden from assistive technology, and animations honor reduced
+are labelled, decorative SVG icons are hidden from assistive technology, and animations honor reduced
 motion. String `content` values are treated as trusted HTML for Layer compatibility; use an
 `HTMLElement` or sanitize untrusted markup before passing it. Dynamic titles are always rendered as
 text.
@@ -74,7 +99,7 @@ config({ styleNonce: window.__CSP_NONCE__ });
 The previous `injectStyles: false` and reusable `layerStyles` workflow cannot represent dynamic
 styled-components themes. `layerStyles` remains as a deprecated compatibility marker, while
 `config({ injectStyles: false })` throws a descriptive migration error instead of silently rendering
-an unstyled dialog. See the [React 19 migration guide](./guides/REACT19_MIGRATION.md).
+an unstyled dialog.
 
 ## Architecture and lifecycle
 
@@ -90,8 +115,7 @@ Chrome for Android 100+, and iOS Safari 15+. The package does not install global
 
 ## Guides
 
-- [Introducing layer-esm](./guides/RELEASE_NOTES/introducing-layer-esm-v1.0.1.md)
-- [React 19 migration](./guides/REACT19_MIGRATION.md)
+- [layer-esm v1.0.1: Layer-style dialogs for modern web projects](./guides/RELEASE_NOTES/introducing-layer-esm-v1.0.1.en-US.md)
 - [Release notes index](./guides/README.md)
 
 ## Contributing
@@ -106,7 +130,7 @@ Chrome for Android 100+, and iOS Safari 15+. The package does not install global
 ### Scripts
 
 ```bash
-npm i
+pnpm install
 npm run dev
 npm run build
 npm test

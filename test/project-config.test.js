@@ -4,6 +4,13 @@ const {
   packageDetails,
   repositoryDetails,
 } = require("../scripts/project-config-utils.cjs");
+const projectConfig = require("../project.config.cjs");
+
+test("project configuration is deeply frozen", () => {
+  expect(Object.isFrozen(projectConfig)).toBe(true);
+  expect(Object.isFrozen(projectConfig.site)).toBe(true);
+  expect(Object.isFrozen(projectConfig.site.theme.primary.light)).toBe(true);
+});
 
 describe("project configuration adapters", () => {
   test("retains the Layer bundle name alias", () => {
