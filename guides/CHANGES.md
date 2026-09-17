@@ -1,5 +1,13 @@
 # Change Record
 
+## 2026-09-17
+
+### Documentation
+
+- Added a Chinese v1.2.3 beginner guide covering messages, dialogs, icon names, and common APIs, with links to the playground, API reference, and project repository.
+- Refined the v1.0.1 Chinese article's formatting and original-article link.
+- Removed completed Bootstrap Icons, playground code-copy, and v1.2.3 article plans.
+
 ## 2026-06-22
 
 ### Documentation
