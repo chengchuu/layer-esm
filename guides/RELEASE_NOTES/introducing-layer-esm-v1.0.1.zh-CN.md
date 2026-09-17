@@ -17,7 +17,6 @@ layer-esm 将熟悉的 Layer 风格命令式 API 带入基于 npm 的浏览器�
   - [替换常用 API](#替换常用-api)
   - [逐步完成迁移](#逐步完成迁移)
 - [内容安全](#内容安全)
-- [版权声明](#版权声明)
 
 ## `layer-esm` 的定位
 
@@ -206,11 +205,11 @@ setTimeout(() => {
 
 为了兼容 Layer，字符串类型的 `content` 会被视为可信 HTML。请勿直接传入不可信的用户输入。应先清理不可信的 HTML，或者在需要结构化 DOM 内容时使用 `HTMLElement`。
 
-## 版权声明
+**版权声明**
 
 本文为原创文章，作者保留版权。转载请保留本文完整内容，并以超链接形式注明作者及原文出处。
 
 作者: [除除](https://github.com/chengchuu)
-原文: <http://blog.mazey.net/6443.html>
+原文: <https://blog.mazey.net/6443.html>
 
 <!-- ID: RELEASE_NOTES/introducing-layer-esm-v1.0.1.zh-CN -->

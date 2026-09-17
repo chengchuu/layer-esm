@@ -1,5 +1,7 @@
 # layer-esm v1.2.3: 消息提示、对话框与图标
 
+![layer-esm](http://blog.mazey.net/wp-content/uploads/2026/06/layer-esm-SF-s7x3.jpg)
+
 保存成功时给出一句提示，继续操作前请用户确认，这些都是网页中的常见需求。`layer-esm` 提供了对应的方法，导入后即可调用。本文从 `msg` 和 `alert` 开始，再介绍图标和其他常用方法。
 
 - [安装](#安装)
@@ -21,6 +23,8 @@
 npm install layer-esm
 ```
 
+在线演示：<https://i.mazey.net/layer-esm/playground/>
+
 ## 快速开始
 
 ### `msg`: 消息提示
@@ -33,7 +37,7 @@ import { msg } from "layer-esm";
 msg("保存成功");
 ```
 
-消息默认在 3 秒后自动关闭，不需要用户点击按钮。
+消息默认在 3 秒后自动关闭，不需要用户点击按钮。如需调整关闭时间，可以通过 `time` 设置秒数。例如，`msg("保存成功", { time: 5 })` 会在 5 秒后自动关闭。更多选项见 [API 文档](https://i.mazey.net/layer-esm/api/)。
 
 ### `alert`: 提醒对话框
 
@@ -44,8 +48,6 @@ import { alert } from "layer-esm";
 
 alert("请先填写昵称。");
 ```
-
-对话框带有一个 `OK` 按钮。点击后，对话框关闭。
 
 ## Icon: 消息图标
 
@@ -137,8 +139,6 @@ prompt({ title: "请输入昵称" }, (value, index) => {
 });
 ```
 
-输入非空文字并点击 `OK` 后，回调收到输入值 `value` 和对话框编号 `index`。这个例子将昵称输出到浏览器控制台，然后关闭对话框。
-
 ### `tab`: 选项卡
 
 需要在一个对话框里切换不同内容时，可以使用 `tab`:
@@ -170,6 +170,18 @@ open({
 });
 ```
 
-`title` 设置标题，`content` 设置内容，`btn` 设置按钮文字。这个例子没有自定义按钮回调，点击"知道了"即可关闭对话框。
+`title` 设置标题，`content` 设置内容，`btn` 设置按钮文字。这个例子没有自定义按钮回调，点击"知道了"即可关闭对话框。字符串内容会按 HTML 处理，请勿直接传入未经处理的用户 HTML。
 
-字符串内容会按 HTML 处理，请勿直接传入未经处理的用户 HTML。
+**版权声明**
+
+本文为原创文章，作者保留版权。转载请保留本文完整内容，并以超链接形式注明作者及原文出处。
+
+作者: [除除](https://github.com/chengchuu)
+原文: <https://blog.mazey.net/6443.html>
+
+<!-- ID: RELEASE_NOTES/introducing-layer-esm-v1.2.3.zh-CN -->
+
+```plain
+#LayerESM #JavaScript #TypeScript #FrontendDevelopment #WebDevelopment #npm #Dialog #ToastNotification #UIComponents #Icons
+#前端开发 #网页开发 #消息提示 #对话框 #图标 #加载动画 #操作确认 #输入提示 #选项卡 #前端入门
+```
