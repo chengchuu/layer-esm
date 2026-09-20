@@ -160,12 +160,8 @@ function validatePwa({ rootDir = defaultRoot } = {}) {
       fail(`${label} lost its canonical URL`);
     if (/<button\b[^>]*data-pwa-install\b/i.test(html))
       fail(`${label} must not expose an Install app button`);
-    if (
-      !/<button\b[^>]*data-pwa-update-now[^>]*>[\s\S]*?Update now[\s\S]*?<\/button>/i.test(
-        html
-      )
-    )
-      fail(`${label} is missing an accessible Update now button`);
+    if (/data-pwa-update(?:-now)?\b/i.test(html))
+      fail(`${label} must not expose website update controls`);
     if (!/data-pwa-status[^>]*|[^>]*data-pwa-status/.test(html))
       fail(`${label} is missing a PWA live status region`);
     const hiddenHelpBlocks = [
@@ -175,6 +171,24 @@ function validatePwa({ rootDir = defaultRoot } = {}) {
     ];
     if (hiddenHelpBlocks.some((match) => /data-pwa-status/.test(match[2])))
       fail(`${label} hides its PWA live status region in installed mode`);
+  }
+
+  const apiDirectory = path.join(docs, "api");
+  if (existsSync(apiDirectory)) {
+    const apiIndex = path.join(apiDirectory, "index.html");
+    for (const file of filesIn(apiDirectory).filter(
+      (candidate) => candidate.endsWith(".html") && candidate !== apiIndex
+    )) {
+      const html = readFileSync(file, "utf8");
+      if (/data-pwa-update(?:-now)?\b/i.test(html)) {
+        fail(
+          `API page ${path.relative(
+            apiDirectory,
+            file
+          )} must not expose website update controls`
+        );
+      }
+    }
   }
 
   if (!existsSync(workerFile)) fail("Service worker is missing from docs");
@@ -200,8 +214,8 @@ function validatePwa({ rootDir = defaultRoot } = {}) {
       fail("Service worker must ignore non-GET requests");
     if (!worker.includes("url.origin === self.location.origin"))
       fail("Service worker must ignore cross-origin requests");
-    if (!worker.includes('event.data?.type === "SKIP_WAITING"'))
-      fail("Service worker updates must require an explicit message");
+    if (/SKIP_WAITING|skipWaiting\s*\(/.test(worker))
+      fail("Service worker must use the browser's normal update lifecycle");
   }
 
   const scriptDirectory = path.join(docs, "assets");

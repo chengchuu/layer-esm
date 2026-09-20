@@ -1,6 +1,7 @@
 # Playground and PWA cleanup plan
 
-Status: Proposed. This document is a plan only; no implementation changes are included.
+Status: Implemented and verified against the generated production artifact in headless Chrome.
+Deployed-site verification remains manual.
 
 ## Goals
 
@@ -8,7 +9,7 @@ Status: Proposed. This document is a plan only; no implementation changes are in
 2. Remove the entire "Continue exploring" section from the playground. Its API, project home, GitHub, and npm destinations already appear in the page navigation or footer.
 3. Remove website-update notices and controls from the homepage, playground, and generated API pages. Keep service-worker registration and caching, and let the browser activate updates through its normal lifecycle.
 
-## Planned changes
+## Implemented changes
 
 1. In `examples/index.ts`, exchange only the Message and Confirm shortcut buttons. Keep every `data-demo` value, action, and displayed source example unchanged. Leave the separate demo cards in their current order.
 2. In `examples/index.html`, remove the complete "Continue exploring" section. Retain the existing navigation and footer links, including the links required by SEO validation.

@@ -44,7 +44,6 @@ function evaluateWorker() {
     addEventListener: (name, listener) => (listeners[name] = listener),
     clients: { claim: jest.fn(async () => undefined) },
     location: { origin: siteOrigin },
-    skipWaiting: jest.fn(),
   };
   const source = renderServiceWorker(
     readFileSync(path.join(root, "site", "service-worker.js"), "utf8"),
@@ -102,6 +101,11 @@ test("activation removes only obsolete project caches", async () => {
     `${projectConfig.pwa.cachePrefix}old`
   );
   expect(self.clients.claim).toHaveBeenCalledTimes(1);
+});
+
+test("updates use the browser service-worker lifecycle", () => {
+  const { listeners } = evaluateWorker();
+  expect(listeners.message).toBeUndefined();
 });
 
 test("the app shell precaches the early theme bootstrap", async () => {

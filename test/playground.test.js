@@ -188,6 +188,21 @@ test("places the compact single-icons card after message variants", () => {
   expect(controls.classList.contains("flex-wrap")).toBe(true);
 });
 
+test("orders gallery shortcuts as Alert, Message, Confirm, and Loading", () => {
+  loadPlayground();
+
+  const shortcuts = Array.from(
+    document.querySelectorAll(".playground-demo-controls [data-demo]"),
+    (button) => [button.textContent, button.dataset.demo]
+  );
+  expect(shortcuts).toEqual([
+    ["Alert", "alert-basic"],
+    ["Message", "message-basic"],
+    ["Confirm", "confirm-basic"],
+    ["Loading", "loading-0"],
+  ]);
+});
+
 test.each([
   ["warning", "Warning"],
   ["success", "Success"],

@@ -1,9 +1,4 @@
-import {
-  isSafePWAEnv,
-  isStandalonePWA,
-  listenMediaQueryChanges,
-  watchServiceWorkerUpdates,
-} from "mazey";
+import { isSafePWAEnv, isStandalonePWA, listenMediaQueryChanges } from "mazey";
 
 export interface SitePwaConfig {
   appName: string;
@@ -180,51 +175,6 @@ export function initializeInstallExperience(
   };
 }
 
-export function monitorServiceWorkerUpdates(
-  registration: ServiceWorkerRegistration,
-  documentRef: Document,
-  navigatorRef: Navigator,
-  windowRef: Window,
-  appName: string
-): () => void {
-  const notice = documentRef.querySelector<HTMLElement>("[data-pwa-update]");
-  const updateButton = documentRef.querySelector<HTMLButtonElement>(
-    "[data-pwa-update-now]"
-  );
-  const announce = statusAnnouncer(documentRef);
-  let reloadRequested = false;
-
-  const watcher = watchServiceWorkerUpdates(
-    registration,
-    navigatorRef.serviceWorker,
-    {
-      onUpdateAvailable() {
-        if (notice) notice.hidden = false;
-        announce(`A new version of the ${appName} website is available.`);
-      },
-      onControllerChange() {
-        if (notice) notice.hidden = true;
-        if (!reloadRequested) return;
-        reloadRequested = false;
-        windowRef.location.reload();
-      },
-    }
-  );
-  const handleUpdate = () => {
-    if (!watcher.activateWaiting()) return;
-    reloadRequested = true;
-    if (updateButton) updateButton.disabled = true;
-    announce("Updating the website now.");
-  };
-
-  updateButton?.addEventListener("click", handleUpdate);
-
-  return () => {
-    updateButton?.removeEventListener("click", handleUpdate);
-    watcher.dispose();
-  };
-}
-
 export async function registerSiteServiceWorker(
   config: SitePwaConfig,
   documentRef: Document,
@@ -246,13 +196,6 @@ export async function registerSiteServiceWorker(
     const registration = await navigatorRef.serviceWorker.register(
       config.serviceWorkerUrl,
       { scope: config.scope }
-    );
-    monitorServiceWorkerUpdates(
-      registration,
-      documentRef,
-      navigatorRef,
-      windowRef,
-      config.appName
     );
     return registration;
   } catch (error) {
