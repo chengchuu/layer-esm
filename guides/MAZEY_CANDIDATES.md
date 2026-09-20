@@ -103,7 +103,6 @@ clean, project-independent contract. They are ordered by extraction value.
 | Recursive configuration freezing         | `deepFreeze`                                   | Newly adopted    | Freeze the project configuration directly without retaining a renaming wrapper.                    |
 | HTML attribute and text serialization    | `escapeHtmlAttribute`                          | Newly adopted    | Reuse for quoted metadata attributes and encoded prompt text; it does not sanitize arbitrary HTML. |
 | Media-query listener compatibility       | `listenMediaQueryChanges`                      | Already adopted  | Reuse for host themes, site themes, and PWA display-mode listeners.                                |
-| Service-worker update state              | `watchServiceWorkerUpdates`                    | Already adopted  | Keep Layer's selectors, messages, update confirmation, and reload policy local.                    |
 | `javaScriptGlobal`                       | `derivePackageMetadata().iifeGlobal`           | Already subsumed | Package metadata derives the browser global; no separate Layer helper is needed.                   |
 | `repositoryDetails`                      | `parseGitHubRepository`                        | Adapter retained | Keep package-manifest string/object extraction, then delegate GitHub parsing to Mazey.             |
 | Theme preference reading and persistence | `resolveThemePreference`, `setThemePreference` | Already adopted  | Keep DOM application and controls site-specific.                                                   |
