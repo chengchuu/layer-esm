@@ -23,7 +23,7 @@
 npm install layer-esm
 ```
 
-在线演示：<https://i.mazey.net/layer-esm/playground/>
+在线演示: <https://i.mazey.net/layer-esm/playground/>
 
 ## 快速开始
 
@@ -134,7 +134,7 @@ tips("填写你希望别人看到的名字", "#nickname", { time: 3 });
 import { close, prompt } from "layer-esm";
 
 prompt({ title: "请输入昵称" }, (value, index) => {
-  console.log("输入的昵称：", value);
+  console.log("输入的昵称:", value);
   close(index);
 });
 ```
