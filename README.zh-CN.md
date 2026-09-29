@@ -113,7 +113,7 @@ Android 100+ 和 iOS Safari 15+。包不会安装全局 polyfill。
 
 ## 指南
 
-- [layer-esm v1.0.1: 面向现代 Web 项目的 Layer 风格弹层库](https://github.com/chengchuu/layer-esm/blob/main/guides/RELEASE_NOTES/introducing-layer-esm-v1.0.1.zh-CN.md)
+- [layer-esm v1.0.1: 面向现代 Web 项目的 Layer 风格弹层库](https://github.com/chengchuu/layer-esm/blob/main/guides/RELEASE_NOTES/introducing-layer-esm-v1.0.zh-CN.md)
 - [发布说明索引](https://github.com/chengchuu/layer-esm/blob/main/guides/README.md)
 
 ## 参与贡献

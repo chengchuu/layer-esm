@@ -181,7 +181,7 @@ open({
 作者: [除除](https://github.com/chengchuu)
 原文: <https://blog.mazey.net/6443.html>
 
-<!-- ID: RELEASE_NOTES/introducing-layer-esm-v1.2.3.zh-CN -->
+<!-- ID: RELEASE_NOTES/introducing-layer-esm-v1.2.zh-CN -->
 
 ```plain
 #LayerESM #JavaScript #TypeScript #WebDevelopment #npm #Dialog #Icon
