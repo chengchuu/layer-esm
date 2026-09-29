@@ -187,17 +187,6 @@ function transformApiHtml(html, relativeFile) {
       ""
     );
   }
-  const pwaUi = [
-    pwaUiStart,
-    '<aside class="site-pwa-update" aria-label="Website update" data-pwa-update hidden>',
-    `<span>A new version of the ${escapeHtmlAttribute(
-      displayName
-    )} website is available.</span>`,
-    '<button type="button" data-pwa-update-now>Update now</button>',
-    "</aside>",
-    pwaUiEnd,
-  ].join("");
-  output = output.replace("</body>", `${pwaUi}</body>`);
   if (!/<h1\b[^>]*>[\s\S]*?<\/h1>/i.test(output)) {
     if (/<h2\b/i.test(output)) {
       output = output.replace(/<h2\b/i, "<h1").replace(/<\/h2>/i, "</h1>");

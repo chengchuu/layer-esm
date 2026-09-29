@@ -329,8 +329,8 @@ if (app) {
                 </p>
                 <div class="d-flex flex-wrap gap-2">
                   <button class="btn btn-primary" data-demo="alert-basic">Alert</button>
-                  <button class="btn btn-outline-primary" data-demo="confirm-basic">Confirm</button>
                   <button class="btn btn-outline-secondary" data-demo="message-basic">Message</button>
+                  <button class="btn btn-outline-primary" data-demo="confirm-basic">Confirm</button>
                   <button class="btn btn-outline-secondary" data-demo="loading-0">Loading</button>
                 </div>
               </div>

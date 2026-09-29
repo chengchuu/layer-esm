@@ -81,7 +81,7 @@ For runtime changes, add focused regression tests and cover public callbacks, re
 - Keep `README.md`, examples, guides, declarations, and root exports synchronized with public behavior.
 - The main documentation should emphasize root named imports and imperative usage; do not imply that consumers must build a React application.
 - Preserve current CSP guidance. styled-components requires runtime style insertion and supports `styleNonce`; do not document `injectStyles: false` or `layerStyles` as a standalone stylesheet replacement.
-- Keep Service Worker registration gated by build-time PWA enablement and Mazey's safe-environment checks; Pages production builds enable it, while ordinary development builds do not. Preserve user-controlled update activation, the configured Pages scope, and the source-to-generated boundary for the manifest, crawler files, cache version, and TypeDoc transformations.
+- Keep Service Worker registration gated by build-time PWA enablement and Mazey's safe-environment checks; Pages production builds enable it, while ordinary development builds do not. Let the browser activate updates through its normal lifecycle without an in-page update notice, forced activation, or automatic reload. Preserve the configured Pages scope and the source-to-generated boundary for the manifest, crawler files, cache version, and TypeDoc transformations.
 
 ## Public skill synchronization
 

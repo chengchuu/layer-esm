@@ -1,4 +1,4 @@
-# layer-esm v1.0.1: Layer-style dialogs for modern web projects
+# layer-esm v1.0: Layer-style dialogs for modern web projects
 
 `layer-esm` brings the familiar Layer-style imperative API to npm-based browser projects. Version
 1.0.1 provides ESM, CommonJS, and TypeScript declaration outputs, so applications can import the
