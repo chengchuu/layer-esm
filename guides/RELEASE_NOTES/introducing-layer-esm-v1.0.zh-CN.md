@@ -1,4 +1,4 @@
-# layer-esm v1.0.1: 面向现代 Web 项目的 Layer 风格弹层库
+# layer-esm v1.0: 面向现代 Web 项目的 Layer 风格弹层库
 
 ![layer-esm](http://blog.mazey.net/wp-content/uploads/2026/06/layer-esm-SF-s7x3.jpg)
 
