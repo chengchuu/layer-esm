@@ -1,4 +1,4 @@
-# layer-esm v1.0.1: 面向现代 Web 项目的 Layer 风格弹层库
+# layer-esm v1.0: 面向现代 Web 项目的 Layer 风格弹层库
 
 ![layer-esm](http://blog.mazey.net/wp-content/uploads/2026/06/layer-esm-SF-s7x3.jpg)
 
@@ -212,4 +212,4 @@ setTimeout(() => {
 作者: [除除](https://github.com/chengchuu)
 原文: <https://blog.mazey.net/6443.html>
 
-<!-- ID: RELEASE_NOTES/introducing-layer-esm-v1.0.1.zh-CN -->
+<!-- ID: RELEASE_NOTES/introducing-layer-esm-v1.0.zh-CN -->
