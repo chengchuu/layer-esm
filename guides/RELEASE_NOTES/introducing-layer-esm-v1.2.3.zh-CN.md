@@ -1,8 +1,8 @@
-# layer-esm v1.2.3: 消息提示、对话框与图标
+# layer-esm v1.2: 消息提示、对话框与图标
 
 ![layer-esm](http://blog.mazey.net/wp-content/uploads/2026/06/layer-esm-SF-s7x3.jpg)
 
-保存成功时给出一句提示，继续操作前请用户确认，这些都是网页中的常见需求。`layer-esm` 提供了对应的方法，导入后即可调用。本文从 `msg` 和 `alert` 开始，再介绍图标和其他常用方法。
+保存成功时给出一句提示，继续操作前请用户确认，这些都是网页中的常见需求。layer-esm 提供了对应的方法，导入后即可调用。本文从 msg 和 alert 开始，再介绍图标和其他常用方法。
 
 - [安装](#安装)
 - [快速开始](#快速开始)
@@ -184,6 +184,6 @@ open({
 <!-- ID: RELEASE_NOTES/introducing-layer-esm-v1.2.3.zh-CN -->
 
 ```plain
-#LayerESM #JavaScript #TypeScript #FrontendDevelopment #WebDevelopment #npm #Dialog #ToastNotification #UIComponents #Icons
-#前端开发 #网页开发 #消息提示 #对话框 #图标 #加载动画 #操作确认 #输入提示 #选项卡 #前端入门
+#LayerESM #JavaScript #TypeScript #WebDevelopment #npm #Dialog #Icon
+#前端开发 #消息提示 #对话框 #图标 #加载动画 #操作确认 #输入提示 #选项卡
 ```
