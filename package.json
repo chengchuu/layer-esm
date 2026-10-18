@@ -1,6 +1,6 @@
 {
   "name": "layer-esm",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Modern ESM Layer Library for Web Popups and Dialogs",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -121,7 +121,7 @@
     "webpack-dev-server": "^6.0.0"
   },
   "dependencies": {
-    "mazey": "^5.9.1",
+    "mazey": "^5.10.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "styled-components": "^6.0.0"
