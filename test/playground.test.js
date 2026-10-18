@@ -11,11 +11,9 @@ const mockLayerApi = {
   confirm: jest.fn(),
   full: jest.fn(),
   load: jest.fn(() => 1),
-  min: jest.fn(),
   msg: jest.fn(),
   open: jest.fn(() => 1),
   prompt: jest.fn(),
-  restore: jest.fn(),
   tab: jest.fn(),
   tips: jest.fn(),
   title: jest.fn(),
@@ -59,9 +57,7 @@ test("every generated code panel has an accessible copy control", () => {
   installClipboard(jest.fn().mockResolvedValue(undefined));
   loadPlayground();
 
-  const groups = document.querySelectorAll(
-    ".playground-demo-controls, .card-body"
-  );
+  const groups = document.querySelectorAll(".card-body");
   const panels = document.querySelectorAll("[data-demo-source-panel]");
   expect(panels).toHaveLength(groups.length);
 
@@ -188,19 +184,22 @@ test("places the compact single-icons card after message variants", () => {
   expect(controls.classList.contains("flex-wrap")).toBe(true);
 });
 
-test("orders gallery shortcuts as Alert, Message, Confirm, and Loading", () => {
+test("shows each example once and separates advanced demos", () => {
   loadPlayground();
-
-  const shortcuts = Array.from(
-    document.querySelectorAll(".playground-demo-controls [data-demo]"),
-    (button) => [button.textContent, button.dataset.demo]
+  const ids = Array.from(
+    document.querySelectorAll("[data-demo]"),
+    (button) => button.dataset.demo
   );
-  expect(shortcuts).toEqual([
-    ["Alert", "alert-basic"],
-    ["Message", "message-basic"],
-    ["Confirm", "confirm-basic"],
-    ["Loading", "loading-0"],
-  ]);
+  expect(new Set(ids).size).toBe(ids.length);
+  ["message-hi", "message-sauce", "prompt-chain"].forEach((id) => {
+    expect(ids).not.toContain(id);
+  });
+  expect(
+    Array.from(
+      document.querySelectorAll("[data-advanced-demos] [data-demo]"),
+      (button) => button.dataset.demo
+    )
+  ).toEqual(["stacked-layers", "countdown-alert"]);
 });
 
 test.each([
@@ -250,17 +249,133 @@ test.each([
   expect(status.textContent).toBe("");
 });
 
-test("prompt demo escapes user input while retaining its intended line break", () => {
+test.each([
+  ["text", 0],
+  ["password", 1],
+  ["textarea", 2],
+])("the %s prompt closes without opening another layer", (name, formType) => {
   loadPlayground();
-  document.querySelector('[data-demo="prompt-chain"]').click();
-  const password = '<img src=x onerror="alert(1)">';
-  const text = "<strong>text & more</strong>";
-  mockLayerApi.prompt.mock.calls[0][1](password, 1);
-  mockLayerApi.prompt.mock.calls[1][1](text, 2);
-  const result = document.createElement("div");
-  result.innerHTML = mockLayerApi.alert.mock.calls[0][0];
-  expect(result.querySelector("img, strong")).toBeNull();
-  expect(result.querySelectorAll("br")).toHaveLength(1);
-  expect(result.textContent).toContain(password);
-  expect(result.textContent).toContain(text);
+  document.querySelector(`[data-demo="prompt-${name}"]`).click();
+  expect(mockLayerApi.prompt).toHaveBeenCalledTimes(1);
+  expect(mockLayerApi.prompt.mock.calls[0][0].formType).toBe(formType);
+  mockLayerApi.prompt.mock.calls[0][1]("<strong>Input</strong>", 7);
+  expect(mockLayerApi.close).toHaveBeenCalledWith(7);
+  expect(mockLayerApi.prompt).toHaveBeenCalledTimes(1);
+  expect(mockLayerApi.alert).not.toHaveBeenCalled();
+  expect(mockLayerApi.msg).not.toHaveBeenCalled();
+});
+
+test("confirmation closes its own dialog without follow-up messages", () => {
+  loadPlayground();
+  document.querySelector('[data-demo="confirm-basic"]').click();
+  mockLayerApi.confirm.mock.calls[0][2](9);
+  expect(mockLayerApi.close).toHaveBeenCalledWith(9);
+  expect(mockLayerApi.msg).not.toHaveBeenCalled();
+});
+
+test.each([
+  "loading-0",
+  "loading-1",
+  "loading-2",
+  "window-controls",
+  "iframe-full",
+  "capture-page",
+  "close-loading",
+  "close-all",
+])("%s has no delayed or follow-up popup", (id) => {
+  loadPlayground();
+  document.querySelector(`[data-demo="${id}"]`).click();
+  expect(jest.getTimerCount()).toBe(0);
+  jest.runOnlyPendingTimers();
+  expect(mockLayerApi.msg).not.toHaveBeenCalled();
+  expect(mockLayerApi.alert).not.toHaveBeenCalled();
+  if (id.startsWith("loading-")) {
+    expect(mockLayerApi.load.mock.calls[0][1].time).toBe(1.6);
+  } else if (id === "window-controls") {
+    expect(mockLayerApi.open.mock.calls[0][0].maxmin).toBe(true);
+  } else if (id === "capture-page") {
+    const options = mockLayerApi.open.mock.calls[0][0];
+    expect(options.cancel).toBeUndefined();
+    expect(options.content.classList.contains("d-none")).toBe(false);
+  } else if (id.startsWith("close-")) {
+    expect(mockLayerApi.closeAll.mock.calls[0]).toEqual(
+      id === "close-loading" ? ["loading"] : []
+    );
+  }
+});
+
+test.each([
+  "confirm-basic",
+  "message-buttons",
+  "capture-page",
+  "loading-0",
+  "loading-1",
+  "loading-2",
+  "prompt-text",
+  "prompt-password",
+  "prompt-textarea",
+  "window-controls",
+  "close-loading",
+  "close-all",
+])("%s displays code matching its action", (id) => {
+  loadPlayground();
+  jest.clearAllMocks();
+  const button = document.querySelector(`[data-demo="${id}"]`);
+  button.click();
+  const source = button
+    .closest(".card-body")
+    .querySelector("[data-demo-source-code]").textContent;
+  const names = Object.keys(mockLayerApi);
+  const snippetApi = names.map(() => jest.fn());
+  // Execute only the repository-owned example, with isolated API mocks.
+  new Function(...names, "captureSource", source)(
+    ...snippetApi,
+    document.querySelector("#capture-source")
+  );
+  names.forEach((name, index) => {
+    const expectedCalls = mockLayerApi[name].mock.calls.map((args) =>
+      args.map((arg) =>
+        typeof arg === "function" ? expect.any(Function) : arg
+      )
+    );
+    expect(snippetApi[index].mock.calls).toEqual(expectedCalls);
+  });
+  if (id === "confirm-basic" || id.startsWith("prompt-")) {
+    const apiName = id === "confirm-basic" ? "confirm" : "prompt";
+    const callbackIndex = apiName === "confirm" ? 2 : 1;
+    const args = apiName === "confirm" ? [7] : ["Input", 7];
+    snippetApi[names.indexOf(apiName)].mock.calls[0][callbackIndex](...args);
+    mockLayerApi[apiName].mock.calls[0][callbackIndex](...args);
+    expect(snippetApi[names.indexOf("close")].mock.calls).toEqual([[7]]);
+    expect(mockLayerApi.close.mock.calls).toEqual([[7]]);
+    expect(snippetApi[names.indexOf("msg")]).not.toHaveBeenCalled();
+    expect(snippetApi[names.indexOf("alert")]).not.toHaveBeenCalled();
+  }
+});
+
+test("captured content has a modal shade and can be reopened after closing", () => {
+  loadPlayground();
+  const runtime = jest.requireActual("../src/index.ts");
+  const button = document.querySelector('[data-demo="capture-page"]');
+  const content = document.querySelector("#capture-source");
+  const parent = content.parentElement;
+  button.click();
+  const options = mockLayerApi.open.mock.calls[0][0];
+  try {
+    const index = runtime.open(options);
+    expect(
+      document.querySelector(`.layer-esm-shade[data-index="${index}"]`)
+    ).not.toBeNull();
+    expect(
+      document
+        .querySelector(`.layer-esm[data-index="${index}"]`)
+        .contains(content)
+    ).toBe(true);
+    runtime.close(index);
+    jest.advanceTimersByTime(200);
+    expect(content.parentElement).toBe(parent);
+    expect(() => runtime.open(options)).not.toThrow();
+  } finally {
+    runtime.destroy();
+  }
 });

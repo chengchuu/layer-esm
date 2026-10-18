@@ -1,4 +1,3 @@
-import { escapeHtmlAttribute } from "mazey";
 import {
   alert,
   close,
@@ -7,11 +6,9 @@ import {
   confirm,
   full,
   load,
-  min,
   msg,
   open,
   prompt,
-  restore,
   tab,
   tips,
   title,
@@ -83,32 +80,12 @@ const alertDemoIcon = "success" as const;
 const demoSource: Record<string, string> = {
   "alert-basic": `alert("Content");`,
   "alert-icon": `alert("Great to See You", { icon: "success" });`,
-  "confirm-basic": `confirm(
-  "What Do You Think About Frontend Development?",
-  { btn: ["Important", "Unusual"] },
-  () => {
-    msg("It Really Is Important", { icon: 1, time: 5 });
-  },
-  () => {
-    msg("That Works Too", {
-      time: 20,
-      btn: ["Got It", "Understood"],
-    });
-  }
-);`,
+  "confirm-basic": `confirm("Continue?", {}, (index) => close(index));`,
   "message-basic": `msg("A Simple Message", { time: 5 });`,
   "message-icon": `msg("Common Notice", { icon: 5 });`,
-  "message-buttons": `msg("A Quick Question?", {
+  "message-buttons": `msg("A message with buttons", {
   time: 0,
-  btn: ["Confirm", "Close"],
-  yes: (index) => {
-    close(index);
-    msg("Custom Buttons", {
-      icon: 6,
-      time: 0,
-      btn: ["Button 1", "Button 2", "Button 3"],
-    });
-  },
+  btn: ["OK", "Close"],
 });`,
   "message-top": `msg("Use Offset Flexibly", {
   offset: "t",
@@ -123,16 +100,9 @@ const demoSource: Record<string, string> = {
   "icon-smile": `msg("Smile", { icon: "smile" });`,
   "capture-page": `open({
   type: 1,
-  shade: false,
   area: ["460px", "320px"],
   title: "Captured Page Example",
   content: captureSource,
-  cancel: () => {
-    msg(
-      "Capture Moves an Existing Page Element Into the Layer Structure",
-      { time: 5, icon: 6 }
-    );
-  },
 });`,
   "tips-top": `tips("Top", "#tips-target", {
   tips: [1, "#0d6efd"],
@@ -149,61 +119,35 @@ const demoSource: Record<string, string> = {
   tips: [4, "#198754"],
   time: 4,
 });`,
-  "loading-0": `const index = load(0, {
+  "loading-0": `load(0, {
   shade: false,
-  content: "Loading Style 0...",
-});
-
-window.setTimeout(() => {
-  close(index);
-  msg("Loading Style 0 Finished", { icon: 1 });
-}, 1600);`,
-  "loading-1": `const index = load(1, {
-  shade: [0.1, "#fff"],
-  content: "Loading Style 1...",
-});
-
-window.setTimeout(() => {
-  close(index);
-  msg("Loading Style 1 Finished", { icon: 1 });
-}, 1600);`,
-  "loading-2": `const index = load(2, {
+  content: "Loading...",
+  time: 1.6,
+});`,
+  "loading-1": `load(1, {
   shade: false,
-  content: "Loading Style 2...",
-});
-
-window.setTimeout(() => {
-  close(index);
-  msg("Loading Style 2 Finished", { icon: 1 });
-}, 1600);`,
+  content: "Loading...",
+  time: 1.6,
+});`,
+  "loading-2": `load(2, {
+  shade: false,
+  content: "Loading...",
+  time: 1.6,
+});`,
   "loading-msg": `load("success", {
   content: "Saved",
   shade: 0.01,
   time: 2,
 });`,
-  "prompt-chain": `import { escapeHtmlAttribute } from "mazey";
-
-prompt(
-  {
-    title: "Enter Any Passcode, Then Confirm",
-    formType: 1,
-  },
-  (password, index) => {
-    close(index);
-    prompt(
-      {
-        title: "Write Anything, Then Confirm",
-        formType: 2,
-      },
-      (text, nextIndex) => {
-        close(nextIndex);
-        alert(
-          \`Demo Complete. Test Passcode: \${escapeHtmlAttribute(password)}<br>Final Text: \${escapeHtmlAttribute(text)}\`
-        );
-      }
-    );
-  }
-);`,
+  "prompt-text": `prompt({ title: "Enter your name", formType: 0 }, (_value, index) => {
+  close(index);
+});`,
+  "prompt-password": `prompt({ title: "Enter a test password", formType: 1 }, (_value, index) => {
+  close(index);
+});`,
+  "prompt-textarea": `prompt({ title: "Write a note", formType: 2 }, (_value, index) => {
+  close(index);
+});`,
   "tab-basic": `tab({
   area: ["640px", "340px"],
   tab: [
@@ -255,23 +199,13 @@ alert("Show the Auto-Close Countdown in the Title Bar", {
     "The Browser Scrollbar Is Locked. It Will Be Restored After This Layer Closes",
   scrollbar: false,
 });`,
-  "min-restore": `const index = open({
+  "window-controls": `open({
   type: 1,
-  title: "Minimize Example",
-  content:
-    "<p class='mb-0'>This Layer Will Minimize Automatically, Then Restore.</p>",
+  title: "Window Controls",
+  content: "Use the title bar buttons to minimize, maximize, or restore this window.",
   area: ["420px", "220px"],
   maxmin: true,
-});
-
-window.setTimeout(() => {
-  min(index);
-}, 800);
-
-window.setTimeout(() => {
-  restore(index);
-  msg("The Window Has Been Restored Automatically", { icon: 1 });
-}, 2200);`,
+});`,
   "iframe-full": `const index = open({
   type: 2,
   title: "Fullscreen Iframe Example",
@@ -280,16 +214,9 @@ window.setTimeout(() => {
   maxmin: true,
 });
 
-full(index);
-msg("Switched to the Fullscreen Iframe Example", { icon: 1 });`,
-  "message-hi": `msg("Hi", { time: 5 });`,
-  "message-sauce": `msg("Just Passing By", { icon: 4 });`,
-  "close-loading": `closeAll("loading", () => {
-  msg("All Loading Layers Have Been Closed");
-});`,
-  "close-all": `closeAll(() => {
-  msg("All Layers Have Been Closed");
-});`,
+full(index);`,
+  "close-loading": `closeAll("loading");`,
+  "close-all": `closeAll();`,
   "stacked-layers": `open({
   title: "First layer",
   content: "This layer stays open behind the next one.",
@@ -321,47 +248,16 @@ confirm("Custom theme", {}, (index) => close(index));`,
 if (app) {
   app.innerHTML = `
     <div class="py-4 py-lg-5 playground-demo-grid">
-          <section class="rounded-4 border border-primary-subtle shadow-sm overflow-hidden mb-4">
-            <div class="row g-0">
-              <div class="col-lg-8 p-4 p-lg-5 playground-demo-controls">
-                <span class="badge rounded-pill text-bg-primary mb-3">Demo Gallery</span>
-                <h2 class="display-6 fw-bold mb-3">Dialog demo gallery</h2>
-                <p class="lead text-secondary mb-3">
-                  Bootstrap-style examples for alerts, confirms, messages, captured pages, tips, loading states,
-                  prompts, tabs, fullscreen iframes, and more.
-                </p>
-                <div class="d-flex flex-wrap gap-2">
-                  <button class="btn btn-primary" data-demo="alert-basic">Alert</button>
-                  <button class="btn btn-outline-secondary" data-demo="message-basic">Message</button>
-                  <button class="btn btn-outline-primary" data-demo="confirm-basic">Confirm</button>
-                  <button class="btn btn-outline-secondary" data-demo="loading-0">Loading</button>
-                </div>
-              </div>
-              <div class="col-lg-4 bg-primary-subtle border-start">
-                <div class="p-4 h-100 d-flex flex-column justify-content-center">
-                  <h2 class="h5 fw-semibold mb-3">Supported demos</h2>
-                  <ul class="list-unstyled small text-secondary mb-0">
-                    <li class="mb-2">• Native ESM API with Layer-style method names</li>
-                    <li class="mb-2">• CSS-based loading indicators and runtime-injected styles</li>
-                    <li class="mb-2">• Page capture, prompt chaining, directional tips, and tabs</li>
-                    <li>• Fullscreen iframe and minimize/restore examples</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </section>
-
           <div class="row g-4">
             <div class="col-md-6 col-xl-4">
               <div class="card shadow-sm h-100">
                 <div class="card-body">
                   <h2 class="h5 card-title">Alert & Confirm</h2>
-                  <p class="card-text text-secondary">Simple alert dialogs plus a confirm flow modeled after the classic Layer examples.</p>
+                  <p class="card-text text-secondary">Open one dialog, then close it with an action button.</p>
                   <div class="d-grid gap-2">
                     <button class="btn btn-primary" data-demo="alert-basic">Alert: Content</button>
                     <button class="btn btn-outline-primary" data-demo="alert-icon">Alert with icon</button>
-                    <button class="btn btn-outline-secondary" data-demo="confirm-basic">Confirm: Frontend development</button>
-                    <button class="btn btn-outline-secondary" data-demo="countdown-alert">Auto-close countdown title</button>
+                    <button class="btn btn-outline-secondary" data-demo="confirm-basic">Confirm</button>
                   </div>
                 </div>
               </div>
@@ -371,7 +267,7 @@ if (app) {
               <div class="card shadow-sm h-100">
                 <div class="card-body">
                   <h2 class="h5 card-title">Message Variants</h2>
-                  <p class="card-text text-secondary">Toast-style messages, custom buttons, icons, offsets, and click-driven follow-ups.</p>
+                  <p class="card-text text-secondary">Try a plain message, an icon, action buttons, or a top offset.</p>
                   <div class="d-grid gap-2">
                     <button class="btn btn-success" data-demo="message-basic">Plain message</button>
                     <button class="btn btn-outline-success" data-demo="message-icon">Message with icon</button>
@@ -404,9 +300,9 @@ if (app) {
               <div class="card shadow-sm h-100">
                 <div class="card-body">
                   <h2 class="h5 card-title">Captured Page Layer</h2>
-                  <p class="card-text text-secondary">Reuses an existing DOM block, similar to the legacy captured-page example.</p>
+                  <p class="card-text text-secondary">Moves the card below into a dialog and restores it here when closed.</p>
                   <button class="btn btn-secondary w-100 mb-3" data-demo="capture-page">Open captured card</button>
-                  <div id="capture-source" class="rounded-3 border border-info-subtle bg-info-subtle p-3 d-none">
+                  <div id="capture-source" class="rounded-3 border border-info-subtle bg-info-subtle p-3">
                     <span class="badge text-bg-info mb-2">Captured element</span>
                     <h3 class="h5">Page capture content</h3>
                     <p class="text-secondary mb-2">
@@ -458,9 +354,11 @@ if (app) {
               <div class="card shadow-sm h-100">
                 <div class="card-body">
                   <h2 class="h5 card-title">Prompt & Tabs</h2>
-                  <p class="card-text text-secondary">Prompt chaining for password and textarea input, plus a tabbed content layer.</p>
+                  <p class="card-text text-secondary">Try each input type independently, or open a tabbed dialog.</p>
                   <div class="d-grid gap-2">
-                    <button class="btn btn-outline-secondary" data-demo="prompt-chain">Prompt chain</button>
+                    <button class="btn btn-outline-secondary" data-demo="prompt-text">Text input</button>
+                    <button class="btn btn-outline-secondary" data-demo="prompt-password">Password input</button>
+                    <button class="btn btn-outline-secondary" data-demo="prompt-textarea">Textarea</button>
                     <button class="btn btn-outline-secondary" data-demo="tab-basic">Open tabs</button>
                   </div>
                 </div>
@@ -474,7 +372,7 @@ if (app) {
                   <p class="card-text text-secondary">Examples for scroll locking, minimize/restore, and a fullscreen iframe layer.</p>
                   <div class="d-grid gap-2">
                     <button class="btn btn-outline-secondary" data-demo="scroll-lock">Lock scrollbar</button>
-                    <button class="btn btn-outline-secondary" data-demo="min-restore">Minimize then restore</button>
+                    <button class="btn btn-outline-secondary" data-demo="window-controls">Try window controls</button>
                     <button class="btn btn-outline-secondary" data-demo="iframe-full">Open fullscreen iframe</button>
                   </div>
                 </div>
@@ -484,14 +382,11 @@ if (app) {
             <div class="col-md-6 col-xl-6">
               <div class="card shadow-sm h-100">
                 <div class="card-body">
-                  <h2 class="h5 card-title">Quick Actions</h2>
-                  <p class="card-text text-secondary">Small, reusable calls inspired by the original docs.</p>
+                  <h2 class="h5 card-title">Close Layers</h2>
+                  <p class="card-text text-secondary">Close loading indicators or all open layers.</p>
                   <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-primary" data-demo="message-hi">Hi</button>
-                    <button class="btn btn-sm btn-danger" data-demo="message-sauce">Just passing by</button>
                     <button class="btn btn-sm btn-warning" data-demo="close-loading">Close all loading</button>
                     <button class="btn btn-sm btn-secondary" data-demo="close-all">Close all layers</button>
-                    <button class="btn btn-sm btn-outline-primary" data-demo="stacked-layers">Stack two layers</button>
                   </div>
                 </div>
               </div>
@@ -511,26 +406,23 @@ if (app) {
                 </div>
               </div>
             </div>
+            <div class="col-12">
+              <div class="card shadow-sm h-100">
+                <div class="card-body" data-advanced-demos>
+                  <h2 class="h5 card-title">Advanced Examples</h2>
+                  <p class="card-text text-secondary">Explore multiple layers or a timer-driven title update.</p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-outline-secondary" data-demo="stacked-layers">Stack two layers</button>
+                    <button class="btn btn-outline-secondary" data-demo="countdown-alert">Auto-close countdown title</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
     </div>
   `;
 
-  const captureSource = document.querySelector<HTMLElement>("#capture-source");
-
-  const runLoading = (
-    icon: number = 0,
-    options: NonNullable<Parameters<typeof load>[1]> = {}
-  ) => {
-    const index = load(icon, {
-      shade: false,
-      content: `Loading Style ${icon}...`,
-      ...options,
-    });
-
-    window.setTimeout(() => {
-      close(index);
-      msg(`Loading Style ${icon} Finished`, { icon: 1 });
-    }, 1600);
-  };
+  const captureSource = document.querySelector<HTMLElement>("#capture-source")!;
 
   const demoActions: Record<string, () => void> = {
     "alert-basic": () => {
@@ -540,21 +432,7 @@ if (app) {
       alert("Great to See You", { icon: alertDemoIcon });
     },
     "confirm-basic": () => {
-      confirm(
-        "What Do You Think About Frontend Development?",
-        {
-          btn: ["Important", "Unusual"],
-        },
-        () => {
-          msg("It Really Is Important", { icon: 1, time: 5 });
-        },
-        () => {
-          msg("That Works Too", {
-            time: 20,
-            btn: ["Got It", "Understood"],
-          });
-        }
-      );
+      confirm("Continue?", {}, (index) => close(index));
     },
     "message-basic": () => {
       msg("A Simple Message", { time: 5 });
@@ -563,17 +441,9 @@ if (app) {
       msg("Common Notice", { icon: 5 });
     },
     "message-buttons": () => {
-      msg("A Quick Question?", {
+      msg("A message with buttons", {
         time: 0,
-        btn: ["Confirm", "Close"],
-        yes: (index) => {
-          close(index);
-          msg("Custom Buttons", {
-            icon: 6,
-            time: 0,
-            btn: ["Button 1", "Button 2", "Button 3"],
-          });
-        },
+        btn: ["OK", "Close"],
       });
     },
     "message-top": () => {
@@ -604,25 +474,11 @@ if (app) {
       msg("Smile", { icon: "smile" });
     },
     "capture-page": () => {
-      if (!captureSource) {
-        return;
-      }
-
       open({
         type: 1,
-        shade: false,
         area: ["460px", "320px"],
         title: "Captured Page Example",
         content: captureSource,
-        cancel: () => {
-          msg(
-            "Capture Moves an Existing Page Element Into the Layer Structure",
-            {
-              time: 5,
-              icon: 6,
-            }
-          );
-        },
       });
     },
     "tips-top": () => {
@@ -649,15 +505,25 @@ if (app) {
       });
     },
     "loading-0": () => {
-      runLoading();
+      load(0, {
+        shade: false,
+        content: "Loading...",
+        time: 1.6,
+      });
     },
     "loading-1": () => {
-      runLoading(1, {
-        shade: [0.1, "#fff"],
+      load(1, {
+        shade: false,
+        content: "Loading...",
+        time: 1.6,
       });
     },
     "loading-2": () => {
-      runLoading(2);
+      load(2, {
+        shade: false,
+        content: "Loading...",
+        time: 1.6,
+      });
     },
     "loading-msg": () => {
       load("success", {
@@ -666,30 +532,23 @@ if (app) {
         time: 2,
       });
     },
-    "prompt-chain": () => {
+    "prompt-text": () => {
+      prompt({ title: "Enter your name", formType: 0 }, (_value, index) => {
+        close(index);
+      });
+    },
+    "prompt-password": () => {
       prompt(
-        {
-          title: "Enter Any Passcode, Then Confirm",
-          formType: 1,
-        },
-        (password, index) => {
+        { title: "Enter a test password", formType: 1 },
+        (_value, index) => {
           close(index);
-          prompt(
-            {
-              title: "Write Anything, Then Confirm",
-              formType: 2,
-            },
-            (text, nextIndex) => {
-              close(nextIndex);
-              alert(
-                `Demo Complete. Test Passcode: ${escapeHtmlAttribute(
-                  password
-                )}<br>Final Text: ${escapeHtmlAttribute(text)}`
-              );
-            }
-          );
         }
       );
+    },
+    "prompt-textarea": () => {
+      prompt({ title: "Write a note", formType: 2 }, (_value, index) => {
+        close(index);
+      });
     },
     "tab-basic": () => {
       tab({
@@ -748,24 +607,15 @@ if (app) {
         scrollbar: false,
       });
     },
-    "min-restore": () => {
-      const index = open({
+    "window-controls": () => {
+      open({
         type: 1,
-        title: "Minimize Example",
+        title: "Window Controls",
         content:
-          "<p class='mb-0'>This Layer Will Minimize Automatically, Then Restore.</p>",
+          "Use the title bar buttons to minimize, maximize, or restore this window.",
         area: ["420px", "220px"],
         maxmin: true,
       });
-
-      window.setTimeout(() => {
-        min(index);
-      }, 800);
-
-      window.setTimeout(() => {
-        restore(index);
-        msg("The Window Has Been Restored Automatically", { icon: 1 });
-      }, 2200);
     },
     "iframe-full": () => {
       const index = open({
@@ -777,23 +627,13 @@ if (app) {
       });
 
       full(index);
-      msg("Switched to the Fullscreen Iframe Example", { icon: 1 });
     },
-    "message-hi": () => {
-      msg("Hi", { time: 5 });
-    },
-    "message-sauce": () => {
-      msg("Just Passing By", { icon: 4 });
-    },
+
     "close-loading": () => {
-      closeAll("loading", () => {
-        msg("All Loading Layers Have Been Closed");
-      });
+      closeAll("loading");
     },
     "close-all": () => {
-      closeAll(() => {
-        msg("All Layers Have Been Closed");
-      });
+      closeAll();
     },
     "stacked-layers": () => {
       open({
@@ -909,9 +749,7 @@ if (app) {
   const showDemoSource = (button: HTMLElement): void => {
     const demoId = button.dataset.demo ?? "";
     const source = demoSource[demoId];
-    const group = button.closest<HTMLElement>(
-      ".playground-demo-controls, .card-body"
-    );
+    const group = button.closest<HTMLElement>(".card-body");
 
     if (!source || !group) {
       return;
@@ -965,14 +803,12 @@ if (app) {
     }
   };
 
-  document
-    .querySelectorAll<HTMLElement>(".playground-demo-controls, .card-body")
-    .forEach((group) => {
-      const firstButton = group.querySelector<HTMLElement>("[data-demo]");
-      if (firstButton) {
-        showDemoSource(firstButton);
-      }
-    });
+  document.querySelectorAll<HTMLElement>(".card-body").forEach((group) => {
+    const firstButton = group.querySelector<HTMLElement>("[data-demo]");
+    if (firstButton) {
+      showDemoSource(firstButton);
+    }
+  });
 
   document.querySelectorAll<HTMLElement>("[data-demo]").forEach((button) => {
     button.addEventListener("click", () => {
