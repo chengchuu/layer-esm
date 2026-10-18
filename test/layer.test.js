@@ -3,9 +3,12 @@
  */
 /* eslint-disable no-undef */
 
+let runtime;
+
 const loadLayer = () => {
   jest.resetModules();
-  return require("../src/index.ts");
+  runtime = require("../src/index.ts");
+  return runtime;
 };
 
 const queryLayer = (index) =>
@@ -15,6 +18,8 @@ beforeEach(() => {
   document.documentElement.innerHTML = "<head></head><body></body>";
   jest.useRealTimers();
 });
+
+afterEach(() => runtime?.destroy());
 
 test("open renders a dialog and close removes it", () => {
   jest.useFakeTimers();
@@ -980,4 +985,161 @@ test("resize listeners are rebound after restoring a maximized layer", () => {
 
   expect(root.style.width).toBe("320px");
   expect(root.style.height).toBe("230px");
+});
+
+test.each(["alert", "confirm"])(
+  "%s preserves option callbacks and positional overrides",
+  (name) => {
+    const runtime = loadLayer();
+    const yes = jest.fn();
+    const btn2 = jest.fn(() => false);
+    const index = runtime[name]("Options", { yes, btn2, isOutAnim: false });
+    const root = queryLayer(index);
+    root.querySelector(".layui-layer-btn0").click();
+    expect(yes).toHaveBeenCalledWith(index, root);
+    expect(queryLayer(index)).toBe(root);
+    if (name === "confirm") {
+      root.querySelector(".layui-layer-btn1").click();
+      expect(btn2).toHaveBeenCalledWith(index, root);
+      expect(queryLayer(index)).toBe(root);
+    }
+    const override = jest.fn();
+    const next = runtime[name]("Override", { yes }, override);
+    queryLayer(next).querySelector(".layui-layer-btn0").click();
+    expect(override).toHaveBeenCalledWith(next, queryLayer(next));
+    expect(yes).toHaveBeenCalledTimes(1);
+    runtime.destroy();
+  }
+);
+
+test("closing callbacks can open a dialog without losing its focus", () => {
+  const runtime = loadLayer();
+  const trigger = document.createElement("button");
+  document.body.appendChild(trigger);
+  trigger.focus();
+  let next;
+  const index = runtime.open({
+    isOutAnim: false,
+    end: () => {
+      next = runtime.alert("Next");
+    },
+  });
+  runtime.close(index);
+  expect(queryLayer(next).contains(document.activeElement)).toBe(true);
+  runtime.destroy();
+});
+
+test("focus trapping excludes non-tabbable and concealed controls", () => {
+  const runtime = loadLayer();
+  const index = runtime.open({
+    type: 1,
+    closeBtn: false,
+    content: `<button tabindex="-1">Programmatic only</button>
+      <input type="hidden"><div hidden><button>Hidden ancestor</button></div>
+      <div style="display:none"><button>CSS hidden</button></div>
+      <fieldset disabled><button>Disabled</button></fieldset>
+      <div inert><button>Inert</button></div>
+      <button id="first-visible">First</button><button id="last-visible">Last</button>
+      <button tabindex="-1">Not a Tab stop</button>`,
+  });
+  const root = queryLayer(index);
+  const first = root.querySelector("#first-visible");
+  const last = root.querySelector("#last-visible");
+  expect(document.activeElement).toBe(first);
+  last.focus();
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Tab", bubbles: true })
+  );
+  expect(document.activeElement).toBe(first);
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true })
+  );
+  expect(document.activeElement).toBe(last);
+  runtime.destroy();
+});
+
+test("absolute dialogs keep scroll offsets when dragged", () => {
+  const runtime = loadLayer();
+  const originalX = window.scrollX;
+  const originalY = window.scrollY;
+  window.scrollX = 100;
+  window.scrollY = 200;
+  try {
+    const index = runtime.open({ fixed: false });
+    const root = queryLayer(index);
+    root.getBoundingClientRect = () => ({ left: 20, top: 30 });
+    root.querySelector(".layer-esm__title").dispatchEvent(
+      new MouseEvent("mousedown", {
+        button: 0,
+        clientX: 25,
+        clientY: 35,
+        bubbles: true,
+      })
+    );
+    document.dispatchEvent(
+      new MouseEvent("mousemove", { clientX: 65, clientY: 85 })
+    );
+    document.dispatchEvent(new MouseEvent("mouseup"));
+    expect(root.style.left).toBe("160px");
+    expect(root.style.top).toBe("280px");
+  } finally {
+    window.scrollX = originalX;
+    window.scrollY = originalY;
+    runtime.destroy();
+  }
+});
+
+test("focus trapping follows positive tabindex order before ordinary controls", () => {
+  const { open } = loadLayer();
+  const index = open({
+    type: 1,
+    closeBtn: false,
+    content:
+      '<button id="ordinary">Ordinary</button><button tabindex="2">Second</button><button tabindex="1">First</button>',
+  });
+  const root = queryLayer(index);
+  const first = root.querySelector('[tabindex="1"]');
+  const last = root.querySelector("#ordinary");
+  expect(document.activeElement).toBe(first);
+  last.focus();
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Tab", bubbles: true })
+  );
+  expect(document.activeElement).toBe(first);
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true })
+  );
+  expect(document.activeElement).toBe(last);
+});
+
+test.each(["alert", "confirm"])(
+  "%s retains configured callbacks when positional callbacks are omitted",
+  (name) => {
+    const runtime = loadLayer();
+    const yes = jest.fn();
+    const btn2 = jest.fn(() => false);
+    runtime.config({ yes, btn2 });
+    const index = runtime[name]("Configured callbacks");
+    const root = queryLayer(index);
+    root.querySelector(".layui-layer-btn0").click();
+    expect(yes).toHaveBeenCalledWith(index, root);
+    if (name === "confirm") {
+      root.querySelector(".layui-layer-btn1").click();
+      expect(btn2).toHaveBeenCalledWith(index, root);
+      expect(queryLayer(index)).toBe(root);
+    }
+  }
+);
+
+test("closing an underlying dialog preserves the remaining dialog's return-focus chain", () => {
+  const { alert, close } = loadLayer();
+  const trigger = document.createElement("button");
+  document.body.appendChild(trigger);
+  trigger.focus();
+  const first = alert("First", { isOutAnim: false });
+  const second = alert("Second", { isOutAnim: false });
+  close(first);
+  expect(queryLayer(second).contains(document.activeElement)).toBe(true);
+  close(second);
+  expect(document.activeElement).toBe(trigger);
 });
