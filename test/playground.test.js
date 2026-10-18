@@ -249,3 +249,18 @@ test.each([
   expect(copyButton.textContent).toBe("Copy code");
   expect(status.textContent).toBe("");
 });
+
+test("prompt demo escapes user input while retaining its intended line break", () => {
+  loadPlayground();
+  document.querySelector('[data-demo="prompt-chain"]').click();
+  const password = '<img src=x onerror="alert(1)">';
+  const text = "<strong>text & more</strong>";
+  mockLayerApi.prompt.mock.calls[0][1](password, 1);
+  mockLayerApi.prompt.mock.calls[1][1](text, 2);
+  const result = document.createElement("div");
+  result.innerHTML = mockLayerApi.alert.mock.calls[0][0];
+  expect(result.querySelector("img, strong")).toBeNull();
+  expect(result.querySelectorAll("br")).toHaveLength(1);
+  expect(result.textContent).toContain(password);
+  expect(result.textContent).toContain(text);
+});

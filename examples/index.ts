@@ -1,3 +1,4 @@
+import { escapeHtmlAttribute } from "mazey";
 import {
   alert,
   close,
@@ -180,7 +181,9 @@ window.setTimeout(() => {
   shade: 0.01,
   time: 2,
 });`,
-  "prompt-chain": `prompt(
+  "prompt-chain": `import { escapeHtmlAttribute } from "mazey";
+
+prompt(
   {
     title: "Enter Any Passcode, Then Confirm",
     formType: 1,
@@ -195,7 +198,7 @@ window.setTimeout(() => {
       (text, nextIndex) => {
         close(nextIndex);
         alert(
-          \`Demo Complete. Test Passcode: \${password}<br>Final Text: \${text}\`
+          \`Demo Complete. Test Passcode: \${escapeHtmlAttribute(password)}<br>Final Text: \${escapeHtmlAttribute(text)}\`
         );
       }
     );
@@ -679,7 +682,9 @@ if (app) {
             (text, nextIndex) => {
               close(nextIndex);
               alert(
-                `Demo Complete. Test Passcode: ${password}<br>Final Text: ${text}`
+                `Demo Complete. Test Passcode: ${escapeHtmlAttribute(
+                  password
+                )}<br>Final Text: ${escapeHtmlAttribute(text)}`
               );
             }
           );

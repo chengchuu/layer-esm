@@ -61,10 +61,33 @@ const BootstrapIcon = ({ descriptor }: { descriptor: LayerIconDescriptor }) => (
 );
 
 const focusableElements = (root: HTMLElement): HTMLElement[] =>
-  Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-    (element) =>
-      !element.hidden && element.getAttribute("aria-hidden") !== "true"
-  );
+  Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE))
+    .filter((element) => {
+      if (
+        element.tabIndex < 0 ||
+        element.matches(":disabled") ||
+        element.closest('[hidden], [inert], [aria-hidden="true"]')
+      )
+        return false;
+      const view = element.ownerDocument.defaultView;
+      const visibility = view?.getComputedStyle(element).visibility;
+      if (visibility === "hidden" || visibility === "collapse") return false;
+      for (
+        let current: HTMLElement | null = element;
+        current;
+        current = current.parentElement
+      ) {
+        if (view?.getComputedStyle(current).display === "none") return false;
+      }
+      return true;
+    })
+    .sort((left, right) => {
+      const leftOrder =
+        left.tabIndex > 0 ? left.tabIndex : Number.MAX_SAFE_INTEGER;
+      const rightOrder =
+        right.tabIndex > 0 ? right.tabIndex : Number.MAX_SAFE_INTEGER;
+      return leftOrder - rightOrder;
+    });
 
 export interface HostActions {
   close(index: number): void;
@@ -144,8 +167,20 @@ const useGesture = (
             )}px`;
           } else {
             root.style.transform = "";
-            root.style.left = `${rect.left + next.clientX - originX}px`;
-            root.style.top = `${rect.top + next.clientY - originY}px`;
+            const view = doc.defaultView;
+            const fixed = root.style.position === "fixed";
+            root.style.left = `${
+              rect.left +
+              next.clientX -
+              originX +
+              (fixed ? 0 : view?.scrollX ?? 0)
+            }px`;
+            root.style.top = `${
+              rect.top +
+              next.clientY -
+              originY +
+              (fixed ? 0 : view?.scrollY ?? 0)
+            }px`;
             root.style.right = "";
             root.style.bottom = "";
           }

@@ -240,3 +240,33 @@ test("local images remain cache-first", async () => {
   await expect(responsePromise).resolves.toBe(cachedResponse);
   expect(fetch).not.toHaveBeenCalled();
 });
+
+test.each([
+  ["image", "no-cors"],
+  ["script", "no-cors"],
+  ["document", "navigate"],
+])(
+  "%s cache reads stay within the active worker version",
+  async (destination, mode) => {
+    const { caches, fetch, listeners } = evaluateWorker();
+    const current = { source: "current worker" };
+    const unrelated = { source: "another cache" };
+    caches.match.mockImplementation(async (_request, options) =>
+      options?.cacheName === `${projectConfig.pwa.cachePrefix}test-version`
+        ? current
+        : unrelated
+    );
+    fetch.mockRejectedValue(new Error("Offline"));
+    let responsePromise;
+    listeners.fetch({
+      request: {
+        destination,
+        mode,
+        method: "GET",
+        url: projectUrl("assets/example"),
+      },
+      respondWith: (promise) => (responsePromise = promise),
+    });
+    await expect(responsePromise).resolves.toBe(current);
+  }
+);
