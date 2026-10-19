@@ -9,6 +9,7 @@
   - [`msg`: 消息提示](#msg-消息提示)
   - [`alert`: 提醒对话框](#alert-提醒对话框)
 - [Icon: 消息图标](#icon-消息图标)
+- [Offset: 显示位置](#offset-显示位置)
 - [更多常用方法](#更多常用方法)
   - [`confirm`: 操作确认](#confirm-操作确认)
   - [`load`: 加载状态](#load-加载状态)
@@ -72,6 +73,31 @@ msg("保存成功", { icon: "success" });
 ```
 
 将 `success` 换成表中的其他名称，就能使用对应的图标。图标已内置，无需额外安装图标包或加载样式文件。
+
+## Offset: 显示位置
+
+通过 `offset` 选项，可以设置消息或对话框的显示位置。默认值为 `"auto"`，表示居中显示。
+
+例如，将消息显示在页面可视区域的顶部中央:
+
+```javascript
+import { msg } from "layer-esm";
+
+msg("保存成功", { offset: "top" });
+```
+
+推荐使用完整的位置名称，简写别名效果相同。例如，`offset: "top"` 与 `offset: "t"` 等效，`offset: "bottom-right"` 表示右下角。
+
+| 位置名称       | 简写别名   | 显示位置 |
+|:---------------|:-----------|:---------|
+| `top`          | `t`        | 顶部中央 |
+| `right`        | `r`        | 右侧中央 |
+| `bottom`       | `b`        | 底部中央 |
+| `left`         | `l`        | 左侧中央 |
+| `top-left`     | `tl`、`lt` | 左上角   |
+| `bottom-left`  | `bl`、`lb` | 左下角   |
+| `top-right`    | `tr`、`rt` | 右上角   |
+| `bottom-right` | `br`、`rb` | 右下角   |
 
 ## 更多常用方法
 
@@ -184,6 +210,6 @@ open({
 <!-- ID: RELEASE_NOTES/introducing-layer-esm-v1.2.zh-CN -->
 
 ```plain
-#LayerESM #JavaScript #TypeScript #WebDevelopment #npm #Dialog #Icon
-#前端开发 #消息提示 #对话框 #图标 #加载动画 #操作确认 #输入提示 #选项卡
+#LayerESM #JavaScript #TypeScript #npm #Dialog #Icon
+#前端开发 #消息提示 #对话框 #图标 #选项卡
 ```

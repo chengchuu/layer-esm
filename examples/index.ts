@@ -88,7 +88,7 @@ const demoSource: Record<string, string> = {
   btn: ["OK", "Close"],
 });`,
   "message-top": `msg("Use Offset Flexibly", {
-  offset: "t",
+  offset: "top",
   anim: 6,
 });`,
   "icon-warning": `msg("Warning", { icon: "warning" });`,
@@ -448,7 +448,7 @@ if (app) {
     },
     "message-top": () => {
       msg("Use Offset Flexibly", {
-        offset: "t",
+        offset: "top",
         anim: 6,
       });
     },

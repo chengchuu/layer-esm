@@ -169,7 +169,7 @@ test("msg bottom offset does not stretch from the default center position", () =
 test("top messages keep their placement transform during entrance animation", () => {
   const { msg } = loadLayer();
   const index = msg("Hi, Welcome to the layer-esm Example Page", {
-    offset: "t",
+    offset: "top",
     anim: 6,
     time: 0,
   });
@@ -1219,4 +1219,41 @@ test("closing an underlying dialog preserves the remaining dialog's return-focus
   expect(queryLayer(second).contains(document.activeElement)).toBe(true);
   close(second);
   expect(document.activeElement).toBe(trigger);
+});
+
+describe.each([true, false])("readable offsets with fixed=%s", (fixed) => {
+  test.each([
+    ["top", "t"],
+    ["right", "r"],
+    ["bottom", "b"],
+    ["left", "l"],
+    ["top-left", "tl"],
+    ["top-left", "lt"],
+    ["bottom-left", "bl"],
+    ["bottom-left", "lb"],
+    ["top-right", "tr"],
+    ["top-right", "rt"],
+    ["bottom-right", "br"],
+    ["bottom-right", "rb"],
+  ])(
+    "%s matches its %s alias with target-document scroll offsets",
+    (name, alias) => {
+      const { applyOffset } = require("../src/utils/position.ts");
+      const ownerDocument = { defaultView: { scrollX: 80, scrollY: 120 } };
+      const named = { style: {}, ownerDocument };
+      const abbreviated = { style: {}, ownerDocument };
+
+      applyOffset(named, name, fixed);
+      applyOffset(abbreviated, alias, fixed);
+
+      expect(named.style).toEqual(abbreviated.style);
+      expect(named.style.transform).not.toBe("translate(-50%, -50%)");
+      if (name === "top" || name.startsWith("top-")) {
+        expect(named.style.top).toBe(fixed ? "0px" : "120px");
+      }
+      if (name === "bottom" || name.startsWith("bottom-")) {
+        expect(named.style.bottom).toBe("0");
+      }
+    }
+  );
 });

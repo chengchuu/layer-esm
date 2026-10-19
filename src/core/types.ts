@@ -15,15 +15,28 @@ export type LayerIconName =
 /** A legacy numeric icon value or its typed string alias. */
 export type LayerIcon = number | LayerIconName;
 
+/** Prefer readable position names; short forms remain supported aliases. */
 export type LayerOffsetKeyword =
   | "auto"
+  | "top"
+  | "right"
+  | "bottom"
+  | "left"
+  | "top-left"
+  | "bottom-left"
+  | "top-right"
+  | "bottom-right"
   | "t"
   | "r"
   | "b"
   | "l"
+  | "tl"
   | "lt"
+  | "bl"
   | "lb"
+  | "tr"
   | "rt"
+  | "br"
   | "rb";
 
 export type LayerOffset =
