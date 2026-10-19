@@ -551,14 +551,23 @@ const LayerView = ({
     return body;
   };
 
+  const ordinaryDialog = ["dialog", "page", "iframe"].includes(record.typeName);
+  const responsiveWidth =
+    ordinaryDialog && (!options.area[0] || options.area[0] === "auto");
+  const widthLimit =
+    responsiveWidth && !options.maxWidthExplicit ? 560 : options.maxWidth;
+  const viewportWidth = ordinaryDialog
+    ? "calc(100vw - 32px)"
+    : "calc(100vw - 2rem)";
+
   const rootStyle: React.CSSProperties = {
     position: options.fixed ? "fixed" : "absolute",
-    width: options.area[0],
+    width: responsiveWidth ? undefined : options.area[0],
     height: options.area[1],
     maxWidth:
-      options.area[0] && !options.maxWidthExplicit
-        ? "calc(100vw - 2rem)"
-        : `min(calc(100vw - 2rem), ${options.maxWidth}px)`,
+      options.area[0] && !responsiveWidth && !options.maxWidthExplicit
+        ? viewportWidth
+        : `min(${viewportWidth}, ${widthLimit}px)`,
     zIndex: record.zIndex,
     ...record.style,
   };
@@ -605,6 +614,7 @@ const LayerView = ({
         $closing={closing}
         $type={record.typeName}
         $anim={options.anim}
+        $responsiveWidth={responsiveWidth ? widthLimit : undefined}
         style={rootStyle}
         role={role}
         aria-live={role === "status" ? "polite" : undefined}
