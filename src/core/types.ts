@@ -15,15 +15,28 @@ export type LayerIconName =
 /** A legacy numeric icon value or its typed string alias. */
 export type LayerIcon = number | LayerIconName;
 
+/** Prefer readable position names; short forms remain supported aliases. */
 export type LayerOffsetKeyword =
   | "auto"
+  | "top"
+  | "right"
+  | "bottom"
+  | "left"
+  | "top-left"
+  | "bottom-left"
+  | "top-right"
+  | "bottom-right"
   | "t"
   | "r"
   | "b"
   | "l"
+  | "tl"
   | "lt"
+  | "bl"
   | "lb"
+  | "tr"
   | "rt"
+  | "br"
   | "rb";
 
 export type LayerOffset =
@@ -58,11 +71,17 @@ export interface LayerOptions {
   closeBtn?: boolean | 0 | 1 | 2;
   time?: number;
   zIndex?: number;
+  /** Width cap in pixels. Automatic dialogs default to 560; compact layers to 360. */
   maxWidth?: number;
   anim?: number;
   isOutAnim?: boolean;
   /** A numeric legacy icon or one of the embedded Bootstrap icon aliases. */
   icon?: LayerIcon;
+  /**
+   * Explicit width and optional height. Automatic dialogs use 24vw between
+   * 240px and 560px, constrained to the viewport with 16px side margins.
+   * Height remains content-driven unless supplied.
+   */
   area?: LayerArea;
   offset?: LayerOffset;
   btn?: false | string | string[];

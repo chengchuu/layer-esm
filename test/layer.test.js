@@ -14,6 +14,17 @@ const loadLayer = () => {
 const queryLayer = (index) =>
   document.querySelector(`.layer-esm[data-index="${index}"]`);
 
+// JSDOM does not compute clamp() widths; inspect rules matching this layer.
+const declaredWidths = (element) =>
+  Array.from(element.ownerDocument.styleSheets)
+    .flatMap((sheet) => Array.from(sheet.cssRules))
+    .filter(
+      (rule) =>
+        rule.type === CSSRule.STYLE_RULE && element.matches(rule.selectorText)
+    )
+    .map((rule) => rule.style.getPropertyValue("width"))
+    .filter(Boolean);
+
 beforeEach(() => {
   document.documentElement.innerHTML = "<head></head><body></body>";
   jest.useRealTimers();
@@ -158,7 +169,7 @@ test("msg bottom offset does not stretch from the default center position", () =
 test("top messages keep their placement transform during entrance animation", () => {
   const { msg } = loadLayer();
   const index = msg("Hi, Welcome to the layer-esm Example Page", {
-    offset: "t",
+    offset: "top",
     anim: 6,
     time: 0,
   });
@@ -724,8 +735,74 @@ test("explicit area is not capped by the default maxWidth and zIndex is honored"
   const root = queryLayer(index);
 
   expect(root.style.width).toBe("640px");
-  expect(root.style.maxWidth).toBe("calc(100vw - 2rem)");
+  expect(declaredWidths(root)).toEqual([]);
+  expect(root.style.maxWidth).toBe("calc(100vw - 32px)");
   expect(Number(root.style.zIndex)).toBeGreaterThanOrEqual(50000001);
+});
+
+test.each([0, 1, 2])(
+  "automatic type %s dialogs use responsive sizing",
+  (type) => {
+    const { open } = loadLayer();
+    const index = open({
+      type,
+      content: type === 2 ? "about:blank" : "Content",
+    });
+    const root = queryLayer(index);
+
+    expect(root.style.width).toBe("");
+    expect(root.style.maxWidth).toBe("min(calc(100vw - 32px), 560px)");
+    expect(declaredWidths(root)).toContain("clamp(240px, 24vw, 560px)");
+    expect(getComputedStyle(root).minWidth).toBe("0");
+  }
+);
+
+test("prompt sizing respects automatic area heights and explicit width limits", () => {
+  const { config, prompt } = loadLayer();
+  config({ maxWidth: 800 });
+  const inherited = queryLayer(prompt({ area: ["auto", 180] }));
+  const overridden = queryLayer(prompt({ maxWidth: 200 }));
+
+  expect(declaredWidths(inherited)).toContain("clamp(240px, 24vw, 800px)");
+  expect(declaredWidths(overridden)).toContain("clamp(240px, 24vw, 200px)");
+  expect(inherited.style.height).toBe("180px");
+  expect(overridden.style.maxWidth).toBe("min(calc(100vw - 32px), 200px)");
+});
+
+test("compact layers retain content-driven widths alongside a responsive dialog", () => {
+  const { load, msg, open, tips } = loadLayer();
+  const target = document.createElement("button");
+  document.body.appendChild(target);
+  const dialog = queryLayer(open({ content: "Dialog" }));
+  expect(declaredWidths(dialog)).toContain("clamp(240px, 24vw, 560px)");
+  for (const index of [
+    msg("Saved", { time: 0 }),
+    load(),
+    tips("Tip", target),
+  ]) {
+    expect(declaredWidths(queryLayer(index))).toEqual([]);
+    expect(queryLayer(index).style.maxWidth).toBe(
+      "min(calc(100vw - 2rem), 360px)"
+    );
+  }
+});
+
+test("window controls restore the responsive width after inline overrides", () => {
+  const { full, min, open, restore } = loadLayer();
+  const index = open({ type: 1, content: "Window" });
+  const root = queryLayer(index);
+
+  min(index);
+  expect(root.style.width).toBe("180px");
+  expect(getComputedStyle(root).minWidth).toBe("0");
+  restore(index);
+  expect(root.style.width).toBe("");
+  expect(declaredWidths(root)).toContain("clamp(240px, 24vw, 560px)");
+  full(index);
+  expect(root.style.width).toBe("100vw");
+  restore(index);
+  expect(root.style.width).toBe("");
+  expect(root.style.maxWidth).toBe("min(calc(100vw - 32px), 560px)");
 });
 
 test("selector-like move options and cross-origin iframe helpers fail safely", () => {
@@ -1142,4 +1219,41 @@ test("closing an underlying dialog preserves the remaining dialog's return-focus
   expect(queryLayer(second).contains(document.activeElement)).toBe(true);
   close(second);
   expect(document.activeElement).toBe(trigger);
+});
+
+describe.each([true, false])("readable offsets with fixed=%s", (fixed) => {
+  test.each([
+    ["top", "t"],
+    ["right", "r"],
+    ["bottom", "b"],
+    ["left", "l"],
+    ["top-left", "tl"],
+    ["top-left", "lt"],
+    ["bottom-left", "bl"],
+    ["bottom-left", "lb"],
+    ["top-right", "tr"],
+    ["top-right", "rt"],
+    ["bottom-right", "br"],
+    ["bottom-right", "rb"],
+  ])(
+    "%s matches its %s alias with target-document scroll offsets",
+    (name, alias) => {
+      const { applyOffset } = require("../src/utils/position.ts");
+      const ownerDocument = { defaultView: { scrollX: 80, scrollY: 120 } };
+      const named = { style: {}, ownerDocument };
+      const abbreviated = { style: {}, ownerDocument };
+
+      applyOffset(named, name, fixed);
+      applyOffset(abbreviated, alias, fixed);
+
+      expect(named.style).toEqual(abbreviated.style);
+      expect(named.style.transform).not.toBe("translate(-50%, -50%)");
+      if (name === "top" || name.startsWith("top-")) {
+        expect(named.style.top).toBe(fixed ? "0px" : "120px");
+      }
+      if (name === "bottom" || name.startsWith("bottom-")) {
+        expect(named.style.bottom).toBe("0");
+      }
+    }
+  );
 });
