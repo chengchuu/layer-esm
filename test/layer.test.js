@@ -752,7 +752,7 @@ test.each([0, 1, 2])(
 
     expect(root.style.width).toBe("");
     expect(root.style.maxWidth).toBe("min(calc(100vw - 32px), 560px)");
-    expect(declaredWidths(root)).toContain("clamp(240px, 24vw, 560px)");
+    expect(declaredWidths(root)).toContain("clamp(240px, 22vw, 560px)");
     expect(getComputedStyle(root).minWidth).toBe("0");
   }
 );
@@ -763,8 +763,8 @@ test("prompt sizing respects automatic area heights and explicit width limits", 
   const inherited = queryLayer(prompt({ area: ["auto", 180] }));
   const overridden = queryLayer(prompt({ maxWidth: 200 }));
 
-  expect(declaredWidths(inherited)).toContain("clamp(240px, 24vw, 800px)");
-  expect(declaredWidths(overridden)).toContain("clamp(240px, 24vw, 200px)");
+  expect(declaredWidths(inherited)).toContain("clamp(240px, 22vw, 800px)");
+  expect(declaredWidths(overridden)).toContain("clamp(240px, 22vw, 200px)");
   expect(inherited.style.height).toBe("180px");
   expect(overridden.style.maxWidth).toBe("min(calc(100vw - 32px), 200px)");
 });
@@ -774,7 +774,7 @@ test("compact layers retain content-driven widths alongside a responsive dialog"
   const target = document.createElement("button");
   document.body.appendChild(target);
   const dialog = queryLayer(open({ content: "Dialog" }));
-  expect(declaredWidths(dialog)).toContain("clamp(240px, 24vw, 560px)");
+  expect(declaredWidths(dialog)).toContain("clamp(240px, 22vw, 560px)");
   for (const index of [
     msg("Saved", { time: 0 }),
     load(),
@@ -797,7 +797,7 @@ test("window controls restore the responsive width after inline overrides", () =
   expect(getComputedStyle(root).minWidth).toBe("0");
   restore(index);
   expect(root.style.width).toBe("");
-  expect(declaredWidths(root)).toContain("clamp(240px, 24vw, 560px)");
+  expect(declaredWidths(root)).toContain("clamp(240px, 22vw, 560px)");
   full(index);
   expect(root.style.width).toBe("100vw");
   restore(index);

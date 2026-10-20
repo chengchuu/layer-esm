@@ -68,7 +68,7 @@ export const Shell = styled.div.attrs({ className: "layer-esm layui-layer" })<{
   ${({ $responsiveWidth }) =>
     $responsiveWidth !== undefined &&
     css`
-      width: clamp(240px, 24vw, ${$responsiveWidth}px);
+      width: clamp(240px, 22vw, ${$responsiveWidth}px);
     `}
   max-height: calc(100vh - 2rem);
   overflow: hidden;
