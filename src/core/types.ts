@@ -78,7 +78,7 @@ export interface LayerOptions {
   /** A numeric legacy icon or one of the embedded Bootstrap icon aliases. */
   icon?: LayerIcon;
   /**
-   * Explicit width and optional height. Automatic dialogs use 24vw between
+   * Explicit width and optional height. Automatic dialogs use 22vw between
    * 240px and 560px, constrained to the viewport with 16px side margins.
    * Height remains content-driven unless supplied.
    */
