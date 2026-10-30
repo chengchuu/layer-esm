@@ -61,10 +61,12 @@ async function networkFirst(request) {
     await cacheResponse(request, response);
     return response;
   } catch (error) {
-    const cached = await caches.match(request).catch(() => undefined);
+    const cached = await caches
+      .match(request, { cacheName: CACHE_NAME })
+      .catch(() => undefined);
     if (cached) return cached;
     if (request.mode === "navigate") {
-      const home = await caches.match(PROJECT_BASE);
+      const home = await caches.match(PROJECT_BASE, { cacheName: CACHE_NAME });
       if (home) return home;
     }
     throw error;
@@ -72,7 +74,9 @@ async function networkFirst(request) {
 }
 
 async function cacheFirst(request) {
-  const cached = await caches.match(request).catch(() => undefined);
+  const cached = await caches
+    .match(request, { cacheName: CACHE_NAME })
+    .catch(() => undefined);
   if (cached) return cached;
   const response = await fetch(request);
   await cacheResponse(request, response);
@@ -112,10 +116,6 @@ self.addEventListener("activate", (event) => {
       )
       .then(() => self.clients.claim())
   );
-});
-
-self.addEventListener("message", (event) => {
-  if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("fetch", (event) => {

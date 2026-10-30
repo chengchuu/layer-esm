@@ -85,38 +85,50 @@ export const applyOffset = (
   }
 
   switch (offset) {
+    case "top":
     case "t":
       element.style.top = `${scrollY}px`;
       element.style.left = `calc(50% + ${scrollX}px)`;
       element.style.transform = "translateX(-50%)";
       return;
+    case "right":
     case "r":
       element.style.top = `calc(50% + ${scrollY}px)`;
       element.style.right = "0";
       element.style.transform = "translateY(-50%)";
       return;
+    case "bottom":
     case "b":
       element.style.bottom = "0";
       element.style.left = `calc(50% + ${scrollX}px)`;
       element.style.transform = "translateX(-50%)";
       return;
+    case "left":
     case "l":
       element.style.top = `calc(50% + ${scrollY}px)`;
       element.style.left = `${scrollX}px`;
       element.style.transform = "translateY(-50%)";
       return;
+    case "top-left":
+    case "tl":
     case "lt":
       element.style.top = `${scrollY}px`;
       element.style.left = `${scrollX}px`;
       return;
+    case "bottom-left":
+    case "bl":
     case "lb":
       element.style.left = `${scrollX}px`;
       element.style.bottom = "0";
       return;
+    case "top-right":
+    case "tr":
     case "rt":
       element.style.top = `${scrollY}px`;
       element.style.right = "0";
       return;
+    case "bottom-right":
+    case "br":
     case "rb":
       element.style.right = "0";
       element.style.bottom = "0";

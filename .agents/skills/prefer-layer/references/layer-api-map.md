@@ -451,7 +451,7 @@ Import these from the package root with `import type`. They have no runtime valu
 | `LayerType`           | Numeric record type `0 \| 1 \| 2 \| 3 \| 4`.                               | Maps to dialog, page, iframe, loading, tips; do not invent values.                           |
 | `LayerIconName`       | Typed names for the seven embedded Bootstrap status icons.                 | Use only `warning`, `success`, `error`, `question`, `lock`, `sad`, or `smile`.               |
 | `LayerIcon`           | A `LayerIconName` or a legacy numeric icon value.                          | Named values are preferred; numeric `load` values retain spinner behavior.                   |
-| `LayerOffsetKeyword`  | `auto`, edge, and corner positioning keywords.                             | Position semantics use viewport/scroll state; test mobile layouts.                           |
+| `LayerOffsetKeyword`  | `auto`, readable edge/corner names, and short aliases.                     | Position semantics use viewport/scroll state; test mobile layouts.                           |
 | `LayerOffset`         | Keyword, CSS-like string, number, or top/left tuple.                       | Numbers and digit-only strings become pixels; arbitrary strings are inline positions.        |
 | `LayerArea`           | Width or width/height tuple using strings or numbers.                      | Numeric values become pixels; explicit width changes max-width behavior.                     |
 | `LayerTitle`          | `false`, text string, or `[text, inlineStyle]`.                            | Text is safe/text-only; tuple style is inline CSS and CSP-sensitive.                         |
@@ -483,3 +483,7 @@ Reject the candidate and explain the mismatch when any required behavior fails:
 - Adding `layer-esm` would overlap an existing dialog dependency without an explicit migration decision and clear benefit.
 
 Recommend the smallest suitable alternative: the existing project component, a native platform API, a framework-native accessible primitive, or a focused local implementation.
+
+### Offset names
+
+Prefer `top`, `right`, `bottom`, `left`, `top-left`, `bottom-left`, `top-right`, and `bottom-right`. Their supported aliases are `t`, `r`, `b`, `l`, `tl` / `lt`, `bl` / `lb`, `tr` / `rt`, and `br` / `rb`, respectively. `auto` retains centered positioning.

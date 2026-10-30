@@ -67,6 +67,27 @@ motion. String `content` values are treated as trusted HTML for Layer compatibil
 `HTMLElement` or sanitize untrusted markup before passing it. Dynamic titles are always rendered as
 text.
 
+## Positioning
+
+Prefer readable `offset` names in new code. Short forms remain supported aliases.
+
+| Position       | Alias      |
+| -------------- | ---------- |
+| `top`          | `t`        |
+| `right`        | `r`        |
+| `bottom`       | `b`        |
+| `left`         | `l`        |
+| `top-left`     | `tl`, `lt` |
+| `bottom-left`  | `bl`, `lb` |
+| `top-right`    | `tr`, `rt` |
+| `bottom-right` | `br`, `rb` |
+
+The default `"auto"` centers the layer. Numeric offsets and top/left tuples remain supported.
+
+```javascript
+msg("Saved", { offset: "top" });
+```
+
 ## Themes
 
 When no theme is configured, the initial theme is read once from the operating-system preference
@@ -115,7 +136,7 @@ Chrome for Android 100+, and iOS Safari 15+. The package does not install global
 
 ## Guides
 
-- [layer-esm v1.0.1: Layer-style dialogs for modern web projects](https://github.com/chengchuu/layer-esm/blob/main/guides/RELEASE_NOTES/introducing-layer-esm-v1.0.1.en-US.md)
+- [layer-esm v1.0: Layer-style dialogs for modern web projects](https://github.com/chengchuu/layer-esm/blob/main/guides/RELEASE_NOTES/introducing-layer-esm-v1.0.en-US.md)
 - [Release notes index](https://github.com/chengchuu/layer-esm/blob/main/guides/README.md)
 
 ## Contributing

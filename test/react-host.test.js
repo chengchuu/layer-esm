@@ -383,3 +383,64 @@ test("prompt is labelled and tabs support arrow-key navigation", () => {
   expect(document.activeElement).toBe(tabs[1]);
   expect(change).toHaveBeenCalledWith(1);
 });
+
+test("destroy immediately finishes animated closes and restores owned resources", () => {
+  jest.useFakeTimers();
+  const runtime = loadLayer();
+  const content = document.createElement("button");
+  document.body.appendChild(content);
+  document.documentElement.style.overflow = "auto";
+  const end = jest.fn();
+  const callback = jest.fn();
+  const setTimer = jest.spyOn(window, "setTimeout");
+  const clearTimer = jest.spyOn(window, "clearTimeout");
+  const index = runtime.open({ content, scrollbar: false, time: 10, end });
+  runtime.close(index, callback);
+  runtime.destroy();
+  expect(content.parentNode).toBe(document.body);
+  expect(document.documentElement.style.overflow).toBe("auto");
+  expect(end).toHaveBeenCalledTimes(1);
+  expect(callback).toHaveBeenCalledTimes(1);
+  for (const delay of [10000, 180]) {
+    const call = setTimer.mock.calls.findIndex((args) => args[1] === delay);
+    expect(call).toBeGreaterThanOrEqual(0);
+    expect(clearTimer).toHaveBeenCalledWith(setTimer.mock.results[call].value);
+  }
+  expect(document.querySelector("[data-layer-esm-host]")).toBeNull();
+  jest.runOnlyPendingTimers();
+  expect(end).toHaveBeenCalledTimes(1);
+});
+
+test("destroy restores focus through multiple dialogs", () => {
+  const runtime = loadLayer();
+  const trigger = document.createElement("button");
+  document.body.appendChild(trigger);
+  trigger.focus();
+  runtime.alert("First");
+  runtime.alert("Second");
+  runtime.destroy();
+  expect(document.activeElement).toBe(trigger);
+});
+
+test("destroy preserves focus and its return target for a dialog opened by an end callback", () => {
+  const runtime = loadLayer();
+  const trigger = document.createElement("button");
+  document.body.appendChild(trigger);
+  trigger.focus();
+  runtime.alert("First");
+  runtime.alert("Second");
+  let next;
+  runtime.alert("Third", {
+    end: () => {
+      next = runtime.alert("Reopened", { isOutAnim: false });
+    },
+  });
+
+  runtime.destroy();
+
+  const reopened = document.querySelector(`.layer-esm[data-index="${next}"]`);
+  expect(reopened.contains(document.activeElement)).toBe(true);
+  runtime.close(next);
+  expect(document.activeElement).toBe(trigger);
+  runtime.destroy();
+});
