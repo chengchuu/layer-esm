@@ -205,7 +205,7 @@ open({
 本文为原创文章，作者保留版权。转载请保留本文完整内容，并以超链接形式注明作者及原文出处。
 
 作者: [除除](https://github.com/chengchuu)
-原文: <https://blog.mazey.net/6443.html>
+原文: <https://blog.mazey.net/6555.html>
 
 <!-- ID: RELEASE_NOTES/introducing-layer-esm-v1.2.zh-CN -->
 
