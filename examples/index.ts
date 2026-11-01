@@ -289,8 +289,8 @@ if (app) {
                     <button class="btn btn-sm btn-outline-danger" data-demo="icon-error">Error</button>
                     <button class="btn btn-sm btn-outline-info" data-demo="icon-question">Question</button>
                     <button class="btn btn-sm btn-outline-secondary" data-demo="icon-lock">Lock</button>
-                    <button class="btn btn-sm btn-outline-danger" data-demo="icon-sad">Sad</button>
                     <button class="btn btn-sm btn-outline-success" data-demo="icon-smile">Smile</button>
+                    <button class="btn btn-sm btn-outline-danger" data-demo="icon-sad">Sad</button>
                   </div>
                 </div>
               </div>
