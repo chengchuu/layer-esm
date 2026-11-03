@@ -69,6 +69,7 @@ test("API subpages receive self-referencing canonical URLs", () => {
   );
   expect(transformed).toContain('href="../../assets/api.css"');
   expect(transformed).toContain(`open | ${displayName} API Reference`);
+  expect(transformed).not.toContain("data-pwa-update");
 });
 
 test("API guide links resolve to the handwritten GitHub source", () => {
@@ -93,7 +94,7 @@ test("generated TypeDoc headings are normalized without changing content", () =>
   );
 });
 
-test("site templates use the styled update, code panel, and muted section classes", () => {
+test("site templates use maintained code panel and section classes", () => {
   const root = path.resolve(__dirname, "..");
   const homepage = readFileSync(path.join(root, "site", "index.html"), "utf8");
   const playground = readFileSync(
@@ -107,11 +108,18 @@ test("site templates use the styled update, code panel, and muted section classe
   const stylesheet = readFileSync(path.join(root, "site", "site.css"), "utf8");
 
   for (const template of [homepage, playground]) {
-    expect(template).toContain('class="pwa-update-notice"');
-    expect(template).toContain("section-band--muted");
-    expect(template).not.toContain('class="pwa-update"');
+    expect(template).not.toContain("data-pwa-update");
     expect(template).not.toContain("section-band-muted");
   }
+  expect(homepage).toContain("section-band--muted");
+  expect(playground).not.toContain("Continue exploring");
+  for (const destination of [
+    "../",
+    "../api/",
+    "<%= GITHUB_URL %>",
+    "<%= NPM_URL %>",
+  ])
+    expect(playground).toContain(`href="${destination}"`);
   expect(homepage).toContain('class="code-panel"');
   expect(playground).toContain('class="playground-demo-gallery"');
   for (const template of [homepage, playground]) {
@@ -185,7 +193,7 @@ test("site templates use the styled update, code panel, and muted section classe
   expect(stylesheet).toContain("gap: 0.75rem 1.25rem");
   expect(stylesheet).toContain(".code-panel {");
   expect(stylesheet).toContain(".code-panel-header {");
-  expect(stylesheet).toContain(".pwa-update-notice {");
+  expect(stylesheet).not.toContain(".pwa-update-notice");
   expect(stylesheet).toContain(".section-band--muted {");
   const featureCardStyles = stylesheet.match(/\.feature-card \{([^}]*)\}/)?.[1];
   expect(featureCardStyles).toContain("padding: 1.5rem");
@@ -259,7 +267,8 @@ test("Pages assembly is repeatable without duplicating API metadata", () => {
       second.match(
         new RegExp(`${projectConfig.site.markerPrefix}-pwa-ui:start`, "g")
       )
-    ).toHaveLength(1);
+    ).toBeNull();
+    expect(second).not.toContain("data-pwa-update");
     expect(firstWorker).not.toMatch(/__PWA_[A-Z_]+__/);
   } finally {
     rmSync(rootDir, { recursive: true, force: true });
