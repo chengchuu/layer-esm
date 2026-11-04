@@ -5,6 +5,7 @@ import layer, {
   type LayerIcon,
   type LayerIconName,
   type LayerOptions,
+  type LayerOffsetKeyword,
 } from "layer-esm";
 
 const iconName: LayerIconName = "success";
@@ -30,3 +31,32 @@ open({ type: 5 });
 
 // @ts-expect-error HTMLElement tuples are not a supported content shape.
 open({ type: 1, content: ["ignored", document.createElement("button")] });
+
+const offsets: LayerOffsetKeyword[] = [
+  "top",
+  "t",
+  "right",
+  "r",
+  "bottom",
+  "b",
+  "left",
+  "l",
+  "top-left",
+  "tl",
+  "lt",
+  "bottom-left",
+  "bl",
+  "lb",
+  "top-right",
+  "tr",
+  "rt",
+  "bottom-right",
+  "br",
+  "rb",
+  "auto",
+];
+for (const offset of offsets) open({ offset });
+
+// @ts-expect-error Unknown keywords are excluded from LayerOffsetKeyword.
+const invalidOffset: LayerOffsetKeyword = "upper";
+void invalidOffset;

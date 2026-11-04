@@ -3,18 +3,34 @@
  */
 /* eslint-disable no-undef */
 
+let runtime;
+
 const loadLayer = () => {
   jest.resetModules();
-  return require("../src/index.ts");
+  runtime = require("../src/index.ts");
+  return runtime;
 };
 
 const queryLayer = (index) =>
   document.querySelector(`.layer-esm[data-index="${index}"]`);
 
+// JSDOM does not compute clamp() widths; inspect rules matching this layer.
+const declaredWidths = (element) =>
+  Array.from(element.ownerDocument.styleSheets)
+    .flatMap((sheet) => Array.from(sheet.cssRules))
+    .filter(
+      (rule) =>
+        rule.type === CSSRule.STYLE_RULE && element.matches(rule.selectorText)
+    )
+    .map((rule) => rule.style.getPropertyValue("width"))
+    .filter(Boolean);
+
 beforeEach(() => {
   document.documentElement.innerHTML = "<head></head><body></body>";
   jest.useRealTimers();
 });
+
+afterEach(() => runtime?.destroy());
 
 test("open renders a dialog and close removes it", () => {
   jest.useFakeTimers();
@@ -153,7 +169,7 @@ test("msg bottom offset does not stretch from the default center position", () =
 test("top messages keep their placement transform during entrance animation", () => {
   const { msg } = loadLayer();
   const index = msg("Hi, Welcome to the layer-esm Example Page", {
-    offset: "t",
+    offset: "top",
     anim: 6,
     time: 0,
   });
@@ -719,8 +735,74 @@ test("explicit area is not capped by the default maxWidth and zIndex is honored"
   const root = queryLayer(index);
 
   expect(root.style.width).toBe("640px");
-  expect(root.style.maxWidth).toBe("calc(100vw - 2rem)");
+  expect(declaredWidths(root)).toEqual([]);
+  expect(root.style.maxWidth).toBe("calc(100vw - 32px)");
   expect(Number(root.style.zIndex)).toBeGreaterThanOrEqual(50000001);
+});
+
+test.each([0, 1, 2])(
+  "automatic type %s dialogs use responsive sizing",
+  (type) => {
+    const { open } = loadLayer();
+    const index = open({
+      type,
+      content: type === 2 ? "about:blank" : "Content",
+    });
+    const root = queryLayer(index);
+
+    expect(root.style.width).toBe("");
+    expect(root.style.maxWidth).toBe("min(calc(100vw - 32px), 560px)");
+    expect(declaredWidths(root)).toContain("clamp(240px, 22vw, 560px)");
+    expect(getComputedStyle(root).minWidth).toBe("0");
+  }
+);
+
+test("prompt sizing respects automatic area heights and explicit width limits", () => {
+  const { config, prompt } = loadLayer();
+  config({ maxWidth: 800 });
+  const inherited = queryLayer(prompt({ area: ["auto", 180] }));
+  const overridden = queryLayer(prompt({ maxWidth: 200 }));
+
+  expect(declaredWidths(inherited)).toContain("clamp(240px, 22vw, 800px)");
+  expect(declaredWidths(overridden)).toContain("clamp(240px, 22vw, 200px)");
+  expect(inherited.style.height).toBe("180px");
+  expect(overridden.style.maxWidth).toBe("min(calc(100vw - 32px), 200px)");
+});
+
+test("compact layers retain content-driven widths alongside a responsive dialog", () => {
+  const { load, msg, open, tips } = loadLayer();
+  const target = document.createElement("button");
+  document.body.appendChild(target);
+  const dialog = queryLayer(open({ content: "Dialog" }));
+  expect(declaredWidths(dialog)).toContain("clamp(240px, 22vw, 560px)");
+  for (const index of [
+    msg("Saved", { time: 0 }),
+    load(),
+    tips("Tip", target),
+  ]) {
+    expect(declaredWidths(queryLayer(index))).toEqual([]);
+    expect(queryLayer(index).style.maxWidth).toBe(
+      "min(calc(100vw - 2rem), 360px)"
+    );
+  }
+});
+
+test("window controls restore the responsive width after inline overrides", () => {
+  const { full, min, open, restore } = loadLayer();
+  const index = open({ type: 1, content: "Window" });
+  const root = queryLayer(index);
+
+  min(index);
+  expect(root.style.width).toBe("180px");
+  expect(getComputedStyle(root).minWidth).toBe("0");
+  restore(index);
+  expect(root.style.width).toBe("");
+  expect(declaredWidths(root)).toContain("clamp(240px, 22vw, 560px)");
+  full(index);
+  expect(root.style.width).toBe("100vw");
+  restore(index);
+  expect(root.style.width).toBe("");
+  expect(root.style.maxWidth).toBe("min(calc(100vw - 32px), 560px)");
 });
 
 test("selector-like move options and cross-origin iframe helpers fail safely", () => {
@@ -980,4 +1062,198 @@ test("resize listeners are rebound after restoring a maximized layer", () => {
 
   expect(root.style.width).toBe("320px");
   expect(root.style.height).toBe("230px");
+});
+
+test.each(["alert", "confirm"])(
+  "%s preserves option callbacks and positional overrides",
+  (name) => {
+    const runtime = loadLayer();
+    const yes = jest.fn();
+    const btn2 = jest.fn(() => false);
+    const index = runtime[name]("Options", { yes, btn2, isOutAnim: false });
+    const root = queryLayer(index);
+    root.querySelector(".layui-layer-btn0").click();
+    expect(yes).toHaveBeenCalledWith(index, root);
+    expect(queryLayer(index)).toBe(root);
+    if (name === "confirm") {
+      root.querySelector(".layui-layer-btn1").click();
+      expect(btn2).toHaveBeenCalledWith(index, root);
+      expect(queryLayer(index)).toBe(root);
+    }
+    const override = jest.fn();
+    const next = runtime[name]("Override", { yes }, override);
+    queryLayer(next).querySelector(".layui-layer-btn0").click();
+    expect(override).toHaveBeenCalledWith(next, queryLayer(next));
+    expect(yes).toHaveBeenCalledTimes(1);
+    runtime.destroy();
+  }
+);
+
+test("closing callbacks can open a dialog without losing its focus", () => {
+  const runtime = loadLayer();
+  const trigger = document.createElement("button");
+  document.body.appendChild(trigger);
+  trigger.focus();
+  let next;
+  const index = runtime.open({
+    isOutAnim: false,
+    end: () => {
+      next = runtime.alert("Next");
+    },
+  });
+  runtime.close(index);
+  expect(queryLayer(next).contains(document.activeElement)).toBe(true);
+  runtime.destroy();
+});
+
+test("focus trapping excludes non-tabbable and concealed controls", () => {
+  const runtime = loadLayer();
+  const index = runtime.open({
+    type: 1,
+    closeBtn: false,
+    content: `<button tabindex="-1">Programmatic only</button>
+      <input type="hidden"><div hidden><button>Hidden ancestor</button></div>
+      <div style="display:none"><button>CSS hidden</button></div>
+      <fieldset disabled><button>Disabled</button></fieldset>
+      <div inert><button>Inert</button></div>
+      <button id="first-visible">First</button><button id="last-visible">Last</button>
+      <button tabindex="-1">Not a Tab stop</button>`,
+  });
+  const root = queryLayer(index);
+  const first = root.querySelector("#first-visible");
+  const last = root.querySelector("#last-visible");
+  expect(document.activeElement).toBe(first);
+  last.focus();
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Tab", bubbles: true })
+  );
+  expect(document.activeElement).toBe(first);
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true })
+  );
+  expect(document.activeElement).toBe(last);
+  runtime.destroy();
+});
+
+test("absolute dialogs keep scroll offsets when dragged", () => {
+  const runtime = loadLayer();
+  const originalX = window.scrollX;
+  const originalY = window.scrollY;
+  window.scrollX = 100;
+  window.scrollY = 200;
+  try {
+    const index = runtime.open({ fixed: false });
+    const root = queryLayer(index);
+    root.getBoundingClientRect = () => ({ left: 20, top: 30 });
+    root.querySelector(".layer-esm__title").dispatchEvent(
+      new MouseEvent("mousedown", {
+        button: 0,
+        clientX: 25,
+        clientY: 35,
+        bubbles: true,
+      })
+    );
+    document.dispatchEvent(
+      new MouseEvent("mousemove", { clientX: 65, clientY: 85 })
+    );
+    document.dispatchEvent(new MouseEvent("mouseup"));
+    expect(root.style.left).toBe("160px");
+    expect(root.style.top).toBe("280px");
+  } finally {
+    window.scrollX = originalX;
+    window.scrollY = originalY;
+    runtime.destroy();
+  }
+});
+
+test("focus trapping follows positive tabindex order before ordinary controls", () => {
+  const { open } = loadLayer();
+  const index = open({
+    type: 1,
+    closeBtn: false,
+    content:
+      '<button id="ordinary">Ordinary</button><button tabindex="2">Second</button><button tabindex="1">First</button>',
+  });
+  const root = queryLayer(index);
+  const first = root.querySelector('[tabindex="1"]');
+  const last = root.querySelector("#ordinary");
+  expect(document.activeElement).toBe(first);
+  last.focus();
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Tab", bubbles: true })
+  );
+  expect(document.activeElement).toBe(first);
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true })
+  );
+  expect(document.activeElement).toBe(last);
+});
+
+test.each(["alert", "confirm"])(
+  "%s retains configured callbacks when positional callbacks are omitted",
+  (name) => {
+    const runtime = loadLayer();
+    const yes = jest.fn();
+    const btn2 = jest.fn(() => false);
+    runtime.config({ yes, btn2 });
+    const index = runtime[name]("Configured callbacks");
+    const root = queryLayer(index);
+    root.querySelector(".layui-layer-btn0").click();
+    expect(yes).toHaveBeenCalledWith(index, root);
+    if (name === "confirm") {
+      root.querySelector(".layui-layer-btn1").click();
+      expect(btn2).toHaveBeenCalledWith(index, root);
+      expect(queryLayer(index)).toBe(root);
+    }
+  }
+);
+
+test("closing an underlying dialog preserves the remaining dialog's return-focus chain", () => {
+  const { alert, close } = loadLayer();
+  const trigger = document.createElement("button");
+  document.body.appendChild(trigger);
+  trigger.focus();
+  const first = alert("First", { isOutAnim: false });
+  const second = alert("Second", { isOutAnim: false });
+  close(first);
+  expect(queryLayer(second).contains(document.activeElement)).toBe(true);
+  close(second);
+  expect(document.activeElement).toBe(trigger);
+});
+
+describe.each([true, false])("readable offsets with fixed=%s", (fixed) => {
+  test.each([
+    ["top", "t"],
+    ["right", "r"],
+    ["bottom", "b"],
+    ["left", "l"],
+    ["top-left", "tl"],
+    ["top-left", "lt"],
+    ["bottom-left", "bl"],
+    ["bottom-left", "lb"],
+    ["top-right", "tr"],
+    ["top-right", "rt"],
+    ["bottom-right", "br"],
+    ["bottom-right", "rb"],
+  ])(
+    "%s matches its %s alias with target-document scroll offsets",
+    (name, alias) => {
+      const { applyOffset } = require("../src/utils/position.ts");
+      const ownerDocument = { defaultView: { scrollX: 80, scrollY: 120 } };
+      const named = { style: {}, ownerDocument };
+      const abbreviated = { style: {}, ownerDocument };
+
+      applyOffset(named, name, fixed);
+      applyOffset(abbreviated, alias, fixed);
+
+      expect(named.style).toEqual(abbreviated.style);
+      expect(named.style.transform).not.toBe("translate(-50%, -50%)");
+      if (name === "top" || name.startsWith("top-")) {
+        expect(named.style.top).toBe(fixed ? "0px" : "120px");
+      }
+      if (name === "bottom" || name.startsWith("bottom-")) {
+        expect(named.style.bottom).toBe("0");
+      }
+    }
+  );
 });

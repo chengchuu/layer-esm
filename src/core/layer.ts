@@ -304,7 +304,7 @@ const finishClose = (index: number, runEnd = true): void => {
     reflowMinimized();
   }
   const topmost = Array.from(runtime.records.values())
-    .filter((current) => current.host === host)
+    .filter((current) => current.host.document === doc)
     .map(({ record: current }) => current)
     .filter(
       (current) =>
@@ -320,7 +320,18 @@ const finishClose = (index: number, runEnd = true): void => {
   host.flush(() => host.store.remove(index));
   runtime.records.delete(index);
   record.lifecycle = "removed";
+  // Preserve return-focus chains when an underlying dialog is removed first.
+  runtime.records.forEach(({ record: remaining }) => {
+    if (record.root?.contains(remaining.previousFocus))
+      remaining.previousFocus = record.previousFocus;
+  });
   let callbackError: unknown;
+  try {
+    if (shouldRestoreFocus && record.previousFocus?.isConnected)
+      record.previousFocus.focus();
+  } catch (error) {
+    callbackError ??= error;
+  }
   if (runEnd && !record.endCalled) {
     record.endCalled = true;
     try {
@@ -336,12 +347,6 @@ const finishClose = (index: number, runEnd = true): void => {
       callbackError ??= error;
     }
   });
-  try {
-    if (shouldRestoreFocus && record.previousFocus?.isConnected)
-      record.previousFocus.focus();
-  } catch (error) {
-    callbackError ??= error;
-  }
   if (callbackError) throw callbackError;
 };
 
@@ -659,12 +664,14 @@ export const alert = (
   yes?: (index: number, layero: HTMLElement) => void
 ): number => {
   const callbackOnly = typeof options === "function";
-  return open({
+  const settings: LayerOptions = {
     content,
     btn: ["OK"],
-    ...(callbackOnly ? {} : options),
-    yes: callbackOnly ? options : yes,
-  });
+    ...(callbackOnly ? undefined : options),
+  };
+  const onYes = callbackOnly ? options : yes;
+  if (onYes) settings.yes = onYes;
+  return open(settings);
 };
 
 export const confirm = (
@@ -674,13 +681,16 @@ export const confirm = (
   cancel?: (index: number, layero: HTMLElement) => void
 ): number => {
   const callbackOnly = typeof options === "function";
-  return open({
+  const settings: LayerOptions = {
     content,
     btn: ["OK", "Cancel"],
-    ...(callbackOnly ? {} : options),
-    yes: callbackOnly ? options : yes,
-    btn2: callbackOnly ? yes : cancel,
-  });
+    ...(callbackOnly ? undefined : options),
+  };
+  const onYes = callbackOnly ? options : yes;
+  const onCancel = callbackOnly ? yes : cancel;
+  if (onYes) settings.yes = onYes;
+  if (onCancel) settings.btn2 = onCancel;
+  return open(settings);
 };
 
 export const msg = (
@@ -807,10 +817,16 @@ export const destroy = (targetDocument?: Document): void => {
   let callbackError: unknown;
   hosts.forEach((host) => {
     runtime.hosts.delete(host.document);
-    host.store.values().forEach((record) => {
-      record.options.isOutAnim = false;
+    const records = host.store
+      .values()
+      .sort((left, right) => right.zIndex - left.zIndex);
+    // Prevent surviving old views from reclaiming focus during teardown.
+    records.forEach((record) => {
+      record.lifecycle = "closing";
+    });
+    records.forEach((record) => {
       try {
-        close(record.index);
+        finishClose(record.index);
       } catch (error) {
         callbackError ??= error;
       }

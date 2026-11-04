@@ -61,10 +61,33 @@ const BootstrapIcon = ({ descriptor }: { descriptor: LayerIconDescriptor }) => (
 );
 
 const focusableElements = (root: HTMLElement): HTMLElement[] =>
-  Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-    (element) =>
-      !element.hidden && element.getAttribute("aria-hidden") !== "true"
-  );
+  Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE))
+    .filter((element) => {
+      if (
+        element.tabIndex < 0 ||
+        element.matches(":disabled") ||
+        element.closest('[hidden], [inert], [aria-hidden="true"]')
+      )
+        return false;
+      const view = element.ownerDocument.defaultView;
+      const visibility = view?.getComputedStyle(element).visibility;
+      if (visibility === "hidden" || visibility === "collapse") return false;
+      for (
+        let current: HTMLElement | null = element;
+        current;
+        current = current.parentElement
+      ) {
+        if (view?.getComputedStyle(current).display === "none") return false;
+      }
+      return true;
+    })
+    .sort((left, right) => {
+      const leftOrder =
+        left.tabIndex > 0 ? left.tabIndex : Number.MAX_SAFE_INTEGER;
+      const rightOrder =
+        right.tabIndex > 0 ? right.tabIndex : Number.MAX_SAFE_INTEGER;
+      return leftOrder - rightOrder;
+    });
 
 export interface HostActions {
   close(index: number): void;
@@ -144,8 +167,20 @@ const useGesture = (
             )}px`;
           } else {
             root.style.transform = "";
-            root.style.left = `${rect.left + next.clientX - originX}px`;
-            root.style.top = `${rect.top + next.clientY - originY}px`;
+            const view = doc.defaultView;
+            const fixed = root.style.position === "fixed";
+            root.style.left = `${
+              rect.left +
+              next.clientX -
+              originX +
+              (fixed ? 0 : view?.scrollX ?? 0)
+            }px`;
+            root.style.top = `${
+              rect.top +
+              next.clientY -
+              originY +
+              (fixed ? 0 : view?.scrollY ?? 0)
+            }px`;
             root.style.right = "";
             root.style.bottom = "";
           }
@@ -516,14 +551,23 @@ const LayerView = ({
     return body;
   };
 
+  const ordinaryDialog = ["dialog", "page", "iframe"].includes(record.typeName);
+  const responsiveWidth =
+    ordinaryDialog && (!options.area[0] || options.area[0] === "auto");
+  const widthLimit =
+    responsiveWidth && !options.maxWidthExplicit ? 560 : options.maxWidth;
+  const viewportWidth = ordinaryDialog
+    ? "calc(100vw - 32px)"
+    : "calc(100vw - 2rem)";
+
   const rootStyle: React.CSSProperties = {
     position: options.fixed ? "fixed" : "absolute",
-    width: options.area[0],
+    width: responsiveWidth ? undefined : options.area[0],
     height: options.area[1],
     maxWidth:
-      options.area[0] && !options.maxWidthExplicit
-        ? "calc(100vw - 2rem)"
-        : `min(calc(100vw - 2rem), ${options.maxWidth}px)`,
+      options.area[0] && !responsiveWidth && !options.maxWidthExplicit
+        ? viewportWidth
+        : `min(${viewportWidth}, ${widthLimit}px)`,
     zIndex: record.zIndex,
     ...record.style,
   };
@@ -570,6 +614,7 @@ const LayerView = ({
         $closing={closing}
         $type={record.typeName}
         $anim={options.anim}
+        $responsiveWidth={responsiveWidth ? widthLimit : undefined}
         style={rootStyle}
         role={role}
         aria-live={role === "status" ? "polite" : undefined}

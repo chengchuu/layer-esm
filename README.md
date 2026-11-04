@@ -67,6 +67,27 @@ motion. String `content` values are treated as trusted HTML for Layer compatibil
 `HTMLElement` or sanitize untrusted markup before passing it. Dynamic titles are always rendered as
 text.
 
+## Positioning
+
+Prefer readable `offset` names in new code. Short forms remain supported aliases.
+
+| Position       | Alias      |
+| -------------- | ---------- |
+| `top`          | `t`        |
+| `right`        | `r`        |
+| `bottom`       | `b`        |
+| `left`         | `l`        |
+| `top-left`     | `tl`, `lt` |
+| `bottom-left`  | `bl`, `lb` |
+| `top-right`    | `tr`, `rt` |
+| `bottom-right` | `br`, `rb` |
+
+The default `"auto"` centers the layer. Numeric offsets and top/left tuples remain supported.
+
+```javascript
+msg("Saved", { offset: "top" });
+```
+
 ## Themes
 
 When no theme is configured, the initial theme is read once from the operating-system preference

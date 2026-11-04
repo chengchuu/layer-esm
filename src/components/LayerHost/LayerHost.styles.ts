@@ -59,11 +59,17 @@ export const Shell = styled.div.attrs({ className: "layer-esm layui-layer" })<{
   $closing: boolean;
   $type: string;
   $anim: number;
+  $responsiveWidth?: number;
 }>`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  min-width: 240px;
+  min-width: 0;
+  ${({ $responsiveWidth }) =>
+    $responsiveWidth !== undefined &&
+    css`
+      width: clamp(240px, 22vw, ${$responsiveWidth}px);
+    `}
   max-height: calc(100vh - 2rem);
   overflow: hidden;
   color: ${({ theme }) => theme.foreground};

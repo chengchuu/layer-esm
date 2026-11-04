@@ -48,7 +48,7 @@ Pass options to customize the icon, duration, or position:
 msg("Upload complete.", {
   icon: 1,
   time: 3,
-  offset: "t",
+  offset: "top",
 });
 ```
 
