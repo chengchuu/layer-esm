@@ -79,7 +79,7 @@ export interface LayerOptions {
   icon?: LayerIcon;
   /**
    * Explicit width and optional height. Automatic dialogs use 22vw between
-   * 240px and 560px, constrained to the viewport with 16px side margins.
+   * 280px and 560px, constrained to the viewport with 16px side margins.
    * Height remains content-driven unless supplied.
    */
   area?: LayerArea;

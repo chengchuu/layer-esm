@@ -284,13 +284,13 @@ if (app) {
                   <h2 class="h5 card-title">Single Icons</h2>
                   <p class="card-text text-secondary">Each button demonstrates one typed icon alias through the message API.</p>
                   <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-outline-warning" data-demo="icon-warning">Warning</button>
                     <button class="btn btn-sm btn-outline-success" data-demo="icon-success">Success</button>
+                    <button class="btn btn-sm btn-outline-warning" data-demo="icon-warning">Warning</button>
                     <button class="btn btn-sm btn-outline-danger" data-demo="icon-error">Error</button>
                     <button class="btn btn-sm btn-outline-info" data-demo="icon-question">Question</button>
                     <button class="btn btn-sm btn-outline-secondary" data-demo="icon-lock">Lock</button>
-                    <button class="btn btn-sm btn-outline-danger" data-demo="icon-sad">Sad</button>
                     <button class="btn btn-sm btn-outline-success" data-demo="icon-smile">Smile</button>
+                    <button class="btn btn-sm btn-outline-danger" data-demo="icon-sad">Sad</button>
                   </div>
                 </div>
               </div>
