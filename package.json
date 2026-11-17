@@ -1,6 +1,6 @@
 {
   "name": "layer-esm",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "description": "Modern ESM Layer Library for Web Popups and Dialogs",
   "type": "module",
   "main": "./dist/index.cjs",
